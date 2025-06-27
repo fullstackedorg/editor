@@ -21,6 +21,14 @@ if (navigator.userAgent.includes("Windows")) {
     document.head.append(link);
 }
 
+// remove top padding for apple devices
+if (platform === Platform.APPLE) {
+    const link = document.createElement("link");
+    link.rel = "stylesheet";
+    link.href = "/apple.css";
+    document.head.append(link);
+}
+
 document.querySelector("#splash")?.remove();
 Projects();
 InitPrompt();
