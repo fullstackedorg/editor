@@ -30,25 +30,27 @@ function EditorVersion() {
         <label>Editor</label>
     `;
 
-    getVersionJSON().then(({ version, branch, commit, commitNumber }) => {
+    getVersionJSON().then(version => {
+        const versionStr = `${version.major}.${version.minor}.${version.patch}`;
+
         const editorVersionContainer = document.createElement("div");
         editorVersionContainer.classList.add("editor-version");
 
         const topRow = document.createElement("div");
-        topRow.innerText = version;
+        topRow.innerText = versionStr;
         editorVersionContainer.append(topRow);
 
         container.append(editorVersionContainer);
 
         getLatestVersionTag().then((latestVersion) => {
-            const isDev = semver.gt(version, latestVersion);
+            const isDev = semver.gt(versionStr, latestVersion);
 
             const badge = isDev
                 ? Badge({
                       text: "Development",
                       type: "info"
                   })
-                : semver.eq(version, latestVersion)
+                : semver.eq(versionStr, latestVersion)
                   ? Badge({
                         text: "Latest",
                         type: "info-2"
@@ -61,9 +63,9 @@ function EditorVersion() {
             topRow.prepend(badge);
 
             if (isDev) {
-                topRow.append(` (${commitNumber})`);
+                topRow.append(` (${version.build})`);
                 const bottomRow = document.createElement("div");
-                bottomRow.innerHTML = `<small>${commit.slice(0, 8)} (${branch})</small>`;
+                bottomRow.innerHTML = `<small>${version.hash.slice(0, 8)} (${version.branch})</small>`;
                 editorVersionContainer.append(bottomRow);
             }
         });
@@ -128,10 +130,12 @@ function SassVersion() {
 const td = new TextDecoder();
 
 function getVersionJSON(): Promise<{
-    version: string;
-    branch: string;
-    commit: string;
-    commitNumber: string;
+    major: string,
+    minor: string,
+    patch: string,
+    build: string,
+    branch: string,
+    hash: string
 }> {
     const payload = new Uint8Array([
         1, // static file serving,
