@@ -8,7 +8,7 @@ import { WorkerTS } from "../../typescript";
 import { Git } from "./git";
 import { createRefresheable } from "../../components/refresheable";
 import git from "../../lib/git";
-import core_message from "../../../lib/core_message";
+import core_message from "../../../fullstacked_modules/core_message";
 import { Button, Icon, Loader } from "@fullstacked/ui";
 import { FileTree } from "./file-tree";
 import { codeEditor } from "../../code-editor";

@@ -9,7 +9,7 @@ import {
 } from "./import-zip";
 import stackNavigation from "../../stack-navigation";
 import { BG_COLOR } from "../../constants";
-import core_message from "../../../lib/core_message";
+import core_message from "../../../fullstacked_modules/core_message";
 import git from "../../lib/git";
 import { Button, InputText } from "@fullstacked/ui";
 

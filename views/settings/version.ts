@@ -1,6 +1,6 @@
-import { bridge } from "../../../lib/bridge";
-import { serializeArgs } from "../../../lib/bridge/serialization";
-import core_fetch from "../../../lib/fetch";
+import { bridge } from "../../../fullstacked_modules/bridge";
+import { serializeArgs } from "../../../fullstacked_modules/bridge/serialization";
+import core_fetch from "../../../fullstacked_modules/fetch";
 import esbuild from "../../lib/esbuild";
 import { WorkerTS } from "../../typescript";
 import semver from "semver";

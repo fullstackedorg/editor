@@ -3,7 +3,7 @@ import { TopBar } from "../../components/top-bar";
 import { Store } from "../../store";
 import stackNavigation from "../../stack-navigation";
 import { BG_COLOR } from "../../constants";
-import fs from "../../../lib/fs";
+import fs from "../../../fullstacked_modules/fs";
 import { Button, InputText } from "@fullstacked/ui";
 
 export function CreateEmpty() {

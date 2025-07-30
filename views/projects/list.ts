@@ -6,7 +6,7 @@ import { Project as ProjectType } from "../../types";
 import { Project } from "../project";
 import { ProjectSettings } from "../project-settings";
 import { Loader, Button, ButtonGroup, Popover, Dialog } from "@fullstacked/ui";
-import archive from "../../../lib/archive";
+import archive from "../../../fullstacked_modules/archive";
 
 export function List() {
     const container = createElement("div");

@@ -1,5 +1,5 @@
-import { bridge } from "../../../lib/bridge";
-import { serializeArgs } from "../../../lib/bridge/serialization";
+import { bridge } from "../../../fullstacked_modules/bridge";
+import { serializeArgs } from "../../../fullstacked_modules/bridge/serialization";
 import { CONFIG_DATA_TYPE, CONFIG_TYPE } from "../../types";
 
 export function get<T extends CONFIG_TYPE>(

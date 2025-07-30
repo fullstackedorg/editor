@@ -12,7 +12,7 @@ https://www.figma.com/design/xb3JBRCvEWpbwGda03T5QQ/Mockups
 // components
 @use "components/top-bar.scss";
 @use "components/view-scrollable.scss";
-@use "../lib/components/snackbar.scss";
+@use "../fullstacked_modules/components/snackbar.scss";
 
 // views
 @use "views/projects/index.scss";

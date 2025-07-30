@@ -1,8 +1,8 @@
-import { fromByteArray } from "../../../lib/base64";
+import { fromByteArray } from "../../../fullstacked_modules/base64";
 import {
     deserializeArgs,
     serializeArgs
-} from "../../../lib/bridge/serialization";
+} from "../../../fullstacked_modules/bridge/serialization";
 
 function syncRequest(method: number, ...args: any[]) {
     const request = new XMLHttpRequest();
@@ -83,4 +83,21 @@ export function readdir(path: string, skip: string[]): string[] {
         false, // withFileType
         ...skip
     );
+}
+
+export function fullstackedModule(path: string) {
+    if (!path.startsWith("node_modules/")) {
+        return null;
+    }
+
+    path = "fullstacked" + path.slice("node".length);
+
+    return syncRequest(
+        65,
+        path
+    ).at(0);
+}
+
+export function fullstackedModulesList() {
+    return syncRequest(66);
 }

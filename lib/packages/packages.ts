@@ -1,9 +1,9 @@
-import { bridge } from "../../../lib/bridge";
+import { bridge } from "../../../fullstacked_modules/bridge";
 import {
     getLowestKeyIdAvailable,
     serializeArgs
-} from "../../../lib/bridge/serialization";
-import core_message from "../../../lib/core_message";
+} from "../../../fullstacked_modules/bridge/serialization";
+import core_message from "../../../fullstacked_modules/core_message";
 import { Project } from "../../types";
 
 const activeInstallations = new Map<

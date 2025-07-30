@@ -1,8 +1,8 @@
 import { createSequential, createSubscribable, Store } from ".";
 import { CONFIG_TYPE, Project } from "../types";
-import fs from "../../lib/fs";
+import fs from "../../fullstacked_modules/fs";
 import config from "../lib/config";
-import { SnackBar } from "../../lib/components/snackbar";
+import { SnackBar } from "../../fullstacked_modules/components/snackbar";
 import core_open from "../lib/core_open";
 import { buildSASS } from "../lib/esbuild/sass";
 import esbuild from "../lib/esbuild";

@@ -1,9 +1,9 @@
 import type { methods } from "./worker";
 import { createSubscribable } from "../store";
-import { numberTo4Bytes } from "../../lib/bridge/serialization";
-import platform, { Platform } from "../../lib/platform";
-import { bridge } from "../../lib/bridge";
-import core_message from "../../lib/core_message";
+import { numberTo4Bytes } from "../../fullstacked_modules/bridge/serialization";
+import platform, { Platform } from "../../fullstacked_modules/platform";
+import { bridge } from "../../fullstacked_modules/bridge";
+import core_message from "../../fullstacked_modules/core_message";
 import { FileEvent, FileEventType } from "../views/project/file-event";
 
 type OnlyOnePromise<T> = T extends PromiseLike<any> ? T : Promise<T>;

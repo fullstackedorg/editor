@@ -6,10 +6,10 @@ import stackNavigation from "../../stack-navigation";
 import slugify from "slugify";
 import { Store } from "../../store";
 import { CONFIG_TYPE } from "../../types";
-import fs from "../../../lib/fs";
+import fs from "../../../fullstacked_modules/fs";
 import config from "../../lib/config";
 import { InputFile, Loader } from "@fullstacked/ui";
-import archive from "../../../lib/archive";
+import archive from "../../../fullstacked_modules/archive";
 
 export function ImportZip() {
     const { container, scrollable } = ViewScrollable();

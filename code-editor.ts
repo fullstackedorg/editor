@@ -2,7 +2,7 @@ import CodeEditor from "@fullstacked/code-editor";
 import config from "./lib/config";
 import { CONFIG_TYPE } from "./types";
 import { Store } from "./store";
-import core_message from "../lib/core_message";
+import core_message from "../fullstacked_modules/core_message";
 import { FileEvent, FileEventType } from "./views/project/file-event";
 import { WorkerTS } from "./typescript";
 import { EditorView } from "codemirror";
@@ -15,7 +15,7 @@ import {
 import { Diagnostic, linter, lintGutter } from "@codemirror/lint";
 import { hoverTooltip } from "@codemirror/view";
 import { autocompletion } from "@codemirror/autocomplete";
-import fs from "../lib/fs";
+import fs from "../fullstacked_modules/fs";
 
 const jsTsFilesExtensions = ["js", "mjs", ".cjs", "jsx", "ts", "tsx"];
 

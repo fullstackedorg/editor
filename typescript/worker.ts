@@ -57,10 +57,9 @@ const options: CompilerOptions = {
     lib: [
         "lib.dom.d.ts",
         "lib.dom.iterable.d.ts",
-        "lib.es2023.d.ts",
-        "fullstacked.d.ts"
+        "lib.es2023.d.ts"
     ],
-    jsx: JsxEmit.React
+    jsx: JsxEmit.React,
 };
 let services: LanguageService;
 let td: TextDecoder;
@@ -125,10 +124,23 @@ export let methods = {
                 files.set(path, {
                     contents: null,
                     version: 0,
-                    source: false
+                    source: true
                 });
             }
         });
+
+        const fullstackedModules = fs_sync.fullstackedModulesList();
+        console.log(fullstackedModules)
+        fullstackedModules.forEach(filePath => {
+            const path = "node_modules/" + filePath;
+            if (!files.has(path)) {
+                files.set(path, {
+                    contents: null,
+                    version: 0,
+                    source: true
+                });
+            }
+        })
     },
     updateFile(fileName: string, contents: string) {
         if (!fileName.includes(workingDirectory)) {
@@ -284,7 +296,6 @@ function initLanguageServiceHost(): LanguageServiceHost {
                     source: false,
                     version: 1
                 };
-                files.set(fileName, file);
             }
 
             if (!file) {
@@ -292,7 +303,9 @@ function initLanguageServiceHost(): LanguageServiceHost {
             }
 
             if (file.contents === null) {
-                file.contents = fs_sync.readFile(fileName);
+                file.contents = fileName.startsWith("node_modules")
+                    ? fs_sync.fullstackedModule(fileName)
+                    : fs_sync.readFile(fileName);
             }
 
             return file.contents
@@ -332,7 +345,9 @@ function initLanguageServiceHost(): LanguageServiceHost {
             }
 
             if (file.contents === null) {
-                file.contents = fs_sync.readFile(fileName);
+                file.contents = fileName.startsWith("node_modules")
+                    ? fs_sync.fullstackedModule(fileName)
+                    : fs_sync.readFile(fileName);
             }
 
             return file.contents;

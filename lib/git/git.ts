@@ -1,6 +1,6 @@
-import { bridge } from "../../../lib/bridge";
-import { serializeArgs } from "../../../lib/bridge/serialization";
-import core_message from "../../../lib/core_message";
+import { bridge } from "../../../fullstacked_modules/bridge";
+import { serializeArgs } from "../../../fullstacked_modules/bridge/serialization";
+import core_message from "../../../fullstacked_modules/core_message";
 import { Project } from "../../types";
 import { GitAuth } from "../../views/project/git/auth";
 
