@@ -1,6 +1,6 @@
-import { bridge } from "../../../lib/bridge";
-import { serializeArgs } from "../../../lib/bridge/serialization";
-import core_fetch from "../../../lib/fetch";
+import { bridge } from "../../../fullstacked_modules/bridge";
+import { serializeArgs } from "../../../fullstacked_modules/bridge/serialization";
+import core_fetch from "../../../fullstacked_modules/fetch";
 import esbuild from "../../lib/esbuild";
 import { WorkerTS } from "../../typescript";
 import semver from "semver";
@@ -30,7 +30,7 @@ function EditorVersion() {
         <label>Editor</label>
     `;
 
-    getVersionJSON().then(version => {
+    getVersionJSON().then((version) => {
         const versionStr = `${version.major}.${version.minor}.${version.patch}`;
 
         const editorVersionContainer = document.createElement("div");
@@ -130,12 +130,12 @@ function SassVersion() {
 const td = new TextDecoder();
 
 function getVersionJSON(): Promise<{
-    major: string,
-    minor: string,
-    patch: string,
-    build: string,
-    branch: string,
-    hash: string
+    major: string;
+    minor: string;
+    patch: string;
+    build: string;
+    branch: string;
+    hash: string;
 }> {
     const payload = new Uint8Array([
         1, // static file serving,

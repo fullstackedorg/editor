@@ -1,12 +1,12 @@
 import "./init";
-import core_message from "../lib/core_message";
+import core_message from "../fullstacked_modules/core_message";
 import { deeplink, WindowsAskForAdmin } from "./deeplink";
 import { Demo } from "./demo";
 import config from "./lib/config";
 import { CONFIG_TYPE } from "./types";
 import { updatePackagesView } from "./views/packages";
 import { Projects } from "./views/projects";
-import platform, { Platform } from "../lib/platform";
+import platform, { Platform } from "../fullstacked_modules/platform";
 import { InitPrompt } from "./views/prompt";
 import { Store } from "./store";
 import { Project } from "./views/project";

@@ -1,13 +1,13 @@
-import { bridge } from "../../../lib/bridge";
+import { bridge } from "../../../fullstacked_modules/bridge";
 import {
     deserializeArgs,
     getLowestKeyIdAvailable,
     serializeArgs
-} from "../../../lib/bridge/serialization";
+} from "../../../fullstacked_modules/bridge/serialization";
 import { Project } from "../../types";
 import type { Message } from "esbuild";
-import core_message from "../../../lib/core_message";
-import { toByteArray } from "../../../lib/base64";
+import core_message from "../../../fullstacked_modules/core_message";
+import { toByteArray } from "../../../fullstacked_modules/base64";
 
 // 55
 export function version(): Promise<string> {

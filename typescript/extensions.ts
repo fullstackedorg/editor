@@ -4,7 +4,7 @@ import { CompletionContext } from "@codemirror/autocomplete";
 import type ts from "typescript";
 import { Diagnostic } from "@codemirror/lint";
 import { codeEditor } from "../code-editor";
-import fs from "../../lib/fs";
+import fs from "../../fullstacked_modules/fs";
 
 export const tsErrorLinter =
     (workingDirectory: string, filePath: string) =>

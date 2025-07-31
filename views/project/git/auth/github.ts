@@ -1,7 +1,7 @@
 import { createElement } from "../../../../components/element";
 import { CONFIG_TYPE } from "../../../../types";
 import config from "../../../../lib/config";
-import core_fetch from "../../../../../lib/fetch";
+import core_fetch from "../../../../../fullstacked_modules/fetch";
 import { Button, Dialog, Icon } from "@fullstacked/ui";
 
 export function GitHubDeviceFlow() {

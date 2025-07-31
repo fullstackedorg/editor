@@ -1,10 +1,10 @@
 import { createFileTree } from "@fullstacked/file-tree";
 import { Project } from "../../types";
 import { createElement } from "../../components/element";
-import fs from "../../../lib/fs";
+import fs from "../../../fullstacked_modules/fs";
 import { NEW_FILE_ID } from "../../constants";
 import { Store } from "../../store";
-import core_message from "../../../lib/core_message";
+import core_message from "../../../fullstacked_modules/core_message";
 import { FileEvent, FileEventType } from "./file-event";
 import { Button, ButtonGroup, Icon, InputText, Popover } from "@fullstacked/ui";
 import { codeEditor } from "../../code-editor";
