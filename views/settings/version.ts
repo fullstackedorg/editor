@@ -30,7 +30,7 @@ function EditorVersion() {
         <label>Editor</label>
     `;
 
-    getVersionJSON().then(version => {
+    getVersionJSON().then((version) => {
         const versionStr = `${version.major}.${version.minor}.${version.patch}`;
 
         const editorVersionContainer = document.createElement("div");
@@ -130,12 +130,12 @@ function SassVersion() {
 const td = new TextDecoder();
 
 function getVersionJSON(): Promise<{
-    major: string,
-    minor: string,
-    patch: string,
-    build: string,
-    branch: string,
-    hash: string
+    major: string;
+    minor: string;
+    patch: string;
+    build: string;
+    branch: string;
+    hash: string;
 }> {
     const payload = new Uint8Array([
         1, // static file serving,

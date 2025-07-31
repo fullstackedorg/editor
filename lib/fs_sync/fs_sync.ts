@@ -92,10 +92,7 @@ export function fullstackedModule(path: string) {
 
     path = "fullstacked" + path.slice("node".length);
 
-    return syncRequest(
-        65,
-        path
-    ).at(0);
+    return syncRequest(65, path).at(0);
 }
 
 export function fullstackedModulesList() {

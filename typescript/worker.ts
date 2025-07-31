@@ -54,12 +54,8 @@ const options: CompilerOptions = {
     target: ScriptTarget.ES2022,
     moduleResolution: ModuleResolutionKind.Node10,
     allowJs: true,
-    lib: [
-        "lib.dom.d.ts",
-        "lib.dom.iterable.d.ts",
-        "lib.es2023.d.ts"
-    ],
-    jsx: JsxEmit.React,
+    lib: ["lib.dom.d.ts", "lib.dom.iterable.d.ts", "lib.es2023.d.ts"],
+    jsx: JsxEmit.React
 };
 let services: LanguageService;
 let td: TextDecoder;
@@ -130,8 +126,8 @@ export let methods = {
         });
 
         const fullstackedModules = fs_sync.fullstackedModulesList();
-        console.log(fullstackedModules)
-        fullstackedModules.forEach(filePath => {
+        console.log(fullstackedModules);
+        fullstackedModules.forEach((filePath) => {
             const path = "node_modules/" + filePath;
             if (!files.has(path)) {
                 files.set(path, {
@@ -140,7 +136,7 @@ export let methods = {
                     source: true
                 });
             }
-        })
+        });
     },
     updateFile(fileName: string, contents: string) {
         if (!fileName.includes(workingDirectory)) {

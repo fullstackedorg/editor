@@ -65,8 +65,8 @@ export function ConsoleTerminal() {
     container.append(text);
 
     const logger = (message: string) => {
-        (text.innerHTML += `${message.trim()}<br/>`),
-            text.scrollIntoView(false);
+        ((text.innerHTML += `${message.trim()}<br/>`),
+            text.scrollIntoView(false));
     };
 
     return { container, text, logger };
