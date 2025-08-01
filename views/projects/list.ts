@@ -180,7 +180,7 @@ function ProjectTile(project: ProjectType) {
                 "data",
                 "node_modules",
                 ".git"
-            ]);
+            ]) as Uint8Array<ArrayBuffer>;
             const blob = new Blob([zipData]);
             const a = document.createElement("a");
             document.body.appendChild(a);
