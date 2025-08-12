@@ -1,8 +1,8 @@
 import { Button, ButtonGroup, Popover, InputText } from "@fullstacked/ui";
 import { createElement } from "../../components/element";
 import { createRefresheable } from "../../components/refresheable";
-import config from "../../lib/config";
 import { CONFIG_TYPE, GitAuths } from "../../types";
+import config from "../../../fullstacked_modules/config";
 
 let gitAuthRefresh: ReturnType<typeof createRefresheable>["refresh"];
 const refreshGitAuthsList = () => {

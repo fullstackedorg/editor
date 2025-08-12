@@ -10,7 +10,7 @@ import {
 import stackNavigation from "../../stack-navigation";
 import { BG_COLOR } from "../../constants";
 import core_message from "../../../fullstacked_modules/core_message";
-import git from "../../lib/git";
+import git from "../../../fullstacked_modules/git";
 import { Button, InputText } from "@fullstacked/ui";
 
 export function CloneGit(repoUrl?: string) {

@@ -1,10 +1,12 @@
 import { GitHubDeviceFlow } from "./github";
 import { createElement } from "../../../../components/element";
 import { CONFIG_TYPE } from "../../../../types";
-import config from "../../../../lib/config";
 import { Button, Dialog, InputText } from "@fullstacked/ui";
+import config from "../../../../../fullstacked_modules/config";
+import core_message from "../../../../../fullstacked_modules/core_message";
+import { gitAuthResponse } from "../../../../../fullstacked_modules/git";
 
-export function GitAuth(hostname: string): Promise<boolean> {
+function GitAuth(hostname: string): Promise<boolean> {
     if (hostname === "github.com") {
         return GitHubDeviceFlow();
     }
@@ -76,3 +78,9 @@ export function GitAuth(hostname: string): Promise<boolean> {
         };
     });
 }
+
+core_message.addListener("git-authentication", (message) => {
+    const { id, host } = JSON.parse(message);
+    console.log(id, "received");
+    GitAuth(host).then((success) => gitAuthResponse(id, success));
+});

@@ -1,11 +1,11 @@
 import { bridge } from "../../../fullstacked_modules/bridge";
 import { serializeArgs } from "../../../fullstacked_modules/bridge/serialization";
 import core_fetch from "../../../fullstacked_modules/fetch";
-import esbuild from "../../lib/esbuild";
 import { WorkerTS } from "../../typescript";
 import semver from "semver";
 import * as sass from "sass";
 import { Badge } from "@fullstacked/ui";
+import esbuild from "../../../fullstacked_modules/esbuild";
 
 export function Version() {
     const container = document.createElement("div");

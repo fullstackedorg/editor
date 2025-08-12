@@ -10,7 +10,7 @@ import {
 import { refreshGitWidgetBranchAndCommit } from "..";
 import { createElement } from "../../../components/element";
 import { createRefresheable } from "../../../components/refresheable";
-import git, { Status } from "../../../lib/git";
+import git, { Status } from "../../../../fullstacked_modules/git";
 import { Store } from "../../../store";
 import { Project } from "../../../types";
 import { Branches } from "./branches";

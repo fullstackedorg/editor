@@ -1,11 +1,11 @@
 import { Chat } from "@fullstacked/code-editor";
 import { codeEditor } from "../code-editor";
 import { deeplink } from "../deeplink";
-import packages from "../lib/packages";
 import stackNavigation from "../stack-navigation";
 import { Store } from "../store";
 import { Project } from "../types";
 import { updatePackagesView } from "../views/packages";
+import packages from "../../fullstacked_modules/packages";
 
 export type Command = {
     name: string;
@@ -36,13 +36,20 @@ export const commands: Command[] = [
                         quick = true;
                         args.splice(args.indexOf("--quick"), 1);
                     }
-                    packages.install(
-                        Store.projects.current.check(),
-                        args,
-                        updatePackagesView,
-                        quick,
-                        dev
-                    );
+                    if (quick) {
+                        packages.installQuick(
+                            Store.projects.current.check(),
+                            updatePackagesView
+                        );
+                    } else {
+                        packages.install(
+                            Store.projects.current.check(),
+                            args,
+                            updatePackagesView,
+                            dev
+                        );
+                    }
+
                     return true;
                 }
             }

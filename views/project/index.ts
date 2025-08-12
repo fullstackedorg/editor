@@ -7,7 +7,7 @@ import { createElement } from "../../components/element";
 import { WorkerTS } from "../../typescript";
 import { Git } from "./git";
 import { createRefresheable } from "../../components/refresheable";
-import git from "../../lib/git";
+import git from "../../../fullstacked_modules/git";
 import core_message from "../../../fullstacked_modules/core_message";
 import { Button, Icon, Loader } from "@fullstacked/ui";
 import { FileTree } from "./file-tree";
@@ -235,14 +235,14 @@ function GitWidget(project: ProjectType) {
         statusArrow.style.display = "flex";
         statusArrow.classList.remove("red");
 
-        let json: { url: string; data: string };
+        let json: { finished: boolean };
         try {
             json = JSON.parse(gitProgress);
         } catch (e) {
             return;
         }
 
-        if (json.data.endsWith("done")) {
+        if (json.finished) {
             statusArrow.style.display = "none";
             branchAndCommit.refresh();
         }
@@ -252,14 +252,14 @@ function GitWidget(project: ProjectType) {
         statusArrow.style.display = "flex";
         statusArrow.classList.add("red");
 
-        let json: { url: string; data: string };
+        let json: { finished: boolean };
         try {
             json = JSON.parse(gitProgress);
         } catch (e) {
             return;
         }
 
-        if (json.data.endsWith("done")) {
+        if (json.finished) {
             statusArrow.style.display = "none";
             branchAndCommit.refresh();
         }

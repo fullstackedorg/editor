@@ -1,10 +1,10 @@
 import { Button, Dialog } from "@fullstacked/ui";
 import { createElement } from "./components/element";
-import config from "./lib/config";
 import { Store } from "./store";
 import { CONFIG_TYPE, Project as ProjectType } from "./types";
 import { CloneGit } from "./views/add-project/clone-git";
 import { Project } from "./views/project";
+import config from "../fullstacked_modules/config";
 
 // fullstacked://http//github.....git
 export async function deeplink(fullstackedUrl: string) {

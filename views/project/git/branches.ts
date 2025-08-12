@@ -11,7 +11,7 @@ import { projectChanges, toggleCommitAndBranchView } from ".";
 import { refreshGitWidgetBranchAndCommit } from "..";
 import { createElement } from "../../../components/element";
 import { createRefresheable } from "../../../components/refresheable";
-import git from "../../../lib/git";
+import git from "../../../../fullstacked_modules/git";
 import { Project } from "../../../types";
 
 let refreshBranches: ReturnType<typeof createRefresheable>["refresh"];

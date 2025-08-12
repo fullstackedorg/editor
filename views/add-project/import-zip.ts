@@ -7,9 +7,9 @@ import slugify from "slugify";
 import { Store } from "../../store";
 import { CONFIG_TYPE } from "../../types";
 import fs from "../../../fullstacked_modules/fs";
-import config from "../../lib/config";
 import { InputFile, Loader } from "@fullstacked/ui";
 import archive from "../../../fullstacked_modules/archive";
+import config from "../../../fullstacked_modules/config";
 
 export function ImportZip() {
     const { container, scrollable } = ViewScrollable();
