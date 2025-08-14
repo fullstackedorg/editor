@@ -1,7 +1,7 @@
 import prettyBytes from "pretty-bytes";
 import { createElement } from "../../components/element";
-import { PackageInfoProgress } from "../../lib/packages";
 import { Dialog } from "@fullstacked/ui";
+import { PackageInfoProgress } from "../../../fullstacked_modules/packages";
 
 let packagesView: {
     dialog: ReturnType<typeof Dialog>;
