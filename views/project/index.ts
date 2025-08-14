@@ -216,7 +216,7 @@ function GitWidget(project: ProjectType) {
         const branchAndCommitContainer = createElement("div");
         branchAndCommitContainer.innerHTML = `
                 <div><b>${result.name}</b></div>
-                <div>${result.hash.slice(0, 7)}<div>
+                <div>${result.hash?.slice(0, 7) || "-"}<div>
             `;
         return branchAndCommitContainer;
     };
