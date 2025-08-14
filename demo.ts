@@ -2,7 +2,7 @@ import { bridge } from "../fullstacked_modules/bridge";
 import { serializeArgs } from "../fullstacked_modules/bridge/serialization";
 import core_fetch from "../fullstacked_modules/fetch";
 import core_message from "../fullstacked_modules/core_message";
-import git from "./lib/git";
+import git from "../fullstacked_modules/git";
 import {
     createAndMoveProject,
     randomStr,

@@ -12,7 +12,7 @@ import {
     isSourceFile,
     version
 } from "typescript";
-import fs_sync, { cache as fsCache, initCache } from "../lib/fs_sync";
+import fs_sync, { cache as fsCache, initCache } from "../fs_sync";
 import { FileEvent, FileEventType } from "../views/project/file-event";
 
 function removeSourceObjects(obj: any) {
@@ -126,7 +126,6 @@ export let methods = {
         });
 
         const fullstackedModules = fs_sync.fullstackedModulesList();
-        console.log(fullstackedModules);
         fullstackedModules.forEach((filePath) => {
             const path = "node_modules/" + filePath;
             if (!files.has(path)) {

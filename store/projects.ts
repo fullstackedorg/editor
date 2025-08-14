@@ -1,15 +1,15 @@
 import { createSequential, createSubscribable, Store } from ".";
 import { CONFIG_TYPE, Project } from "../types";
 import fs from "../../fullstacked_modules/fs";
-import config from "../lib/config";
 import { SnackBar } from "../../fullstacked_modules/components/snackbar";
-import core_open from "../lib/core_open";
-import { buildSASS } from "../lib/esbuild/sass";
-import esbuild from "../lib/esbuild";
-import git from "../lib/git";
-import packages from "../lib/packages";
+import git from "../../fullstacked_modules/git";
 import { updatePackagesView } from "../views/packages";
 import stackNavigation from "../stack-navigation";
+import esbuild from "../../fullstacked_modules/esbuild";
+import { buildSASS } from "../../fullstacked_modules/esbuild/sass";
+import config from "../../fullstacked_modules/config";
+import core_open from "../../fullstacked_modules/core_open";
+import packages from "../../fullstacked_modules/packages";
 
 const list = createSubscribable(listP, []);
 
@@ -102,8 +102,8 @@ async function build(project: Project) {
 
     const isUserMode = Store.preferences.isUserMode.check();
     if (!isUserMode || (await esbuild.shouldBuild(project))) {
-        await packages.install(project, null, updatePackagesView, true);
-        const buildErrorsSASS = await buildSASS(project, fs);
+        await packages.installQuick(project, updatePackagesView);
+        const buildErrorsSASS = await buildSASS(fs, project);
         const buildErrorsEsbuild = await esbuild.build(project);
         const buildErrors = [buildErrorsSASS, ...(buildErrorsEsbuild || [])]
             .flat()

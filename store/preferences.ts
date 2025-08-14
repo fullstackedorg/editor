@@ -1,5 +1,5 @@
 import { createSubscribable } from ".";
-import config from "../lib/config";
+import config from "../../fullstacked_modules/config";
 import { CONFIG_TYPE } from "../types";
 
 const isUserMode = createSubscribable(getUserMode, false);
