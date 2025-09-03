@@ -21,7 +21,6 @@ export async function deeplink(fullstackedUrl: string) {
     }
 
     const runProjectIfFound = (projects: ProjectType[]) => {
-        console.log(projects, url);
         const existingProject = projects?.find(
             (p) => p.gitRepository?.url === url
         );

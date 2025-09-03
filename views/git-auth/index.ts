@@ -1,10 +1,10 @@
 import { GitHubDeviceFlow } from "./github";
-import { createElement } from "../../../../components/element";
-import { CONFIG_TYPE } from "../../../../types";
+import { createElement } from "../../components/element";
+import { CONFIG_TYPE } from "../../types";
 import { Button, Dialog, InputText } from "@fullstacked/ui";
-import config from "../../../../../fullstacked_modules/config";
-import core_message from "../../../../../fullstacked_modules/core_message";
-import { gitAuthResponse } from "../../../../../fullstacked_modules/git";
+import config from "../../../fullstacked_modules/config";
+import core_message from "../../../fullstacked_modules/core_message";
+import { gitAuthResponse } from "../../../fullstacked_modules/git";
 
 function GitAuth(hostname: string): Promise<boolean> {
     if (hostname === "github.com") {
@@ -79,8 +79,7 @@ function GitAuth(hostname: string): Promise<boolean> {
     });
 }
 
-core_message.addListener("git-authentication", (message) => {
+export function gitAuthCallback(message: string) {
     const { id, host } = JSON.parse(message);
-    console.log(id, "received");
     GitAuth(host).then((success) => gitAuthResponse(id, success));
-});
+};
