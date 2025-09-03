@@ -82,4 +82,4 @@ function GitAuth(hostname: string): Promise<boolean> {
 export function gitAuthCallback(message: string) {
     const { id, host } = JSON.parse(message);
     GitAuth(host).then((success) => gitAuthResponse(id, success));
-};
+}
