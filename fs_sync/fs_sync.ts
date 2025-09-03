@@ -1,6 +1,8 @@
 import { fromByteArray } from "../../fullstacked_modules/base64";
-import { deserializeArgs, serializeArgs } from "../../fullstacked_modules/bridge/serialization";
-
+import {
+    deserializeArgs,
+    serializeArgs
+} from "../../fullstacked_modules/bridge/serialization";
 
 function syncRequest(method: number, ...args: any[]) {
     const request = new XMLHttpRequest();
