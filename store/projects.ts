@@ -119,6 +119,7 @@ async function build(project: Project) {
         });
 
         if (errors.length) {
+            console.log(errors);
             if (isUserMode) {
                 SnackBar({
                     message: `Encountered errors while building <b>${project.title}</b>.`,
@@ -127,10 +128,11 @@ async function build(project: Project) {
             } else {
                 Store.editor.codeEditor.addBuildErrors(errors);
             }
+        } else {
+            core_open(project.id);
         }
     }
 
-    core_open(project.id);
     removeProjectBuild();
 }
 

@@ -79,9 +79,9 @@ export function readdir(path: string, skip: string[]): string[] {
     return syncRequest(
         5,
         path,
-        true,  // recursive
+        true, // recursive
         false, // withFileType
-        true,  // filesOnly
+        true, // filesOnly
         ...skip
     );
 }
