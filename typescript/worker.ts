@@ -132,7 +132,7 @@ export let methods = {
                 files.set(path, {
                     contents: null,
                     version: 0,
-                    source: true
+                    source: path.endsWith(".d.ts")
                 });
             }
         });
