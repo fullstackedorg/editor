@@ -1,8 +1,6 @@
 import { Button, Dialog, InputPredictive } from "@fullstacked/ui";
 import { createElement } from "../../components/element";
 import { commands } from "../../commands";
-import { codeEditor } from "../../code-editor";
-import { Chat } from "@fullstacked/code-editor";
 
 let promptDialog = null;
 function closeDialog() {
@@ -117,12 +115,6 @@ function Prompt() {
             },
             commands.find(({ name }) => name === firstWord)
         );
-
-        if (!command?.exec?.(args)) {
-            const chatView = new Chat();
-            codeEditor.getWorkspace().item.add(chatView);
-            chatView.prompt(value);
-        }
 
         closeDialog();
     });

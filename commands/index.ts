@@ -1,5 +1,3 @@
-import { Chat } from "@fullstacked/code-editor";
-import { codeEditor } from "../code-editor";
 import { deeplink } from "../deeplink";
 import stackNavigation from "../stack-navigation";
 import { Store } from "../store";
@@ -125,17 +123,6 @@ export const commands: Command[] = [
             const repoUrl = args.at(0);
             const deeplinkUrl = `fullstacked://${repoUrl}`;
             deeplink(deeplinkUrl);
-            return true;
-        }
-    },
-    {
-        name: "chat",
-        exec(args) {
-            const project = Store.projects.current.check();
-            if (project) {
-                codeEditor.getWorkspace().item.add(new Chat());
-            }
-
             return true;
         }
     }

@@ -4,25 +4,22 @@ import stackNavigation from "../../stack-navigation";
 import { TopBar as TopBarComponent } from "../../components/top-bar";
 import { Store } from "../../store";
 import { createElement } from "../../components/element";
-import { WorkerTS } from "../../typescript";
 import { Git } from "./git";
 import { createRefresheable } from "../../components/refresheable";
 import git from "../../../fullstacked_modules/git";
 import core_message from "../../../fullstacked_modules/core_message";
 import { Button, Icon, Loader } from "@fullstacked/ui";
 import { FileTree } from "./file-tree";
-import { codeEditor } from "../../code-editor";
 import { openPrompt } from "../prompt";
+import { createWorkspace } from "./workspace";
 
-let lastOpenedProjectId: string,
-    workspaceElement: typeof codeEditor.workspaceElement;
+let lastOpenedProjectId: string
 export function Project(project: ProjectType) {
     if (!project) return;
 
     // gives a chance if back button by mistake
     if (lastOpenedProjectId !== project.id) {
-        workspaceElement = codeEditor.workspaceElement;
-        WorkerTS.dispose();
+        
     }
 
     lastOpenedProjectId = project.id;
@@ -65,10 +62,6 @@ function TopBar(project: ProjectType, fileTreeAndEditor: HTMLElement) {
             tsButton.classList.remove("working");
         }
     };
-    WorkerTS.working.subscribe(flashOnWorking);
-    tsButton.onclick = () => {
-        WorkerTS.restart();
-    };
 
     const runButton = RunButton(project);
 
@@ -88,7 +81,6 @@ function TopBar(project: ProjectType, fileTreeAndEditor: HTMLElement) {
     });
 
     topBar.ondestroy = () => {
-        WorkerTS.working.unsubscribe(flashOnWorking);
         gitWidget?.destroy();
         runButton?.destroy();
     };
@@ -112,7 +104,11 @@ function FileTreeAndEditor(project: ProjectType) {
     container.ondestroy = () =>
         Store.editor.sidePanelClosed.unsubscribe(toggleSidePanel);
 
-    const fileTree = FileTree(project);
+    const workspace = createWorkspace(project);
+    const fileTree = FileTree(
+        project,
+        workspace
+    );
 
     const leftPanel = document.createElement("div");
     leftPanel.classList.add("left-panel");
@@ -130,10 +126,12 @@ function FileTreeAndEditor(project: ProjectType) {
 
     leftPanel.append(fileTree, buttonContainer);
 
-    container.append(leftPanel, workspaceElement);
+    const editor = document.createElement("div");
+    container.append(leftPanel, workspace.element);
 
     container.ondestroy = () => {
         fileTree.destroy();
+        workspace.destroy();
     };
 
     return container;

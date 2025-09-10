@@ -7,7 +7,7 @@ import { Store } from "../../store";
 import core_message from "../../../fullstacked_modules/core_message";
 import { FileEvent, FileEventType } from "./file-event";
 import { Button, ButtonGroup, Icon, InputText, Popover } from "@fullstacked/ui";
-import { codeEditor } from "../../code-editor";
+import { Workspace } from "./workspace";
 
 const directoryIconOpen = Icon("Caret");
 directoryIconOpen.classList.add("open");
@@ -15,7 +15,10 @@ const directoryIconClose = Icon("Caret");
 
 const hide = ["/.build", "/.git"];
 
-export function FileTree(project: Project) {
+export function FileTree(
+    project: Project,
+    workspace: Workspace
+) {
     const container = createElement("div");
     container.classList.add("file-tree-container");
 
@@ -128,11 +131,9 @@ export function FileTree(project: Project) {
         },
         onSelect: (path) => {
             const pathAbs = project.id + "/" + path;
-            fs.exists(pathAbs).then((exists) => {
+            fs.exists(pathAbs).then(async (exists) => {
                 if (!exists?.isFile) return;
-                codeEditor
-                    .getWorkspace()
-                    .file.open(pathAbs, fs.readFile(pathAbs));
+                workspace.add(path);
             });
         },
         onRename: async (oldPath, newPath) => {

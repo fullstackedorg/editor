@@ -1,7 +1,6 @@
 import { bridge } from "../../../fullstacked_modules/bridge";
 import { serializeArgs } from "../../../fullstacked_modules/bridge/serialization";
 import core_fetch from "../../../fullstacked_modules/fetch";
-import { WorkerTS } from "../../typescript";
 import semver from "semver";
 import * as sass from "sass";
 import { Badge } from "@fullstacked/ui";
@@ -104,14 +103,6 @@ function TypescriptVersion() {
     container.innerHTML = `
         <label>TypeScript</label>
     `;
-
-    const appendTypeScriptVersion = async () => {
-        container.innerHTML += `
-            <div>${await WorkerTS.call().version()}</div>`;
-        WorkerTS.dispose();
-    };
-
-    WorkerTS.start("").then(appendTypeScriptVersion);
 
     return container;
 }
