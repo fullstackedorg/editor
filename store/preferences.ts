@@ -1,6 +1,6 @@
 import { createSubscribable } from ".";
-import config from "../../fullstacked_modules/config";
 import { CONFIG_TYPE } from "../types";
+import config from "../editor_modules/config";
 
 const isUserMode = createSubscribable(getUserMode, false);
 

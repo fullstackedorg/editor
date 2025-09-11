@@ -2,7 +2,7 @@ import { createElement } from "../../components/element";
 import { CONFIG_TYPE } from "../../types";
 import core_fetch from "../../../fullstacked_modules/fetch";
 import { Button, Dialog, Icon } from "@fullstacked/ui";
-import config from "../../../fullstacked_modules/config";
+import config from "../../editor_modules/config";
 
 export function GitHubDeviceFlow() {
     const container = createElement("div");

@@ -9,8 +9,8 @@ import platform, { Platform } from "../fullstacked_modules/platform";
 import { InitPrompt } from "./views/prompt";
 import { Store } from "./store";
 import { Project } from "./views/project";
-import config from "../fullstacked_modules/config";
 import { gitAuthCallback } from "./views/git-auth";
+import config from "./editor_modules/config";
 
 core_message.addListener("deeplink", deeplink);
 core_message.addListener("git-authentication", gitAuthCallback);

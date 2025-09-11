@@ -4,7 +4,7 @@ import { Store } from "./store";
 import { CONFIG_TYPE, Project as ProjectType } from "./types";
 import { CloneGit } from "./views/add-project/clone-git";
 import { Project } from "./views/project";
-import config from "../fullstacked_modules/config";
+import config from "./editor_modules/config";
 
 // fullstacked://http//github.....git
 export async function deeplink(fullstackedUrl: string) {

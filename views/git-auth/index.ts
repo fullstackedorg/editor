@@ -2,9 +2,9 @@ import { GitHubDeviceFlow } from "./github";
 import { createElement } from "../../components/element";
 import { CONFIG_TYPE } from "../../types";
 import { Button, Dialog, InputText } from "@fullstacked/ui";
-import config from "../../../fullstacked_modules/config";
 import core_message from "../../../fullstacked_modules/core_message";
 import { gitAuthResponse } from "../../../fullstacked_modules/git";
+import config from "../../editor_modules/config";
 
 function GitAuth(hostname: string): Promise<boolean> {
     if (hostname === "github.com") {

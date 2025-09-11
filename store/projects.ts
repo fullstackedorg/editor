@@ -7,9 +7,9 @@ import { updatePackagesView } from "../views/packages";
 import stackNavigation from "../stack-navigation";
 import esbuild from "../../fullstacked_modules/esbuild";
 import { buildSASS } from "../../fullstacked_modules/esbuild/sass";
-import config from "../../fullstacked_modules/config";
 import core_open from "../../fullstacked_modules/core_open";
 import packages from "../../fullstacked_modules/packages";
+import config from "../editor_modules/config";
 
 const list = createSubscribable(listP, []);
 

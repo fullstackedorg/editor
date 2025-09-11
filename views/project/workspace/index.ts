@@ -4,33 +4,38 @@ import { Transport, LSPClient, languageServerExtensions } from "@codemirror/lsp-
 import { basicSetup, EditorView } from "codemirror"
 import { Project } from "../../../types";
 import fs from "../../../../fullstacked_modules/fs";
+import * as directories from "../../../editor_modules/directories";
+import * as lsp from "../../../editor_modules/lsp";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
 
 type TransportHandler = (value: string) => void;
 
-function createTransport(): Transport & {destroy: () => void} {
+function createTransport(): Transport & { destroy: () => void } {
     const handlers = new Set<TransportHandler>();
 
     // core: callback LSP RESPONSE
-    sock.onmessage = e => { for (let h of handlers) h(e.data.toString()) }
+    // sock.onmessage = e => { for (let h of handlers) h(e.data.toString()) }
     return {
         send(message: string) { 
             // core: LSP REQUEST
-            sock.send(message)
+            lsp.request(message);
         },
         subscribe(handler: TransportHandler) { handlers.add(handler) },
         unsubscribe(handler: TransportHandler) { handlers.delete(handler) },
-        destroy(){}
+        destroy() { }
     }
 }
+
+
+
+// core: GET ROOT DIRECTORY
+const rootBaseUri = await directories.root();
 
 export function createWorkspace(project: Project) {
     const element = document.createElement("div");
     element.classList.add("editor");
 
-    // core: GET ROOT DIRECTORY
-    const rootBaseUri = "";
     const rootUri = `file://${rootBaseUri}/${project.id}`;
 
     const lspTransport = createTransport()
@@ -43,12 +48,13 @@ export function createWorkspace(project: Project) {
     const add = async (projectFilePath: string) => {
         const contents = await fs.readFile(`${project.id}/${projectFilePath}`, { encoding: "utf8" });
 
+        const filePathUri = `${rootUri}/${projectFilePath}`;
         const view = createCodeMirrorView({
             contents,
             language: "typescript",
             extensions: [
                 oneDark,
-                client.plugin(`${rootUri}/${projectFilePath}`),
+                client.plugin(filePathUri),
             ]
         })
 
