@@ -86,7 +86,7 @@ $file-tree-panel-width: 235px;
         .workspace {
             flex: 1;
             border-top-left-radius: spacing.$x-small;
-            overflow: hidden;
+            background-color: colors.$dark;
         }
 
         &.closed-panel {

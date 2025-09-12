@@ -23,10 +23,11 @@ async function createTransport(
     const transportId = await lsp.start(project);
     const handlers = new Set<TransportHandler>();
     const onResponse = (message: string) =>
-        handlers.forEach((handler) => handler(message));
+       {console.log(message); handlers.forEach((handler) => handler(message))};
     core_message.addListener(`lsp-${transportId}`, onResponse);
     return {
         send(message: string) {
+            console.log(message)
             lsp.request(transportId, message);
         },
         subscribe(handler: TransportHandler) {
@@ -55,7 +56,7 @@ function toSeverity(sev: number) {
 
 export function createWorkspace(project: Project) {
     const element = document.createElement("div");
-    element.classList.add("editor");
+    element.classList.add("workspace");
 
     const rootUri = `file://${rootBaseUri}/${project.id}`;
 
@@ -130,7 +131,7 @@ export function createWorkspace(project: Project) {
     };
 
     const destroy = () => {
-        lspTransport.destroy();
+        lspTransport?.destroy();
     };
 
     return {

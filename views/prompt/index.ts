@@ -115,7 +115,7 @@ function Prompt() {
             },
             commands.find(({ name }) => name === firstWord)
         );
-
+        command?.exec?.(args);
         closeDialog();
     });
 
