@@ -73,8 +73,6 @@ export function createWorkspace(project: Project) {
             extensions: languageServerExtensions()
         }).connect(lspTransport);
 
-        client.initializing.then;
-
         const runDiagnostics = () => {
             originalRequest("textDocument/diagnostic", {
                 textDocument: {
@@ -124,8 +122,8 @@ export function createWorkspace(project: Project) {
         const filePathUri = `${rootUri}/${projectFilePath}`;
         const view = createCodeMirrorView({
             contents,
-            language: "tsx",
-            extensions: [oneDark, client.plugin(filePathUri, "typescriptreact")]
+            language: "typescript",
+            extensions: [oneDark, client.plugin(filePathUri, "typescript")]
         });
 
         element.append(view.element);
