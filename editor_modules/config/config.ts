@@ -1,4 +1,4 @@
-import { CONFIG_DATA_TYPE,CONFIG_TYPE } from "../../types";
+import { CONFIG_DATA_TYPE, CONFIG_TYPE } from "../../types";
 import { serializeArgs } from "../../../fullstacked_modules/bridge/serialization";
 import { bridge } from "../../../fullstacked_modules/bridge";
 

@@ -15,10 +15,7 @@ const directoryIconClose = Icon("Caret");
 
 const hide = ["/.build", "/.git"];
 
-export function FileTree(
-    project: Project,
-    workspace: Workspace
-) {
+export function FileTree(project: Project, workspace: Workspace) {
     const container = createElement("div");
     container.classList.add("file-tree-container");
 

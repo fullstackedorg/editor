@@ -13,13 +13,12 @@ import { FileTree } from "./file-tree";
 import { openPrompt } from "../prompt";
 import { createWorkspace } from "./workspace";
 
-let lastOpenedProjectId: string
+let lastOpenedProjectId: string;
 export function Project(project: ProjectType) {
     if (!project) return;
 
     // gives a chance if back button by mistake
     if (lastOpenedProjectId !== project.id) {
-        
     }
 
     lastOpenedProjectId = project.id;
@@ -105,10 +104,7 @@ function FileTreeAndEditor(project: ProjectType) {
         Store.editor.sidePanelClosed.unsubscribe(toggleSidePanel);
 
     const workspace = createWorkspace(project);
-    const fileTree = FileTree(
-        project,
-        workspace
-    );
+    const fileTree = FileTree(project, workspace);
 
     const leftPanel = document.createElement("div");
     leftPanel.classList.add("left-panel");
