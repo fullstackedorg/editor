@@ -6,31 +6,35 @@ import { Project } from "../../../types";
 import fs from "../../../../fullstacked_modules/fs";
 import * as directories from "../../../editor_modules/directories";
 import * as lsp from "../../../editor_modules/lsp";
+import core_message from "../../../../fullstacked_modules/core_message";
+import { setDiagnostics } from "@codemirror/lint";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
 
 type TransportHandler = (value: string) => void;
 
-function createTransport(): Transport & { destroy: () => void } {
+async function createTransport(project: Project): Promise<Transport & { destroy: () => void }> {
+    const transportId = await lsp.start(project);
     const handlers = new Set<TransportHandler>();
-
-    // core: callback LSP RESPONSE
-    // sock.onmessage = e => { for (let h of handlers) h(e.data.toString()) }
+    const onResponse = (message: string) => handlers.forEach(handler => handler(message));
+    core_message.addListener(`lsp-${transportId}`, onResponse);
     return {
-        send(message: string) { 
-            // core: LSP REQUEST
-            lsp.request(message);
+        send(message: string) {
+            lsp.request(transportId, message);
         },
         subscribe(handler: TransportHandler) { handlers.add(handler) },
         unsubscribe(handler: TransportHandler) { handlers.delete(handler) },
-        destroy() { }
+        destroy() { 
+            core_message.removeListener(`lsp-${transportId}`, onResponse)
+        }
     }
 }
 
-
-
-// core: GET ROOT DIRECTORY
 const rootBaseUri = await directories.root();
+
+function toSeverity(sev: number) {
+    return sev == 1 ? "error" : sev == 2 ? "warning" : sev == 3 ? "info" : "hint"
+}
 
 export function createWorkspace(project: Project) {
     const element = document.createElement("div");
@@ -38,23 +42,60 @@ export function createWorkspace(project: Project) {
 
     const rootUri = `file://${rootBaseUri}/${project.id}`;
 
-    const lspTransport = createTransport()
-
-    const client = new LSPClient({ 
-        rootUri,
-        extensions: languageServerExtensions()
-    }).connect(lspTransport)
+    let lspTransport: Awaited<ReturnType<typeof createTransport>>;
+    
 
     const add = async (projectFilePath: string) => {
         const contents = await fs.readFile(`${project.id}/${projectFilePath}`, { encoding: "utf8" });
 
+        lspTransport = await createTransport(project)
+
+        const client = new LSPClient({ 
+            rootUri,
+            extensions: languageServerExtensions()
+        }).connect(lspTransport)
+
+        client.initializing.then
+
+        const runDiagnostics = () => {
+            originalRequest("textDocument/diagnostic", {
+                textDocument: {
+                    uri: filePathUri
+                }
+            }).then(diagnostics => {
+                view.editorView.dispatch(setDiagnostics(view.editorView.state, diagnostics.items.map(item => ({
+                    from: view.editorView.state.doc.line(item.range.start.line + 1).from + item.range.start.character,
+                    to: view.editorView.state.doc.line(item.range.end.line + 1).from + item.range.end.character,
+                    severity: toSeverity(item.severity),
+                    message: item.message,
+                }))))
+            })
+        }
+
+        client.initializing.then(runDiagnostics);
+
+        const originalRequest = client.request.bind(client);
+        client.request = (method: string, params: any) => {
+            if (method === "textDocument/completion" && params?.context?.triggerCharacter !== undefined) {
+                delete params.context.triggerCharacter;
+            }
+            return originalRequest(method, params)
+        }
+        const originalNotification = client.notification.bind(client);
+        client.notification = (method: string, params: any) => {
+            if (method === "textDocument/didChange") {
+                setTimeout(runDiagnostics, 500)
+            }
+            return originalNotification(method, params);
+        }
+
         const filePathUri = `${rootUri}/${projectFilePath}`;
         const view = createCodeMirrorView({
             contents,
-            language: "typescript",
+            language: "tsx",
             extensions: [
                 oneDark,
-                client.plugin(filePathUri),
+                client.plugin(filePathUri, "typescriptreact")
             ]
         })
 
