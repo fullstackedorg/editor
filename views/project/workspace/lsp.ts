@@ -54,10 +54,8 @@ async function createTransport(
 }
 
 async function tsConfig(project: Project) {
-    const tsConfigFilePath = `${project.id}/tsconfig.json`;
-    if ((await fs.exists(tsConfigFilePath))?.isFile) return;
-    return fs.writeFile(
-        tsConfigFilePath,
+    fs.writeFile(
+        `${project.id}/tsconfig.json`,
         JSON.stringify({ compilerOptions }, null, 4)
     );
 }
