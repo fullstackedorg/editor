@@ -8,7 +8,7 @@ import {
 import { basicSetup, EditorView } from "codemirror";
 import { Project } from "../../../types";
 import core_message from "../../../../fullstacked_modules/core_message";
-import { setDiagnostics,lintGutter } from "@codemirror/lint";
+import { setDiagnostics, lintGutter } from "@codemirror/lint";
 import { compilerOptions } from "./tsconfig";
 import { insertCompletionText } from "@codemirror/autocomplete";
 import { createLSP } from "./lsp";
@@ -16,14 +16,13 @@ import fs from "../../../../fullstacked_modules/fs";
 import { SupportedLanguage } from "@fullstacked/codemirror-view/languages";
 import { gutter } from "@codemirror/view";
 
-
 export type Workspace = ReturnType<typeof createWorkspace>;
 
 export function createWorkspace(project: Project) {
     const element = document.createElement("div");
     element.classList.add("workspace");
 
-    const container = document.createElement("div")
+    const container = document.createElement("div");
     element.append(container);
 
     const cmContainer = document.createElement("div");
@@ -38,17 +37,14 @@ export function createWorkspace(project: Project) {
 
         const view = createCodeMirrorView({
             contents,
-            extensions: [
-                oneDark,
-                lintGutter()
-            ]
+            extensions: [oneDark, lintGutter()]
         });
 
         view.setLanguage(projectFilePath.split(".").pop() as SupportedLanguage);
 
         lsp.then((l) => {
-            view.extensions.add(l.plugin(projectFilePath))
-            l.runDiagnostics(projectFilePath)
+            view.extensions.add(l.plugin(projectFilePath));
+            l.runDiagnostics(projectFilePath);
         });
 
         cmContainer.append(view.element);

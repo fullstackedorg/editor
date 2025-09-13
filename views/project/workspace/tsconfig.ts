@@ -9,8 +9,5 @@ export const compilerOptions = {
     paths: {
         "*": ["../.fullstacked_modules/*"]
     },
-    typeRoots: [
-        "../.fullstacked_modules",
-        "./node_modules/@types"
-    ]
+    typeRoots: ["../.fullstacked_modules", "./node_modules/@types"]
 };

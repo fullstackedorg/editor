@@ -23,10 +23,10 @@ function toSeverity(sev: number) {
     return sev == 1
         ? "error"
         : sev == 2
-            ? "warning"
-            : sev == 3
-                ? "info"
-                : "hint";
+          ? "warning"
+          : sev == 3
+            ? "info"
+            : "hint";
 }
 
 async function createTransport(
@@ -172,9 +172,13 @@ export async function createLSP(project: Project) {
 
     return {
         client,
-        runDiagnostics: (filePath: string) => runDiagnostics(`${rootUri}/${filePath}`),
+        runDiagnostics: (filePath: string) =>
+            runDiagnostics(`${rootUri}/${filePath}`),
         plugin: (filePath: string) =>
-            client.plugin(`${rootUri}/${filePath}`, filePathToLanguageId(filePath)),
+            client.plugin(
+                `${rootUri}/${filePath}`,
+                filePathToLanguageId(filePath)
+            ),
         destroy: () => {
             client.disconnect();
             lspTransport?.destroy();
@@ -197,4 +201,4 @@ function filePathToLanguageId(filePath: string) {
         default:
             return ext;
     }
-} 
+}
