@@ -23,7 +23,7 @@ export function createWorkspace(project: Project) {
     const lsp = createLSP(project);
 
     const add = async (projectFilePath: string) => {
-        console.log((await lsp).client.workspace.files)
+        console.log((await lsp).client.workspace.files);
         const contents = await fs.readFile(`${project.id}/${projectFilePath}`, {
             encoding: "utf8"
         });
@@ -31,12 +31,10 @@ export function createWorkspace(project: Project) {
         const view = createCodeMirrorView({
             contents,
             language: "typescript",
-            extensions: [
-                oneDark
-            ]
+            extensions: [oneDark]
         });
 
-        lsp.then(l => view.extensions.add(l.plugin(projectFilePath)))
+        lsp.then((l) => view.extensions.add(l.plugin(projectFilePath)));
 
         element.append(view.element);
     };

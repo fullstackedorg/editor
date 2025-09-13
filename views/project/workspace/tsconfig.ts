@@ -6,5 +6,4 @@ export const compilerOptions = {
     allowJs: true,
     lib: ["dom", "dom.iterable", "es2023"],
     jsx: "react"
-}
-
+};

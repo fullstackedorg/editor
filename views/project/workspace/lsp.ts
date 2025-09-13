@@ -1,5 +1,10 @@
 import { Project } from "../../../types";
-import { Transport, LSPClient, languageServerExtensions, Workspace } from "@codemirror/lsp-client";
+import {
+    Transport,
+    LSPClient,
+    languageServerExtensions,
+    Workspace
+} from "@codemirror/lsp-client";
 import * as lsp from "../../../editor_modules/lsp";
 import core_message from "../../../../fullstacked_modules/core_message";
 import * as directories from "../../../editor_modules/directories";
@@ -18,10 +23,10 @@ function toSeverity(sev: number) {
     return sev == 1
         ? "error"
         : sev == 2
-            ? "warning"
-            : sev == 3
-                ? "info"
-                : "hint";
+          ? "warning"
+          : sev == 3
+            ? "info"
+            : "hint";
 }
 
 async function createTransport(
@@ -29,7 +34,8 @@ async function createTransport(
 ): Promise<Transport & { destroy: () => void }> {
     const transportId = await lsp.start(project);
     const handlers = new Set<TransportHandler>();
-    const onResponse = (message: string) => handlers.forEach((handler) => handler(message));
+    const onResponse = (message: string) =>
+        handlers.forEach((handler) => handler(message));
     core_message.addListener(`lsp-${transportId}`, onResponse);
     return {
         send(message: string) {
@@ -49,39 +55,40 @@ async function createTransport(
 
 async function tsConfig(project: Project) {
     const tsConfigFilePath = `${project.id}/tsconfig.json`;
-    if ((await fs.exists(tsConfigFilePath))?.isFile) return
-    return fs.writeFile(tsConfigFilePath, JSON.stringify({ compilerOptions }, null, 4))
+    if ((await fs.exists(tsConfigFilePath))?.isFile) return;
+    return fs.writeFile(
+        tsConfigFilePath,
+        JSON.stringify({ compilerOptions }, null, 4)
+    );
 }
 
 export async function createLSP(project: Project) {
-    await tsConfig(project)
+    await tsConfig(project);
     const lspTransport = await createTransport(project);
 
     const rootUri = `file://${rootBaseUri}/${project.id}`;
 
     const client = new LSPClient({
         rootUri,
-        extensions: languageServerExtensions(),
+        extensions: languageServerExtensions()
     }).connect(lspTransport);
 
     const runDiagnostics = (uri: string) => {
         originalRequest("textDocument/diagnostic", {
             textDocument: { uri }
         }).then((diagnostics) => {
-            const view = client.workspace.getFile(uri)?.getView()
+            const view = client.workspace.getFile(uri)?.getView();
             if (!view) return;
             view.dispatch(
                 setDiagnostics(
                     view.state,
                     diagnostics.items.map((item) => ({
                         from:
-                            view.state.doc.line(
-                                item.range.start.line + 1
-                            ).from + item.range.start.character,
+                            view.state.doc.line(item.range.start.line + 1)
+                                .from + item.range.start.character,
                         to:
-                            view.state.doc.line(
-                                item.range.end.line + 1
-                            ).from + item.range.end.character,
+                            view.state.doc.line(item.range.end.line + 1).from +
+                            item.range.end.character,
                         severity: toSeverity(item.severity),
                         message: item.message
                     }))
@@ -105,33 +112,52 @@ export async function createLSP(project: Project) {
 
             const originalMap = response.items.map.bind(response.items);
             response.items.map = (cb) => {
-                const options = originalMap(cb)
+                const options = originalMap(cb);
                 return options.map((o, i) => {
                     const item = response.items[i];
                     if (item.data?.autoImport) {
                         o.apply = (view, c, from, to) => {
-                            view.dispatch(insertCompletionText(view.state, item.label, from, to));
+                            view.dispatch(
+                                insertCompletionText(
+                                    view.state,
+                                    item.label,
+                                    from,
+                                    to
+                                )
+                            );
                             originalRequest("completionItem/resolve", {
                                 label: c.label,
                                 data: item.data
                             }).then((completionResolve: any) => {
-                                if (!completionResolve.additionalTextEdits) return;
-                                const changes = completionResolve.additionalTextEdits.map(({ newText, range }) => {
-                                    return {
-                                        from: view.state.doc.line(range.start.line + 1).from + range.start.character,
-                                        to: view.state.doc.line(range.end.line + 1).from + range.end.character,
-                                        insert: newText
-                                    }
-                                })
+                                if (!completionResolve.additionalTextEdits)
+                                    return;
+                                const changes =
+                                    completionResolve.additionalTextEdits.map(
+                                        ({ newText, range }) => {
+                                            return {
+                                                from:
+                                                    view.state.doc.line(
+                                                        range.start.line + 1
+                                                    ).from +
+                                                    range.start.character,
+                                                to:
+                                                    view.state.doc.line(
+                                                        range.end.line + 1
+                                                    ).from +
+                                                    range.end.character,
+                                                insert: newText
+                                            };
+                                        }
+                                    );
 
                                 view.dispatch({ changes });
-                            })
-                        }
+                            });
+                        };
                     }
 
                     return o;
-                })
-            }
+                });
+            };
 
             return response;
         }
@@ -148,10 +174,11 @@ export async function createLSP(project: Project) {
 
     return {
         client,
-        plugin: (filePath: string) => client.plugin(`${rootUri}/${filePath}`, "typescript"),
+        plugin: (filePath: string) =>
+            client.plugin(`${rootUri}/${filePath}`, "typescript"),
         destroy: () => {
             client.disconnect();
             lspTransport?.destroy();
         }
-    }
-} 
+    };
+}
