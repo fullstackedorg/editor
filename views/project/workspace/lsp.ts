@@ -23,10 +23,10 @@ function toSeverity(sev: number) {
     return sev == 1
         ? "error"
         : sev == 2
-          ? "warning"
-          : sev == 3
-            ? "info"
-            : "hint";
+            ? "warning"
+            : sev == 3
+                ? "info"
+                : "hint";
 }
 
 async function createTransport(
@@ -174,11 +174,29 @@ export async function createLSP(project: Project) {
 
     return {
         client,
+        runDiagnostics: (filePath: string) => runDiagnostics(`${rootUri}/${filePath}`),
         plugin: (filePath: string) =>
-            client.plugin(`${rootUri}/${filePath}`, "typescript"),
+            client.plugin(`${rootUri}/${filePath}`, filePathToLanguageId(filePath)),
         destroy: () => {
             client.disconnect();
             lspTransport?.destroy();
         }
     };
 }
+
+// https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentItem
+function filePathToLanguageId(filePath: string) {
+    const ext = filePath.split(".").pop();
+    switch (ext) {
+        case "ts":
+            return "typescript";
+        case "tsx":
+            return "typescriptreact";
+        case "js":
+            return "javascript";
+        case "jsx":
+            return "javascriptreact";
+        default:
+            return ext;
+    }
+} 

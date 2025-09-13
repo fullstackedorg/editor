@@ -13,7 +13,7 @@ const directoryIconOpen = Icon("Caret");
 directoryIconOpen.classList.add("open");
 const directoryIconClose = Icon("Caret");
 
-const hide = ["/.build", "/.git", "/tsconfig.json"];
+const hide = ["/.build", "/.git"];
 
 export function FileTree(project: Project, workspace: Workspace) {
     const container = createElement("div");
