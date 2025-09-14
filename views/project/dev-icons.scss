@@ -1,4 +1,6 @@
 .dev-icon {
+    font-family: "Dev Icons";
+
     &.typescript::before {
         content: "\E099";
         color: #519aba;

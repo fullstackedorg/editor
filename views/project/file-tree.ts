@@ -8,6 +8,7 @@ import core_message from "../../../fullstacked_modules/core_message";
 import { FileEvent, FileEventType } from "./file-event";
 import { Button, ButtonGroup, Icon, InputText, Popover } from "@fullstacked/ui";
 import { Workspace } from "./workspace";
+import { createDevIcon } from "./dev-icons";
 
 const directoryIconOpen = Icon("Caret");
 directoryIconOpen.classList.add("open");
@@ -49,15 +50,7 @@ export function FileTree(project: Project, workspace: Workspace) {
                 return chatIcon;
             }
 
-            const div = document.createElement("div");
-            div.classList.add("dev-icon");
-
-            const devIconClass = pathToDevIconClass(path);
-            if (devIconClass) {
-                div.classList.add(devIconClass);
-            }
-
-            return div;
+            return createDevIcon(path);
         },
         name: (path) => {
             if (creating && (!path || path.endsWith("/"))) {
@@ -346,44 +339,4 @@ function fileItemInput(
     });
 
     return form;
-}
-
-function pathToDevIconClass(path: string) {
-    const ext = path.split(".").pop();
-    switch (ext) {
-        case "ts":
-        case "cts":
-        case "mts":
-            return "typescript";
-        case "js":
-        case "cjs":
-        case "mjs":
-            return "javascript";
-        case "tsx":
-        case "jsx":
-            return "react";
-        case "html":
-            return "html";
-        case "sass":
-        case "scss":
-            return "sass";
-        case "css":
-            return "css";
-        case "json":
-            return "json";
-        case "md":
-            return "markdown";
-        case "liquid":
-            return "liquid";
-        case "png":
-        case "jpg":
-        case "jpeg":
-            return "image";
-        case "svg":
-            return "svg";
-        case "npmignore":
-            return "npm";
-        default:
-            return "default";
-    }
 }
