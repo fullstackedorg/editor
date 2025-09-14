@@ -19,17 +19,9 @@ type TransportHandler = (value: string) => void;
 
 const rootBaseUri = await directories.root();
 
+const supportedExtensions = ["ts", "tsx", "js", "jsx", "mjs", "cjs"];
 
-const supportedExtensions = [
-    "ts",
-    "tsx",
-    "js",
-    "jsx",
-    "mjs",
-    "cjs"
-]
-
-export function lspSupportedFile(filePath: string){
+export function lspSupportedFile(filePath: string) {
     const ext = filePath.split(".").pop();
     return supportedExtensions.includes(ext);
 }

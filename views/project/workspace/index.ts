@@ -31,7 +31,7 @@ function createTabs() {
 
             const close = Button({
                 style: "icon-small",
-                iconRight: "Close",
+                iconRight: "Close"
             });
 
             tab.append(createDevIcon(filePath), filePath, close);
@@ -72,7 +72,7 @@ export function createWorkspace(project: Project) {
             views.set(projectFilePath, view);
             tabs.add(projectFilePath);
         }
-            
+
         view.setLanguage(projectFilePath.split(".").pop() as SupportedLanguage);
 
         if (lspSupportedFile(projectFilePath)) {
@@ -84,9 +84,9 @@ export function createWorkspace(project: Project) {
         }
 
         if (!activeView) {
-            cmContainer.append(view.element)
+            cmContainer.append(view.element);
         } else {
-            activeView.element.replaceWith(view.element)
+            activeView.element.replaceWith(view.element);
         }
 
         activeView = view;

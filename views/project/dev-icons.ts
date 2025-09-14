@@ -1,12 +1,12 @@
 export function createDevIcon(filePath: string) {
     const element = document.createElement("div");
-    element.classList.add("dev-icon")
+    element.classList.add("dev-icon");
     const devIconClass = pathToDevIconClass(filePath);
     if (devIconClass) {
         element.classList.add(devIconClass);
     }
-    return element
-} 
+    return element;
+}
 
 function pathToDevIconClass(path: string) {
     const ext = path.split(".").pop();
