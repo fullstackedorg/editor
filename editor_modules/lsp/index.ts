@@ -22,3 +22,15 @@ export function request(transportId: string, message: string) {
     requestsToProcess.push([transportId, message]);
     processRequests();
 }
+
+// 92
+export function restart(transportId: string) {
+    const payload = new Uint8Array([92, ...serializeArgs([transportId])]);
+    return bridge(payload);
+}
+
+// 93
+export function end(transportId: string) {
+    const payload = new Uint8Array([93, ...serializeArgs([transportId])]);
+    return bridge(payload);
+} 

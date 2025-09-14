@@ -30,16 +30,25 @@ function toSeverity(sev: number) {
     return sev == 1
         ? "error"
         : sev == 2
-          ? "warning"
-          : sev == 3
-            ? "info"
-            : "hint";
+            ? "warning"
+            : sev == 3
+                ? "info"
+                : "hint";
 }
+
+let transportId: string = null;
 
 async function createTransport(
     project: Project
-): Promise<Transport & { destroy: () => void }> {
-    const transportId = await lsp.start(project);
+): Promise<Transport & { 
+    restart: () => void,
+    destroy: () => void
+}> {
+    if (transportId) {
+        await lsp.end(transportId)
+    }
+
+    transportId = await lsp.start(project);
     const handlers = new Set<TransportHandler>();
     const onResponse = (message: string) =>
         handlers.forEach((handler) => handler(message));
@@ -54,7 +63,12 @@ async function createTransport(
         unsubscribe(handler: TransportHandler) {
             handlers.delete(handler);
         },
+        restart() {
+            return lsp.restart(transportId)
+        },
         destroy() {
+            lsp.end(transportId);
+            transportId = null;
             core_message.removeListener(`lsp-${transportId}`, onResponse);
         }
     };
@@ -186,6 +200,7 @@ export async function createLSP(project: Project) {
                 `${rootUri}/${filePath}`,
                 filePathToLanguageId(filePath)
             ),
+        restart: () => lspTransport.restart(),
         destroy: () => {
             client.disconnect();
             lspTransport?.destroy();

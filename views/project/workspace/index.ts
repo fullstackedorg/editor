@@ -17,10 +17,13 @@ import { SupportedLanguage } from "@fullstacked/codemirror-view/languages";
 import { gutter } from "@codemirror/view";
 import { Button, Icon } from "@fullstacked/ui";
 import { createDevIcon } from "../dev-icons";
+import { file } from "zod";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
 
-function createTabs() {
+function createTabs(opts: {
+    close: (filePath: string) => void
+}) {
     const element = document.createElement("div");
     element.classList.add("tabs");
 
@@ -33,6 +36,11 @@ function createTabs() {
                 style: "icon-small",
                 iconRight: "Close"
             });
+
+            close.onclick = () => {
+                opts.close(filePath);
+                tab.remove();
+            }
 
             tab.append(createDevIcon(filePath), filePath, close);
             element.append(tab);
@@ -47,7 +55,16 @@ export function createWorkspace(project: Project) {
     let activeView: ReturnType<typeof createCodeMirrorView> = null;
     const views = new Map<string, typeof activeView>();
 
-    const tabs = createTabs();
+    const close = (filePath: string) => {
+        const view = views.get(filePath);
+        view?.remove();
+        if (view === activeView) {
+            activeView = null;
+        }
+        views.delete(filePath);
+    }
+
+    const tabs = createTabs({ close });
     const container = document.createElement("div");
     container.classList.add("code-view");
 
