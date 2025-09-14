@@ -15,8 +15,8 @@ import { createWorkspace } from "./workspace";
 
 let lastOpenedProjectId: string;
 export function Project(project: ProjectType) {
-    if(!project) return;
-    
+    if (!project) return;
+
     // gives a chance if back button by mistake
     if (lastOpenedProjectId !== project.id) {
     }

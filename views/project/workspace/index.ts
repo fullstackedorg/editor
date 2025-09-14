@@ -21,9 +21,7 @@ import { file } from "zod";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
 
-function createTabs(opts: {
-    close: (filePath: string) => void
-}) {
+function createTabs(opts: { close: (filePath: string) => void }) {
     const element = document.createElement("div");
     element.classList.add("tabs");
 
@@ -40,7 +38,7 @@ function createTabs(opts: {
             close.onclick = () => {
                 opts.close(filePath);
                 tab.remove();
-            }
+            };
 
             tab.append(createDevIcon(filePath), filePath, close);
             element.append(tab);
@@ -62,7 +60,7 @@ export function createWorkspace(project: Project) {
             activeView = null;
         }
         views.delete(filePath);
-    }
+    };
 
     const tabs = createTabs({ close });
     const container = document.createElement("div");

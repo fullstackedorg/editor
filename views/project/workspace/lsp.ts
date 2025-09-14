@@ -30,22 +30,22 @@ function toSeverity(sev: number) {
     return sev == 1
         ? "error"
         : sev == 2
-            ? "warning"
-            : sev == 3
-                ? "info"
-                : "hint";
+          ? "warning"
+          : sev == 3
+            ? "info"
+            : "hint";
 }
 
 let transportId: string = null;
 
-async function createTransport(
-    project: Project
-): Promise<Transport & { 
-    restart: () => void,
-    destroy: () => void
-}> {
+async function createTransport(project: Project): Promise<
+    Transport & {
+        restart: () => void;
+        destroy: () => void;
+    }
+> {
     if (transportId) {
-        await lsp.end(transportId)
+        await lsp.end(transportId);
     }
 
     transportId = await lsp.start(project);
@@ -64,7 +64,7 @@ async function createTransport(
             handlers.delete(handler);
         },
         restart() {
-            return lsp.restart(transportId)
+            return lsp.restart(transportId);
         },
         destroy() {
             lsp.end(transportId);

@@ -33,4 +33,4 @@ export function restart(transportId: string) {
 export function end(transportId: string) {
     const payload = new Uint8Array([93, ...serializeArgs([transportId])]);
     return bridge(payload);
-} 
+}
