@@ -69,12 +69,10 @@ export function createWorkspace(project: Project) {
 
     element.append(tabs.element, container);
 
-    const cmContainer = document.createElement("div");
-    container.append(cmContainer);
-
-    const lsp = createLSP(project);
-
-    const add = async (projectFilePath: string) => {
+    const add = async (
+        projectFilePath: string,
+        pos?: { line: number; character: number }
+    ) => {
         const contents = await fs.readFile(`${project.id}/${projectFilePath}`, {
             encoding: "utf8"
         });
@@ -83,7 +81,12 @@ export function createWorkspace(project: Project) {
         if (!view) {
             view = createCodeMirrorView({
                 contents,
-                extensions: [oneDark]
+                extensions: [
+                    oneDark,
+                    EditorView.clickAddsSelectionRange.of(
+                        (e) => e.altKey && !e.metaKey
+                    )
+                ]
             });
             views.set(projectFilePath, view);
             tabs.add(projectFilePath);
@@ -99,15 +102,23 @@ export function createWorkspace(project: Project) {
         }
 
         if (!activeView) {
-            cmContainer.append(view.element);
+            container.append(view.element);
         } else {
             activeView.element.replaceWith(view.element);
         }
 
         activeView = view;
+
+        if (pos) {
+            view.goTo(pos.line, pos.character);
+        }
     };
 
-    const destroy = async () => {};
+    const lsp = createLSP(project, { add });
+
+    const destroy = async () => {
+        (await lsp).destroy();
+    };
 
     return {
         element,

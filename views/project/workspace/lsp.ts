@@ -18,6 +18,8 @@ import { FileEvent, FileEventType } from "../file-event";
 import { createCodeMirrorView } from "@fullstacked/codemirror-view";
 import { Extension } from "@codemirror/state";
 import { vi } from "zod/v4/locales";
+import { URI } from "vscode-languageserver-types";
+import { d } from "../../../../core/typescript-go/testdata/tests/cases/compiler/declarationEmitBigInt";
 
 export type CodemirrorView = ReturnType<typeof createCodeMirrorView>;
 
@@ -26,7 +28,7 @@ type TransportHandler = (value: string) => void;
 const rootBaseUri = await directories.root();
 const rootUri = (project: Project) => `file://${rootBaseUri}/${project.id}`;
 
-const supportedExtensions = ["ts", "tsx", "js", "jsx", "mjs", "cjs"];
+const supportedExtensions = ["ts", "tsx", "js", "jsx", "cjs", "mjs"];
 
 export function lspSupportedFile(filePath: string) {
     const ext = filePath.split(".").pop();
@@ -37,10 +39,10 @@ function toSeverity(sev: number) {
     return sev == 1
         ? "error"
         : sev == 2
-            ? "warning"
-            : sev == 3
-                ? "info"
-                : "hint";
+          ? "warning"
+          : sev == 3
+            ? "info"
+            : "hint";
 }
 
 let transportId: string = null;
@@ -201,56 +203,112 @@ async function createClientLSP(project: Project) {
     };
 }
 
-export async function createLSP(project: Project) {
+export async function createLSP(
+    project: Project,
+    actions: {
+        add(filePath: string, pos?: { line: number; character: number }): void;
+    }
+) {
     await tsConfig(project);
 
     let clientLSP = await createClientLSP(project);
 
-    const cachedRootUri = rootUri(project);
+    const projectRootUri = rootUri(project);
 
     const viewsWithLSP = new Map<
         string,
         {
             view: CodemirrorView;
-            extension: Extension;
+            extensions: Extension[];
         }
     >();
+
+    const navigateToDefinition = (filePath: string) => {
+        return (e: MouseEvent, view: EditorView) => {
+            if (!e.metaKey && !e.ctrlKey) return null;
+
+            const pos = view.posAtCoords({ x: e.clientX, y: e.clientY });
+
+            if (!pos) return;
+
+            const lineInfo = view.state.doc.lineAt(pos);
+            const line = lineInfo.number - 1;
+            const character = pos - lineInfo.from;
+
+            clientLSP.client
+                .request("textDocument/definition", {
+                    textDocument: {
+                        uri: `${projectRootUri}/${filePath}`
+                    },
+                    position: {
+                        line,
+                        character
+                    }
+                })
+                .then(
+                    (
+                        definitions: {
+                            uri: string;
+                            range: {
+                                start: { line: number; character: number };
+                            };
+                        }[]
+                    ) => {
+                        if (!definitions || definitions.length === 0) return;
+                        const def = definitions.at(0);
+                        if (!def.uri.startsWith(projectRootUri)) return;
+                        const filePath = decodeURIComponent(
+                            def.uri.slice(projectRootUri.length + 1)
+                        );
+                        actions.add(filePath, {
+                            line: def.range.start.line + 1,
+                            character: def.range.start.character
+                        });
+                    }
+                );
+        };
+    };
 
     const bindView = (filePath: string, view: CodemirrorView) => {
         // remove previous plugin
         const activeView = viewsWithLSP.get(filePath);
         if (activeView) {
-            view.extensions.remove(activeView.extension);
+            activeView.extensions.forEach(view.extensions.remove);
         }
 
         // add current plugin
-        const extension = clientLSP.client.plugin(
-            `${cachedRootUri}/${filePath}`,
-            filePathToLanguageId(filePath)
-        );
-        view.extensions.add(extension);
+        const extensions = [
+            clientLSP.client.plugin(
+                `${projectRootUri}/${filePath}`,
+                filePathToLanguageId(filePath)
+            ),
+            EditorView.domEventHandlers({
+                click: navigateToDefinition(filePath)
+            })
+        ];
+        extensions.forEach(view.extensions.add);
 
-        viewsWithLSP.set(filePath, { view, extension });
+        viewsWithLSP.set(filePath, { view, extensions });
     };
 
     const restartClient = async () => {
         console.log("RESTARTING");
         await clientLSP.end();
         clientLSP = await createClientLSP(project);
-        Array.from(viewsWithLSP.entries()).forEach(
-            ([filePath, { view }]) => {
-                bindView(filePath, view);
-            }
-        );
-    }
+        Array.from(viewsWithLSP.entries()).forEach(([filePath, { view }]) => {
+            bindView(filePath, view);
+        });
+    };
 
     const fileEventsListenner = (msg: string) => {
         const fileEvents: FileEvent[] = JSON.parse(msg);
         let restart = false;
         for (const fileEvent of fileEvents) {
-            if (fileEvent.type === FileEventType.CREATED || 
+            if (
+                fileEvent.type === FileEventType.CREATED ||
                 fileEvent.type === FileEventType.DELETED ||
-                fileEvent.type === FileEventType.RENAME) {
+                fileEvent.type === FileEventType.RENAME
+            ) {
                 restart = true;
                 break;
             }
@@ -262,7 +320,11 @@ export async function createLSP(project: Project) {
     core_message.addListener("file-event", fileEventsListenner);
 
     return {
-        bindView
+        bindView,
+        async destroy() {
+            await clientLSP.end();
+            clientLSP = null;
+        }
     };
 }
 
