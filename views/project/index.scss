@@ -4,7 +4,7 @@
 @use "./dev-icons.scss";
 
 $file-tree-panel-width: 235px;
-$workspace-tabs-height: 44px;
+$workspace-tabs-height: 34px;
 
 @keyframes flash {
     from {
@@ -64,7 +64,7 @@ $workspace-tabs-height: 44px;
             width: $file-tree-panel-width;
             transition: 0.2s width;
 
-            > div:last-child {
+            >div:last-child {
                 padding-left: spacing.$small;
                 padding-bottom: spacing.$small;
                 transition: 0.2s all;
@@ -93,30 +93,51 @@ $workspace-tabs-height: 44px;
             flex-direction: column;
             width: calc(100% - $file-tree-panel-width);
 
-            > .tabs {
+            >.tabs {
                 white-space: nowrap;
                 overflow: auto;
                 border-bottom: 1px solid colors.$gray;
                 height: $workspace-tabs-height;
 
-                > div {
+                >div {
                     display: inline-flex;
                     align-items: center;
-                    padding: spacing.$small;
+                    padding: spacing.$x-small spacing.$x-small spacing.$x-small spacing.$small;
                     border-right: 1px solid colors.$gray;
+                    gap: spacing.$x-small;
+                    cursor: pointer;
+
+                    >span {
+                        color: colors.opacity(colors.$light, 50);
+                    }
+
+                    &.active {
+                        >span {
+                            color: colors.$light;
+                        }
+                    }
+
+                    .dev-icon {
+                        font-size: 24px;
+                    }
+
+                    button svg {
+                        height: 18px;
+                        width: 18px;
+                    }
                 }
             }
 
-            > .code-view {
+            >.code-view {
                 width: 100%;
                 height: calc(100% - $workspace-tabs-height);
                 flex: 1;
 
-                > .cm-container {
+                >.cm-container {
                     height: 100%;
                     width: 100%;
 
-                    > div {
+                    >div {
                         height: 100%;
                         max-height: 100%;
                         width: 100%;
@@ -134,13 +155,13 @@ $workspace-tabs-height: 44px;
             .left-panel {
                 width: 0;
 
-                > div:last-child {
+                >div:last-child {
                     width: 0;
                     padding-left: 0;
                 }
             }
 
-            + .terminal-container {
+            +.terminal-container {
                 border-top-left-radius: 0;
             }
 
@@ -156,14 +177,14 @@ $workspace-tabs-height: 44px;
         flex-direction: column;
         overflow: hidden;
 
-        > div:first-child {
+        >div:first-child {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding-left: spacing.$x-small;
             padding-right: spacing.$x-small;
 
-            > div {
+            >div {
                 display: flex;
                 align-items: center;
                 justify-content: flex-end;
@@ -171,6 +192,7 @@ $workspace-tabs-height: 44px;
             }
 
             .import-file {
+
                 form,
                 input {
                     height: 0;
@@ -189,7 +211,7 @@ $workspace-tabs-height: 44px;
     .file-tree {
         overflow: hidden;
 
-        > .scrollable > .file-items > .file-item > .indent > div {
+        >.scrollable>.file-items>.file-item>.indent>div {
             width: 55%;
         }
 
@@ -222,7 +244,7 @@ $workspace-tabs-height: 44px;
             }
 
             .suffix {
-                > button {
+                >button {
                     color: colors.$light;
                     display: none;
                 }
@@ -232,7 +254,7 @@ $workspace-tabs-height: 44px;
                 background-color: colors.opacity(colors.$blue, 50);
 
                 .suffix {
-                    > button {
+                    >button {
                         display: flex;
                     }
                 }
@@ -245,7 +267,7 @@ $workspace-tabs-height: 44px;
         display: flex;
         flex-direction: column;
 
-        > div {
+        >div {
             overflow: auto;
 
             img {
@@ -306,7 +328,7 @@ $workspace-tabs-height: 44px;
         border-top-left-radius: spacing.$small;
         position: relative;
 
-        > button {
+        >button {
             position: absolute;
             top: spacing.$x-small;
             right: spacing.$x-small;
@@ -325,12 +347,12 @@ $workspace-tabs-height: 44px;
         color: colors.$blue;
         position: relative;
 
-        > div:first-child {
+        >div:first-child {
             text-align: right;
             display: flex;
             flex-direction: column;
 
-            > div:last-child {
+            >div:last-child {
                 font-size: typography.$small;
             }
         }

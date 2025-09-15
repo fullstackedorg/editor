@@ -206,7 +206,7 @@ async function createClientLSP(project: Project) {
 export async function createLSP(
     project: Project,
     actions: {
-        add(filePath: string, pos?: { line: number; character: number }): void;
+        open(filePath: string, pos?: { line: number; character: number }): void;
     }
 ) {
     await tsConfig(project);
@@ -260,7 +260,7 @@ export async function createLSP(
                         const filePath = decodeURIComponent(
                             def.uri.slice(projectRootUri.length + 1)
                         );
-                        actions.add(filePath, {
+                        actions.open(filePath, {
                             line: def.range.start.line + 1,
                             character: def.range.start.character
                         });

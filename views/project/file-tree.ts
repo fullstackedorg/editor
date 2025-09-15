@@ -123,7 +123,7 @@ export function FileTree(project: Project, workspace: Workspace) {
             const pathAbs = project.id + "/" + path;
             fs.exists(pathAbs).then(async (exists) => {
                 if (!exists?.isFile) return;
-                workspace.add(path);
+                workspace.open(path);
             });
         },
         onRename: async (oldPath, newPath) => {
