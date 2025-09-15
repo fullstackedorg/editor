@@ -37,10 +37,10 @@ function toSeverity(sev: number) {
     return sev == 1
         ? "error"
         : sev == 2
-          ? "warning"
-          : sev == 3
-            ? "info"
-            : "hint";
+            ? "warning"
+            : sev == 3
+                ? "info"
+                : "hint";
 }
 
 let transportId: string = null;
@@ -233,24 +233,30 @@ export async function createLSP(project: Project) {
         viewsWithLSP.set(filePath, { view, extension });
     };
 
-    const fileEventsListenner = async (msg: string) => {
+    const restartClient = async () => {
+        console.log("RESTARTING");
+        await clientLSP.end();
+        clientLSP = await createClientLSP(project);
+        Array.from(viewsWithLSP.entries()).forEach(
+            ([filePath, { view }]) => {
+                bindView(filePath, view);
+            }
+        );
+    }
+
+    const fileEventsListenner = (msg: string) => {
         const fileEvents: FileEvent[] = JSON.parse(msg);
         let restart = false;
         for (const fileEvent of fileEvents) {
-            if (fileEvent.type === FileEventType.CREATED) {
+            if (fileEvent.type === FileEventType.CREATED || 
+                fileEvent.type === FileEventType.DELETED ||
+                fileEvent.type === FileEventType.RENAME) {
                 restart = true;
                 break;
             }
         }
         if (restart) {
-            console.log("RESTARTING");
-            await clientLSP.end();
-            clientLSP = await createClientLSP(project);
-            Array.from(viewsWithLSP.entries()).forEach(
-                ([filePath, { view }]) => {
-                    bindView(filePath, view);
-                }
-            );
+            restartClient();
         }
     };
     core_message.addListener("file-event", fileEventsListenner);
