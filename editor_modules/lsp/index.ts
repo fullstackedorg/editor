@@ -24,13 +24,16 @@ export function request(transportId: string, message: string) {
 }
 
 // 92
-export function restart(transportId: string) {
-    const payload = new Uint8Array([92, ...serializeArgs([transportId])]);
-    return bridge(payload);
-}
-
-// 93
 export function end(transportId: string) {
-    const payload = new Uint8Array([93, ...serializeArgs([transportId])]);
-    return bridge(payload);
+    const payload = new Uint8Array([92, ...serializeArgs([transportId])]);
+    return new Promise<void>((resolve) => {
+        const listenToClose = (closeTransportId: string) => {
+            if (closeTransportId === transportId) {
+                core_message.removeListener("lsp-close", listenToClose);
+                resolve();
+            }
+        };
+        core_message.addListener("lsp-close", listenToClose);
+        bridge(payload);
+    });
 }

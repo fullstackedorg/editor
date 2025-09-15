@@ -18,6 +18,7 @@ import { gutter } from "@codemirror/view";
 import { Button, Icon } from "@fullstacked/ui";
 import { createDevIcon } from "../dev-icons";
 import { file } from "zod";
+import { FileEvent, FileEventType } from "../file-event";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
 
@@ -93,8 +94,7 @@ export function createWorkspace(project: Project) {
         if (lspSupportedFile(projectFilePath)) {
             view.extensions.add(lintGutter());
             lsp.then((l) => {
-                view.extensions.add(l.plugin(projectFilePath));
-                l.runDiagnostics(projectFilePath);
+                l.bindView(projectFilePath, view);
             });
         }
 
@@ -107,9 +107,7 @@ export function createWorkspace(project: Project) {
         activeView = view;
     };
 
-    const destroy = async () => {
-        (await lsp).destroy();
-    };
+    const destroy = async () => {};
 
     return {
         element,

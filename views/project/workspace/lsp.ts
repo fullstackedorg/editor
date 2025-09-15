@@ -14,10 +14,17 @@ import { compilerOptions } from "./tsconfig";
 import { EditorView } from "codemirror";
 import { insertCompletionText } from "@codemirror/autocomplete";
 import { setDiagnostics } from "@codemirror/lint";
+import { FileEvent, FileEventType } from "../file-event";
+import { createCodeMirrorView } from "@fullstacked/codemirror-view";
+import { Extension } from "@codemirror/state";
+import { vi } from "zod/v4/locales";
+
+export type CodemirrorView = ReturnType<typeof createCodeMirrorView>;
 
 type TransportHandler = (value: string) => void;
 
 const rootBaseUri = await directories.root();
+const rootUri = (project: Project) => `file://${rootBaseUri}/${project.id}`;
 
 const supportedExtensions = ["ts", "tsx", "js", "jsx", "mjs", "cjs"];
 
@@ -40,8 +47,7 @@ let transportId: string = null;
 
 async function createTransport(project: Project): Promise<
     Transport & {
-        restart: () => void;
-        destroy: () => void;
+        destroy: () => Promise<void>;
     }
 > {
     if (transportId) {
@@ -63,11 +69,8 @@ async function createTransport(project: Project): Promise<
         unsubscribe(handler: TransportHandler) {
             handlers.delete(handler);
         },
-        restart() {
-            return lsp.restart(transportId);
-        },
-        destroy() {
-            lsp.end(transportId);
+        async destroy() {
+            await lsp.end(transportId);
             transportId = null;
             core_message.removeListener(`lsp-${transportId}`, onResponse);
         }
@@ -81,14 +84,11 @@ async function tsConfig(project: Project) {
     );
 }
 
-export async function createLSP(project: Project) {
-    await tsConfig(project);
+async function createClientLSP(project: Project) {
     const lspTransport = await createTransport(project);
 
-    const rootUri = `file://${rootBaseUri}/${project.id}`;
-
     const client = new LSPClient({
-        rootUri,
+        rootUri: rootUri(project),
         extensions: languageServerExtensions()
     }).connect(lspTransport);
 
@@ -193,18 +193,70 @@ export async function createLSP(project: Project) {
 
     return {
         client,
-        runDiagnostics: (filePath: string) =>
-            runDiagnostics(`${rootUri}/${filePath}`),
-        plugin: (filePath: string) =>
-            client.plugin(
-                `${rootUri}/${filePath}`,
-                filePathToLanguageId(filePath)
-            ),
-        restart: () => lspTransport.restart(),
-        destroy: () => {
+        end: async () => {
+            await originalRequest("shutdown");
+            await lspTransport.destroy();
             client.disconnect();
-            lspTransport?.destroy();
         }
+    };
+}
+
+export async function createLSP(project: Project) {
+    await tsConfig(project);
+
+    let clientLSP = await createClientLSP(project);
+
+    const cachedRootUri = rootUri(project);
+
+    const viewsWithLSP = new Map<
+        string,
+        {
+            view: CodemirrorView;
+            extension: Extension;
+        }
+    >();
+
+    const bindView = (filePath: string, view: CodemirrorView) => {
+        // remove previous plugin
+        const activeView = viewsWithLSP.get(filePath);
+        if (activeView) {
+            view.extensions.remove(activeView.extension);
+        }
+
+        // add current plugin
+        const extension = clientLSP.client.plugin(
+            `${cachedRootUri}/${filePath}`,
+            filePathToLanguageId(filePath)
+        );
+        view.extensions.add(extension);
+
+        viewsWithLSP.set(filePath, { view, extension });
+    };
+
+    const fileEventsListenner = async (msg: string) => {
+        const fileEvents: FileEvent[] = JSON.parse(msg);
+        let restart = false;
+        for (const fileEvent of fileEvents) {
+            if (fileEvent.type === FileEventType.CREATED) {
+                restart = true;
+                break;
+            }
+        }
+        if (restart) {
+            console.log("RESTARTING");
+            await clientLSP.end();
+            clientLSP = await createClientLSP(project);
+            Array.from(viewsWithLSP.entries()).forEach(
+                ([filePath, { view }]) => {
+                    bindView(filePath, view);
+                }
+            );
+        }
+    };
+    core_message.addListener("file-event", fileEventsListenner);
+
+    return {
+        bindView
     };
 }
 
