@@ -22,9 +22,9 @@ import { FileEvent, FileEventType } from "../file-event";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
 
-function createTabs(actions: { 
-    open: (filePath: string) => void,
-    close: (filePath: string) => void
+function createTabs(actions: {
+    open: (filePath: string) => void;
+    close: (filePath: string) => void;
 }) {
     const element = document.createElement("div");
     element.classList.add("tabs");
@@ -38,8 +38,8 @@ function createTabs(actions: {
             } else {
                 tab.classList.remove("active");
             }
-        })
-    }
+        });
+    };
 
     return {
         element,
@@ -109,7 +109,9 @@ export function createWorkspace(project: Project) {
             });
             views.set(projectFilePath, view);
 
-            view.setLanguage(projectFilePath.split(".").pop() as SupportedLanguage);
+            view.setLanguage(
+                projectFilePath.split(".").pop() as SupportedLanguage
+            );
 
             if (lspSupportedFile(projectFilePath)) {
                 view.extensions.add(lintGutter());
@@ -118,12 +120,14 @@ export function createWorkspace(project: Project) {
                 });
             }
 
-            view.extensions.add(EditorView.updateListener.of((update) => {
-                if (update.selectionSet && !update.docChanged) {
-                    const head = update.state.selection.main.head;
-                    console.log("Navigation:", head);
-                }
-            }))
+            view.extensions.add(
+                EditorView.updateListener.of((update) => {
+                    if (update.selectionSet && !update.docChanged) {
+                        const head = update.state.selection.main.head;
+                        console.log("Navigation:", head);
+                    }
+                })
+            );
         }
 
         if (!activeView) {
@@ -146,7 +150,6 @@ export function createWorkspace(project: Project) {
         view?.remove();
         if (view === activeView) {
             activeView = null;
-
         }
         views.delete(filePath);
     };
@@ -166,17 +169,19 @@ export function createWorkspace(project: Project) {
                 case FileEventType.DELETED:
                     const filePathAbs = fileEvent.paths.at(0);
                     if (filePathAbs.includes(project.id)) {
-                        const projectFilePath = filePathAbs.split(project.id).pop().slice(1);
+                        const projectFilePath = filePathAbs
+                            .split(project.id)
+                            .pop()
+                            .slice(1);
                         if (projectFilePath) {
                             close(projectFilePath);
                         }
                     }
                     return;
                 case FileEventType.RENAME:
-
             }
         }
-    }
+    };
     core_message.addListener("file-event", fileEventsListener);
 
     const destroy = async () => {
