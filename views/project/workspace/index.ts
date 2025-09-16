@@ -247,9 +247,9 @@ export function createWorkspace(project: Project) {
                 typeof pos === "number"
                     ? pos
                     : pos
-                        ? view.editorView.state.doc.line(pos.line).from +
+                      ? view.editorView.state.doc.line(pos.line).from +
                         pos.character
-                        : null;
+                      : null;
 
             history.push(projectFilePath, position || 0);
         }

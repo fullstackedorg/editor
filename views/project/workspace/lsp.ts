@@ -281,10 +281,7 @@ export async function createLSP(
 
         // add current plugin
         const extensions = [
-            clientLSP.client.plugin(
-                fileUri,
-                filePathToLanguageId(filePath)
-            ),
+            clientLSP.client.plugin(fileUri, filePathToLanguageId(filePath)),
             EditorView.domEventHandlers({
                 click: navigateToDefinition(filePath)
             })
@@ -319,7 +316,7 @@ export async function createLSP(
             }
         }
         if (restart) {
-            restartClient()
+            restartClient();
         }
     };
     core_message.addListener("file-event", fileEventsListenner);
