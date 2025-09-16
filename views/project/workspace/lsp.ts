@@ -195,6 +195,7 @@ async function createClientLSP(project: Project) {
 
     return {
         client,
+        runDiagnostics,
         end: async () => {
             await originalRequest("shutdown");
             await lspTransport.destroy();
@@ -276,10 +277,12 @@ export async function createLSP(
             activeView.extensions.forEach(view.extensions.remove);
         }
 
+        const fileUri = `${projectRootUri}/${filePath}`;
+
         // add current plugin
         const extensions = [
             clientLSP.client.plugin(
-                `${projectRootUri}/${filePath}`,
+                fileUri,
                 filePathToLanguageId(filePath)
             ),
             EditorView.domEventHandlers({
@@ -289,6 +292,8 @@ export async function createLSP(
         extensions.forEach(view.extensions.add);
 
         viewsWithLSP.set(filePath, { view, extensions });
+
+        clientLSP.runDiagnostics(fileUri);
     };
 
     const restartClient = async () => {
@@ -314,7 +319,7 @@ export async function createLSP(
             }
         }
         if (restart) {
-            restartClient();
+            restartClient()
         }
     };
     core_message.addListener("file-event", fileEventsListenner);
