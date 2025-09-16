@@ -47,27 +47,12 @@ export function Project(project: ProjectType) {
 function TopBar(project: ProjectType, fileTreeAndEditor: HTMLElement) {
     const gitWidget = GitWidget(project);
 
-    const tsButton = Button({
-        style: "icon-large",
-        iconLeft: "TypeScript"
-    });
-
-    tsButton.disabled = true;
-    const flashOnWorking = (request: Map<number, Function>) => {
-        if (request.size > 0) {
-            tsButton.disabled = false;
-            tsButton.classList.add("working");
-        } else {
-            tsButton.classList.remove("working");
-        }
-    };
-
     const runButton = RunButton(project);
 
     const topBar = TopBarComponent({
         title: project.title,
         subtitle: project.id,
-        actions: [gitWidget, tsButton, runButton],
+        actions: [gitWidget, runButton],
         onBack: () => {
             if (fileTreeAndEditor.classList.contains("closed-panel")) {
                 Store.editor.setSidePanelClosed(false);

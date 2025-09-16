@@ -17,7 +17,6 @@ import { SupportedLanguage } from "@fullstacked/codemirror-view/languages";
 import { gutter } from "@codemirror/view";
 import { Button, Icon } from "@fullstacked/ui";
 import { createDevIcon } from "../dev-icons";
-import { file } from "zod";
 import { FileEvent, FileEventType } from "../file-event";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
@@ -35,6 +34,7 @@ function createTabs(actions: {
         Array.from(tabs.entries()).forEach(([f, tab]) => {
             if (filePath === f) {
                 tab.classList.add("active");
+                tab.scrollIntoView();
             } else {
                 tab.classList.remove("active");
             }
@@ -79,6 +79,103 @@ function createTabs(actions: {
     };
 }
 
+function createHistoryNavigation(actions: {
+    open: (filePath: string, pos: number, fromHistory: true) => void;
+}) {
+    let history: {
+        filePath: string;
+        pos: number;
+    }[] = [];
+
+    const element = document.createElement("div");
+    element.classList.add("history");
+
+    const back = Button({
+        style: "icon-small",
+        iconRight: "Arrow 2"
+    });
+    back.disabled = true;
+    back.onclick = () => {
+        cursor--;
+        const { filePath, pos } = history.at(cursor);
+        actions.open(filePath, pos, true);
+        refreshState();
+    };
+    const next = Button({
+        style: "icon-small",
+        iconRight: "Arrow 2"
+    });
+    next.onclick = () => {
+        cursor++;
+        const { filePath, pos } = history.at(cursor);
+        actions.open(filePath, pos, true);
+        refreshState();
+    };
+    next.disabled = true;
+    element.append(back, next);
+
+    let cursor = 0;
+
+    const refreshState = () => {
+        back.disabled = cursor <= 0;
+        next.disabled = cursor >= history.length - 1;
+    };
+
+    return {
+        element,
+        push(filePath: string, pos: number) {
+            const lastState = history.at(cursor);
+            if (lastState?.filePath === filePath && lastState?.pos === pos)
+                return;
+
+            history = history.slice(0, cursor + 1);
+            history.push({ filePath, pos });
+            cursor = history.length - 1;
+            refreshState();
+        },
+        close(filePath: string, openedFiles: string[]) {
+            if (history.at(cursor).filePath !== filePath) return;
+
+            const restoreState = (i: number) => {
+                const state = history.at(i);
+                if (
+                    state.filePath !== filePath &&
+                    openedFiles.includes(state.filePath)
+                ) {
+                    actions.open(state.filePath, state.pos, true);
+                    cursor = i;
+                    refreshState();
+                    return true;
+                }
+                return false;
+            };
+
+            for (let i = cursor; i >= 0; i--) {
+                if (restoreState(i)) return;
+            }
+
+            for (let i = history.length - 1; i > cursor; i--) {
+                if (restoreState(i)) return;
+            }
+        },
+        remove(filePath: string) {
+            for (let i = history.length - 1; i >= 0; i--) {
+                if (history.at(i).filePath === filePath) {
+                    history.splice(i, 1);
+                    if (i <= cursor) {
+                        cursor--;
+                    }
+                }
+            }
+            const lastState = history.at(cursor);
+            if (lastState) {
+                actions.open(lastState.filePath, lastState.pos, true);
+            }
+            refreshState();
+        }
+    };
+}
+
 export function createWorkspace(project: Project) {
     const element = document.createElement("div");
     element.classList.add("workspace");
@@ -88,7 +185,8 @@ export function createWorkspace(project: Project) {
 
     const open = async (
         projectFilePath: string,
-        pos?: { line: number; character: number }
+        pos?: { line: number; character: number } | number,
+        fromHistory?: boolean
     ) => {
         const contents = await fs.readFile(`${project.id}/${projectFilePath}`, {
             encoding: "utf8"
@@ -121,10 +219,14 @@ export function createWorkspace(project: Project) {
             }
 
             view.extensions.add(
-                EditorView.updateListener.of((update) => {
-                    if (update.selectionSet && !update.docChanged) {
-                        const head = update.state.selection.main.head;
-                        console.log("Navigation:", head);
+                EditorView.domEventHandlers({
+                    click: (e: MouseEvent) => {
+                        if (e.ctrlKey || e.metaKey) return;
+                        const pos = view.editorView.posAtCoords({
+                            x: e.clientX,
+                            y: e.clientY
+                        });
+                        history.push(projectFilePath, pos);
                     }
                 })
             );
@@ -136,11 +238,23 @@ export function createWorkspace(project: Project) {
             activeView.element.replaceWith(view.element);
         }
 
-        activeView = view;
-
         if (pos) {
-            view.goTo(pos.line, pos.character);
+            view.goTo(pos);
         }
+
+        if (!fromHistory) {
+            const position =
+                typeof pos === "number"
+                    ? pos
+                    : pos
+                      ? view.editorView.state.doc.line(pos.line).from +
+                        pos.character
+                      : null;
+
+            history.push(projectFilePath, position || 0);
+        }
+
+        activeView = view;
     };
 
     const close = (filePath: string) => {
@@ -152,13 +266,19 @@ export function createWorkspace(project: Project) {
             activeView = null;
         }
         views.delete(filePath);
+
+        history.close(filePath, Array.from(views.keys()));
     };
 
+    const history = createHistoryNavigation({ open });
     const tabs = createTabs({ open, close });
+    const topRow = document.createElement("div");
+    topRow.append(history.element, tabs.element);
+
     const container = document.createElement("div");
     container.classList.add("code-view");
 
-    element.append(tabs.element, container);
+    element.append(topRow, container);
 
     const lsp = createLSP(project, { open });
 
@@ -175,6 +295,7 @@ export function createWorkspace(project: Project) {
                             .slice(1);
                         if (projectFilePath) {
                             close(projectFilePath);
+                            history.remove(projectFilePath);
                         }
                     }
                     return;

@@ -93,11 +93,28 @@ $workspace-tabs-height: 34px;
             flex-direction: column;
             width: calc(100% - $file-tree-panel-width);
 
-            > .tabs {
-                white-space: nowrap;
-                overflow: auto;
+            > div:first-child {
+                display: flex;
                 border-bottom: 1px solid colors.$gray;
                 height: $workspace-tabs-height;
+                align-items: center;
+            }
+
+            .history {
+                padding: 0 spacing.$x-small;
+                display: flex;
+                gap: spacing.$x-small;
+                border-right: 1px solid colors.$gray;
+                height: 100%;
+                align-items: center;
+                > button:first-child {
+                    transform: rotate(180deg);
+                }
+            }
+
+            .tabs {
+                white-space: nowrap;
+                overflow: auto;
 
                 > div {
                     display: inline-flex;
