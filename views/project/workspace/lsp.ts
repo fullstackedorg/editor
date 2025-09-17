@@ -8,7 +8,6 @@ import {
 import * as lsp from "../../../editor_modules/lsp";
 import core_message from "../../../../fullstacked_modules/core_message";
 import * as directories from "../../../editor_modules/directories";
-import { file } from "zod";
 import fs from "../../../../fullstacked_modules/fs";
 import { compilerOptions } from "./tsconfig";
 import { EditorView } from "codemirror";
@@ -17,9 +16,7 @@ import { setDiagnostics } from "@codemirror/lint";
 import { FileEvent, FileEventType } from "../file-event";
 import { createCodeMirrorView } from "@fullstacked/codemirror-view";
 import { Extension } from "@codemirror/state";
-import { vi } from "zod/v4/locales";
-import { URI } from "vscode-languageserver-types";
-import { d } from "../../../../core/typescript-go/testdata/tests/cases/compiler/declarationEmitBigInt";
+import { file } from "zod";
 
 export type CodemirrorView = ReturnType<typeof createCodeMirrorView>;
 
@@ -39,10 +36,10 @@ function toSeverity(sev: number) {
     return sev == 1
         ? "error"
         : sev == 2
-          ? "warning"
-          : sev == 3
-            ? "info"
-            : "hint";
+            ? "warning"
+            : sev == 3
+                ? "info"
+                : "hint";
 }
 
 let transportId: string = null;
@@ -306,11 +303,18 @@ export async function createLSP(
         const fileEvents: FileEvent[] = JSON.parse(msg);
         let restart = false;
         for (const fileEvent of fileEvents) {
+            if (!fileEvent.paths.at(0).includes(project.id) || 
+                fileEvent.paths.at(0).includes(`${project.id}/.build`) ||
+                fileEvent.paths.at(0).includes(`${project.id}/.git`) ||
+                fileEvent.paths.at(0).includes(`${project.id}/data`)) 
+                continue;
+
             if (
                 fileEvent.type === FileEventType.CREATED ||
                 fileEvent.type === FileEventType.DELETED ||
                 fileEvent.type === FileEventType.RENAME
             ) {
+                console.log(fileEvent.paths.at(0))
                 restart = true;
                 break;
             }
