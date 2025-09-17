@@ -316,7 +316,6 @@ export async function createLSP(
                 fileEvent.type === FileEventType.DELETED ||
                 fileEvent.type === FileEventType.RENAME
             ) {
-                console.log(fileEvent.paths.at(0));
                 restart = true;
                 break;
             }

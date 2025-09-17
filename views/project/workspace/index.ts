@@ -134,7 +134,11 @@ function createHistoryNavigation(actions: {
             refreshState();
         },
         close(filePath: string, openedFiles: string[]) {
-            if (history.at(cursor).filePath !== filePath) return;
+            if (
+                !history.at(cursor)?.filePath ||
+                history.at(cursor).filePath !== filePath
+            )
+                return;
 
             const restoreState = (i: number) => {
                 const state = history.at(i);
