@@ -36,10 +36,10 @@ function toSeverity(sev: number) {
     return sev == 1
         ? "error"
         : sev == 2
-            ? "warning"
-            : sev == 3
-                ? "info"
-                : "hint";
+          ? "warning"
+          : sev == 3
+            ? "info"
+            : "hint";
 }
 
 let transportId: string = null;
@@ -303,10 +303,12 @@ export async function createLSP(
         const fileEvents: FileEvent[] = JSON.parse(msg);
         let restart = false;
         for (const fileEvent of fileEvents) {
-            if (!fileEvent.paths.at(0).includes(project.id) || 
+            if (
+                !fileEvent.paths.at(0).includes(project.id) ||
                 fileEvent.paths.at(0).includes(`${project.id}/.build`) ||
                 fileEvent.paths.at(0).includes(`${project.id}/.git`) ||
-                fileEvent.paths.at(0).includes(`${project.id}/data`)) 
+                fileEvent.paths.at(0).includes(`${project.id}/data`)
+            )
                 continue;
 
             if (
@@ -314,7 +316,7 @@ export async function createLSP(
                 fileEvent.type === FileEventType.DELETED ||
                 fileEvent.type === FileEventType.RENAME
             ) {
-                console.log(fileEvent.paths.at(0))
+                console.log(fileEvent.paths.at(0));
                 restart = true;
                 break;
             }
