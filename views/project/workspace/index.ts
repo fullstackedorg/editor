@@ -211,6 +211,13 @@ export function createWorkspace(project: Project) {
             });
             views.set(projectFilePath, view);
 
+            const filePath = `${project.id}/${projectFilePath}`;
+            view.addUpdateListener(async (contents) => {
+                if ((await fs.exists(filePath)).isFile) {
+                    await fs.writeFile(filePath, contents, "code-editor");
+                }
+            });
+
             view.setLanguage(
                 projectFilePath.split(".").pop() as SupportedLanguage
             );

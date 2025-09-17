@@ -25,7 +25,18 @@ type TransportHandler = (value: string) => void;
 const rootBaseUri = await directories.root();
 const rootUri = (project: Project) => `file://${rootBaseUri}/${project.id}`;
 
-const supportedExtensions = ["ts", "tsx", "js", "jsx", "cjs", "mjs"];
+// file://./../../../../core/typescript-go/internal/project/watch.go#20
+const supportedExtensions = [
+    "ts",
+    "tsx",
+    "js",
+    "jsx",
+    "cjs",
+    "mjs",
+    "mts",
+    "cts",
+    "json"
+];
 
 export function lspSupportedFile(filePath: string) {
     const ext = filePath.split(".").pop();
