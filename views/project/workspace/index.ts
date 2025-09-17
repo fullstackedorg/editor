@@ -45,23 +45,28 @@ function createTabs(actions: {
 
     const displayDirectoryIfNeeded = () => {
         Array.from(tabs.entries()).forEach((tab) => {
-            const otherTabs = Array.from(tabs.entries()).filter(t => t[0] !== tab[0]);
-            const otherFileNames = otherTabs.map(([filePath]) => filePath.split("/").pop());
+            const otherTabs = Array.from(tabs.entries()).filter(
+                (t) => t[0] !== tab[0]
+            );
+            const otherFileNames = otherTabs.map(([filePath]) =>
+                filePath.split("/").pop()
+            );
             const [filePath, [_, text]] = tab;
             const filePathComponents = filePath.split("/");
-            console.log(filePathComponents.at(-1), otherFileNames)
+            console.log(filePathComponents.at(-1), otherFileNames);
             if (otherFileNames.includes(filePathComponents.at(-1))) {
-                text.innerHTML = filePathComponents.at(-1) + 
-                    `<small>${filePathComponents.at(-2) 
-                        ? `../${filePathComponents.at(-2)}` 
-                        : "/"
-                    }</small>`
+                text.innerHTML =
+                    filePathComponents.at(-1) +
+                    `<small>${
+                        filePathComponents.at(-2)
+                            ? `../${filePathComponents.at(-2)}`
+                            : "/"
+                    }</small>`;
             } else {
                 text.innerText = filePathComponents.at(-1);
             }
         });
-
-    }
+    };
 
     return {
         element,
@@ -69,7 +74,10 @@ function createTabs(actions: {
             let tab = tabs.get(filePath);
 
             if (!tab) {
-                tab = [document.createElement("div"), document.createElement("span")];
+                tab = [
+                    document.createElement("div"),
+                    document.createElement("span")
+                ];
                 tab[0].onclick = () => actions.open(filePath);
 
                 tab[1].innerText = filePath.split("/").pop();
@@ -171,12 +179,14 @@ function createHistoryNavigation(actions: {
             refreshState();
         },
         replace(oldPath: string, newPath: string) {
-            history = history.map(state => state.filePath === oldPath
-                ? {
-                    ...state,
-                    filePath: newPath
-                }
-                : state)
+            history = history.map((state) =>
+                state.filePath === oldPath
+                    ? {
+                          ...state,
+                          filePath: newPath
+                      }
+                    : state
+            );
         },
         close(filePath: string, openedFiles: string[]) {
             if (
@@ -236,14 +246,17 @@ export function createWorkspace(project: Project) {
         projectFilePath: string,
         pos?: { line: number; character: number } | number,
         fromHistory?: boolean,
-        oldPath?: string,
+        oldPath?: string
     ) => {
         let view = views.get(projectFilePath);
 
         if (!view) {
-            const contents = await fs.readFile(`${project.id}/${projectFilePath}`, {
-                encoding: "utf8"
-            });
+            const contents = await fs.readFile(
+                `${project.id}/${projectFilePath}`,
+                {
+                    encoding: "utf8"
+                }
+            );
             view = createCodeMirrorView({
                 contents,
                 extensions: [
@@ -301,19 +314,18 @@ export function createWorkspace(project: Project) {
 
         if (!fromHistory) {
             if (oldPath) {
-                history.replace(oldPath, projectFilePath)
+                history.replace(oldPath, projectFilePath);
             } else {
                 const position =
                     typeof pos === "number"
                         ? pos
                         : pos
-                            ? view.editorView.state.doc.line(pos.line).from +
+                          ? view.editorView.state.doc.line(pos.line).from +
                             pos.character
-                            : null;
+                          : null;
 
                 history.push(projectFilePath, position || 0);
             }
-            
         }
 
         if (oldPath) {
@@ -358,7 +370,10 @@ export function createWorkspace(project: Project) {
         for (const fileEvent of fileEvents) {
             if (fileEvent.origin === FILE_EVENT_ORIGIN) continue;
 
-            const projectFilePath = fileEvent.paths.at(0).split(`${project.id}/`).pop();
+            const projectFilePath = fileEvent.paths
+                .at(0)
+                .split(`${project.id}/`)
+                .pop();
             if (!projectFilePath) continue;
 
             const view = views.get(projectFilePath);
@@ -366,23 +381,30 @@ export function createWorkspace(project: Project) {
 
             switch (fileEvent.type) {
                 case FileEventType.DELETED:
-                    closeTimeouts.set(projectFilePath, setTimeout(() => {
-                        close(projectFilePath);
-                        history.remove(projectFilePath);
-                    }, 100));
+                    closeTimeouts.set(
+                        projectFilePath,
+                        setTimeout(() => {
+                            close(projectFilePath);
+                            history.remove(projectFilePath);
+                        }, 100)
+                    );
                     break;
                 case FileEventType.CREATED:
                     const closeTimeout = closeTimeouts.get(projectFilePath);
                     if (closeTimeout) {
                         clearTimeout(closeTimeout);
-                        fs.readFile(`${project.id}/${projectFilePath}`, { encoding: "utf8" })
-                            .then(view.replaceContents)
+                        fs.readFile(`${project.id}/${projectFilePath}`, {
+                            encoding: "utf8"
+                        }).then(view.replaceContents);
                     }
                     break;
                 case FileEventType.RENAME:
-                    const newPath = fileEvent.paths.at(1).split(`${project.id}/`).pop();
+                    const newPath = fileEvent.paths
+                        .at(1)
+                        .split(`${project.id}/`)
+                        .pop();
                     open(
-                        newPath, 
+                        newPath,
                         view.editorView.state.selection.main.head,
                         false,
                         projectFilePath
