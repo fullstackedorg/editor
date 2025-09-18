@@ -296,7 +296,7 @@ async function createViewCode(
     });
 
     const save = async () => {
-        if ((await fs.exists(filePath)).isFile) {
+        if ((await fs.exists(filePath))?.isFile) {
             await fs.writeFile(filePath, view.value, FILE_EVENT_ORIGIN);
         }
     };

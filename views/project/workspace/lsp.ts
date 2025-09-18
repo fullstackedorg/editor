@@ -284,9 +284,10 @@ export async function createLSP(
                     ) => {
                         if (!definitions || definitions.length === 0) return;
                         const def = definitions.at(0);
-                        if (!def.uri.startsWith(projectRootUri)) return;
+                        const fileUri = removeDriveLetter(decodeURIComponent(def.uri))
+                        if (!fileUri.startsWith(projectRootUri)) return;
                         const filePath = decodeURIComponent(
-                            def.uri.slice(projectRootUri.length + 1)
+                            fileUri.slice(projectRootUri.length + 1)
                         );
                         actions.open(filePath, {
                             line: def.range.start.line + 1,
@@ -316,6 +317,8 @@ export async function createLSP(
         extensions.forEach(view.extensions.add);
 
         viewsWithLSP.set(filePath, { view, extensions });
+
+        clientLSP.runDiagnostics(`${projectRootUri}/${filePath}`)
     };
 
     const restartClient = async () => {
@@ -346,7 +349,6 @@ export async function createLSP(
                 fileEvent.type === FileEventType.DELETED ||
                 fileEvent.type === FileEventType.RENAME
             ) {
-                console.log(fileEvent.paths.at(0));
                 restart = true;
                 break;
             }
@@ -384,4 +386,16 @@ function filePathToLanguageId(filePath: string) {
         default:
             return ext;
     }
+}
+
+
+function removeDriveLetter(fileUri: string){
+    if(!fileUri.startsWith("file:///")) return fileUri;
+
+    const parts = fileUri.slice("file:///".length).split("/");
+    if(parts.at(0).includes(":")) {
+        parts.splice(0, 1);
+    }
+
+    return "file:///" + parts.join("/");
 }
