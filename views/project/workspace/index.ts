@@ -33,7 +33,8 @@ function createTabs(
     actions: {
         open: (filePath: string) => void;
         close: (filePath: string) => void;
-    }) {
+    }
+) {
     const element = document.createElement("div");
     element.classList.add("tabs");
 
@@ -63,9 +64,10 @@ function createTabs(
             if (otherFileNames.includes(filePathComponents.at(-1))) {
                 text.innerHTML =
                     filePathComponents.at(-1) +
-                    `<small>${filePathComponents.at(-2)
-                        ? `../${filePathComponents.at(-2)}`
-                        : "/"
+                    `<small>${
+                        filePathComponents.at(-2)
+                            ? `../${filePathComponents.at(-2)}`
+                            : "/"
                     }</small>`;
             } else {
                 text.innerText = filePathComponents.at(-1);
@@ -75,13 +77,18 @@ function createTabs(
 
     const onBuildErrors = (buildErrors: BuildError[]) => {
         Array.from(tabs.entries()).forEach(([filePath, [tab]]) => {
-            if (buildErrors.find(({ file }) => file.split(project.id + "/").pop() === filePath)) {
+            if (
+                buildErrors.find(
+                    ({ file }) =>
+                        file.split(project.id + "/").pop() === filePath
+                )
+            ) {
                 tab.classList.add("has-error");
             } else {
                 tab.classList.remove("has-error");
             }
         });
-    }
+    };
     Store.editor.codeEditor.buildErrors.subscribe(onBuildErrors);
 
     return {
@@ -117,8 +124,12 @@ function createTabs(
                 tabs.set(filePath, tab);
             }
 
-            const hasBuildErrors = Store.editor.codeEditor.buildErrors.check()
-                .find(({ file }) => file.split(project.id + "/").pop() === filePath);
+            const hasBuildErrors = Store.editor.codeEditor.buildErrors
+                .check()
+                .find(
+                    ({ file }) =>
+                        file.split(project.id + "/").pop() === filePath
+                );
             if (hasBuildErrors) {
                 tab[0].classList.add("has-error");
             } else {
@@ -209,9 +220,9 @@ function createHistoryNavigation(actions: {
             history = history.map((state) =>
                 state.filePath === oldPath
                     ? {
-                        ...state,
-                        filePath: newPath
-                    }
+                          ...state,
+                          filePath: newPath
+                      }
                     : state
             );
         },
@@ -267,25 +278,20 @@ type ViewImage = ReturnType<typeof createViewImage>;
 type ViewBinary = ReturnType<typeof createViewBinary>;
 
 async function createViewCode(
-    project: Project, 
+    project: Project,
     projectFilePath: string,
     lsp: ReturnType<typeof createLSP>,
     history: ReturnType<typeof createHistoryNavigation>
 ) {
-    const contents = await fs.readFile(
-        `${project.id}/${projectFilePath}`,
-        {
-            encoding: "utf8"
-        }
-    );
-            
+    const contents = await fs.readFile(`${project.id}/${projectFilePath}`, {
+        encoding: "utf8"
+    });
+
     const view = createCodeMirrorView({
         contents,
         extensions: [
             oneDark,
-            EditorView.clickAddsSelectionRange.of(
-                (e) => e.altKey && !e.metaKey
-            )
+            EditorView.clickAddsSelectionRange.of((e) => e.altKey && !e.metaKey)
         ]
     });
 
@@ -296,9 +302,7 @@ async function createViewCode(
         }
     });
 
-    view.setLanguage(
-        projectFilePath.split(".").pop() as SupportedLanguage
-    );
+    view.setLanguage(projectFilePath.split(".").pop() as SupportedLanguage);
 
     const lspSupport = lspSupportedFile(projectFilePath);
     const sassSupport = sassSupportedFile(projectFilePath);
@@ -330,12 +334,9 @@ async function createViewCode(
         ...view,
         type: "code",
         reloadContents() {
-            fs.readFile(
-                `${project.id}/${projectFilePath}`,
-                {
-                    encoding: "utf8"
-                }
-            ).then(view.replaceContents);
+            fs.readFile(`${project.id}/${projectFilePath}`, {
+                encoding: "utf8"
+            }).then(view.replaceContents);
         }
     };
 }
@@ -359,14 +360,30 @@ export function createWorkspace(project: Project) {
             let newView: typeof activeView;
             if (imageSupportedFile(projectFilePath)) {
                 newView = createViewImage(project, projectFilePath);
-            } else if (lspSupportedFile(projectFilePath) || sassSupportedFile(projectFilePath)) {
-                newView = await createViewCode(project, projectFilePath, lsp, history);
+            } else if (
+                lspSupportedFile(projectFilePath) ||
+                sassSupportedFile(projectFilePath)
+            ) {
+                newView = await createViewCode(
+                    project,
+                    projectFilePath,
+                    lsp,
+                    history
+                );
             } else if (binarySupportedFile(projectFilePath)) {
                 newView = createViewBinary(project, projectFilePath);
             } else {
-                const fileSize = (await fs.stat(`${project.id}/${projectFilePath}`)).size;
-                if (fileSize < 1e6) { // 1mb
-                    newView = await createViewCode(project, projectFilePath, lsp, history);
+                const fileSize = (
+                    await fs.stat(`${project.id}/${projectFilePath}`)
+                ).size;
+                if (fileSize < 1e6) {
+                    // 1mb
+                    newView = await createViewCode(
+                        project,
+                        projectFilePath,
+                        lsp,
+                        history
+                    );
                 } else {
                     newView = createViewBinary(project, projectFilePath);
                 }
@@ -376,14 +393,18 @@ export function createWorkspace(project: Project) {
             view = newView;
         }
 
-        if(activeView === view && !oldPath && view.type === "code") {
+        if (activeView === view && !oldPath && view.type === "code") {
             (view as ViewCode).format();
         }
 
         if (lspSupportedFile(projectFilePath)) {
-            lsp.then(l => l.runDiagnostics(projectFilePath))
+            lsp.then((l) => l.runDiagnostics(projectFilePath));
         } else if (sassSupportedFile(projectFilePath)) {
-            sassSetDiagnostic(project, projectFilePath, (view as ViewCode).editorView);
+            sassSetDiagnostic(
+                project,
+                projectFilePath,
+                (view as ViewCode).editorView
+            );
         }
 
         if (!activeView) {
@@ -406,9 +427,10 @@ export function createWorkspace(project: Project) {
                     typeof pos === "number"
                         ? pos
                         : pos
-                            ? (view as ViewCode).editorView.state.doc.line(pos.line).from +
-                            pos.character
-                            : null;
+                          ? (view as ViewCode).editorView.state.doc.line(
+                                pos.line
+                            ).from + pos.character
+                          : null;
 
                 history.push(projectFilePath, position || 0);
             }
@@ -479,7 +501,7 @@ export function createWorkspace(project: Project) {
                     const closeTimeout = closeTimeouts.get(projectFilePath);
                     if (closeTimeout) {
                         clearTimeout(closeTimeout);
-                        view.reloadContents()
+                        view.reloadContents();
                     }
                     break;
                 case FileEventType.RENAME:
@@ -489,7 +511,8 @@ export function createWorkspace(project: Project) {
                         .pop();
                     open(
                         newPath,
-                        (view as ViewCode)?.editorView?.state?.selection?.main?.head,
+                        (view as ViewCode)?.editorView?.state?.selection?.main
+                            ?.head,
                         false,
                         projectFilePath
                     );
@@ -500,21 +523,26 @@ export function createWorkspace(project: Project) {
     core_message.addListener("file-event", fileEventsListener);
 
     const buildErrorsListener = async (buildErrors: BuildError[]) => {
-        const projectFilePaths = new Set(buildErrors
-            .filter(({ file }) => file.includes(project.id))
-            .map(({ file }) => file.split(project.id + "/").pop()));
+        const projectFilePaths = new Set(
+            buildErrors
+                .filter(({ file }) => file.includes(project.id))
+                .map(({ file }) => file.split(project.id + "/").pop())
+        );
         const l = await lsp;
-        Array.from(views.entries())
-            .filter(([projectFilePath, view]) => {
-                if (lspSupportedFile(projectFilePath)) {
-                    l.runDiagnostics(projectFilePath)
-                } else if (sassSupportedFile(projectFilePath)) {
-                    sassSetDiagnostic(project, projectFilePath, (view as ViewCode).editorView);
-                }
-            });
-        projectFilePaths.forEach(f => open(f));
-    }
-    Store.editor.codeEditor.buildErrors.subscribe(buildErrorsListener)
+        Array.from(views.entries()).filter(([projectFilePath, view]) => {
+            if (lspSupportedFile(projectFilePath)) {
+                l.runDiagnostics(projectFilePath);
+            } else if (sassSupportedFile(projectFilePath)) {
+                sassSetDiagnostic(
+                    project,
+                    projectFilePath,
+                    (view as ViewCode).editorView
+                );
+            }
+        });
+        projectFilePaths.forEach((f) => open(f));
+    };
+    Store.editor.codeEditor.buildErrors.subscribe(buildErrorsListener);
 
     const destroy = async () => {
         (await lsp).destroy();

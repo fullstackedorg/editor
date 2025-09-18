@@ -2,11 +2,7 @@ import { EditorView } from "codemirror";
 import { setDiagnostics, Diagnostic } from "@codemirror/lint";
 import { Project } from "../../../types";
 import { Store } from "../../../store";
-const extensions = [
-    "sass",
-    "scss",
-    "css"
-]
+const extensions = ["sass", "scss", "css"];
 
 export function sassSupportedFile(filePath: string) {
     const ext = filePath.split(".").pop();
@@ -15,12 +11,15 @@ export function sassSupportedFile(filePath: string) {
 
 export function sassSetDiagnostic(
     project: Project,
-    projectFilePath: string, 
+    projectFilePath: string,
     view: EditorView
 ) {
-    const buildErrors = Store.editor.codeEditor.buildErrors.check()
-        .filter(({ file }) => file.split(project.id + "/").pop() === projectFilePath);
-    const diagnostics = buildErrors.map(err => {
+    const buildErrors = Store.editor.codeEditor.buildErrors
+        .check()
+        .filter(
+            ({ file }) => file.split(project.id + "/").pop() === projectFilePath
+        );
+    const diagnostics = buildErrors.map((err) => {
         const from = view.state.doc.line(err.line).from + err.col;
         return {
             from,
@@ -29,5 +28,5 @@ export function sassSetDiagnostic(
             message: err.message
         } as Diagnostic;
     });
-    view.dispatch(setDiagnostics(view.state, diagnostics))
-} 
+    view.dispatch(setDiagnostics(view.state, diagnostics));
+}

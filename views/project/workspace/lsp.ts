@@ -48,10 +48,10 @@ function toSeverity(sev: number) {
     return sev == 1
         ? "error"
         : sev == 2
-            ? "warning"
-            : sev == 3
-                ? "info"
-                : "hint";
+          ? "warning"
+          : sev == 3
+            ? "info"
+            : "hint";
 }
 
 let transportId: string = null;
@@ -110,11 +110,13 @@ async function createClientLSP(project: Project) {
             const view = client.workspace.getFile(uri)?.getView();
             if (!view) return;
 
-            const buildErrors: Diagnostic[] = 
-                Store.editor.codeEditor.buildErrors.check()
+            const buildErrors: Diagnostic[] =
+                Store.editor.codeEditor.buildErrors
+                    .check()
                     .filter(({ file }) => uri.endsWith(file))
-                    .map(err => {
-                        const from = view.state.doc.line(err.line).from + err.col;
+                    .map((err) => {
+                        const from =
+                            view.state.doc.line(err.line).from + err.col;
                         return {
                             from,
                             to: from + err.length,
@@ -132,8 +134,8 @@ async function createClientLSP(project: Project) {
                                 view.state.doc.line(item.range.start.line + 1)
                                     .from + item.range.start.character,
                             to:
-                                view.state.doc.line(item.range.end.line + 1).from +
-                                item.range.end.character,
+                                view.state.doc.line(item.range.end.line + 1)
+                                    .from + item.range.end.character,
                             severity: toSeverity(item.severity),
                             message: item.message
                         }))
@@ -319,8 +321,7 @@ export async function createLSP(
     const restartClient = async () => {
         console.log("RESTARTING");
 
-        if(clientLSP)
-            await clientLSP.end();
+        if (clientLSP) await clientLSP.end();
 
         clientLSP = await createClientLSP(project);
         Array.from(viewsWithLSP.entries()).forEach(([filePath, { view }]) => {

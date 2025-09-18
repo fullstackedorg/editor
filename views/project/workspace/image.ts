@@ -1,13 +1,6 @@
 import { Project } from "../../../types";
 import fs from "../../../../fullstacked_modules/fs";
-const extensions = [
-    "jpg", 
-    "jpeg", 
-    "png", 
-    "webp", 
-    "bmp",
-    "gif"
-];
+const extensions = ["jpg", "jpeg", "png", "webp", "bmp", "gif"];
 
 export function imageSupportedFile(filePath: string) {
     const ext = filePath.split(".").pop();
@@ -21,17 +14,17 @@ export function createViewImage(project: Project, projectFilePath: string) {
     const image = document.createElement("img");
     element.append(image);
 
-    let url: ReturnType<typeof URL.createObjectURL>
+    let url: ReturnType<typeof URL.createObjectURL>;
     const load = () => {
-        fs.readFile(`${project.id}/${projectFilePath}`)
-            .then(data => {
-                const blob = new Blob([data], { type: "image/" + projectFilePath.split(".").pop() });
-                const url = URL.createObjectURL(blob);
-                image.src = url;
-            })
-    }
+        fs.readFile(`${project.id}/${projectFilePath}`).then((data) => {
+            const blob = new Blob([data], {
+                type: "image/" + projectFilePath.split(".").pop()
+            });
+            const url = URL.createObjectURL(blob);
+            image.src = url;
+        });
+    };
     load();
-    
 
     return {
         element,
@@ -40,9 +33,9 @@ export function createViewImage(project: Project, projectFilePath: string) {
             element.remove();
             URL.revokeObjectURL(url);
         },
-        reloadContents() { 
+        reloadContents() {
             URL.revokeObjectURL(url);
             load();
         }
-    }
-} 
+    };
+}

@@ -64,7 +64,7 @@ $workspace-tabs-height: 34px;
             width: $file-tree-panel-width;
             transition: 0.2s width;
 
-            >div:last-child {
+            > div:last-child {
                 padding-left: spacing.$small;
                 padding-bottom: spacing.$small;
                 transition: 0.2s all;
@@ -93,7 +93,7 @@ $workspace-tabs-height: 34px;
             flex-direction: column;
             width: calc(100% - $file-tree-panel-width);
 
-            >div:first-child {
+            > div:first-child {
                 display: flex;
                 border-bottom: 1px solid colors.$gray;
                 height: $workspace-tabs-height;
@@ -108,7 +108,7 @@ $workspace-tabs-height: 34px;
                 height: 100%;
                 align-items: center;
 
-                >button:first-child {
+                > button:first-child {
                     transform: rotate(180deg);
                 }
             }
@@ -117,15 +117,16 @@ $workspace-tabs-height: 34px;
                 white-space: nowrap;
                 overflow: auto;
 
-                >div {
+                > div {
                     display: inline-flex;
                     align-items: center;
-                    padding: spacing.$x-small spacing.$x-small spacing.$x-small spacing.$small;
+                    padding: spacing.$x-small spacing.$x-small spacing.$x-small
+                        spacing.$small;
                     border-right: 1px solid colors.$gray;
                     gap: spacing.$x-small;
                     cursor: pointer;
 
-                    >span {
+                    > span {
                         position: relative;
                         color: colors.opacity(colors.$light, 50);
 
@@ -137,13 +138,13 @@ $workspace-tabs-height: 34px;
                     }
 
                     &.active {
-                        >span {
+                        > span {
                             color: colors.$light;
                         }
                     }
 
                     &.has-error {
-                        >span::after {
+                        > span::after {
                             content: "";
                             background-color: colors.$red;
                             position: absolute;
@@ -166,18 +167,18 @@ $workspace-tabs-height: 34px;
                 }
             }
 
-            >.view-container {
+            > .view-container {
                 width: 100%;
                 height: calc(100% - $workspace-tabs-height);
                 flex: 1;
 
-                >.image-container {
+                > .image-container {
                     height: 100%;
                     width: 100%;
                     overflow: hidden;
                     padding: spacing.$medium;
 
-                    >img {
+                    > img {
                         height: 100%;
                         width: 100%;
                         object-fit: contain;
@@ -185,16 +186,16 @@ $workspace-tabs-height: 34px;
                     }
                 }
 
-                >.binary-container {
+                > .binary-container {
                     text-align: center;
                     padding: spacing.$medium;
                 }
 
-                >.cm-container {
+                > .cm-container {
                     height: 100%;
                     width: 100%;
 
-                    >div {
+                    > div {
                         height: 100%;
                         max-height: 100%;
                         width: 100%;
@@ -212,13 +213,13 @@ $workspace-tabs-height: 34px;
             .left-panel {
                 width: 0;
 
-                >div:last-child {
+                > div:last-child {
                     width: 0;
                     padding-left: 0;
                 }
             }
 
-            +.terminal-container {
+            + .terminal-container {
                 border-top-left-radius: 0;
             }
 
@@ -234,14 +235,14 @@ $workspace-tabs-height: 34px;
         flex-direction: column;
         overflow: hidden;
 
-        >div:first-child {
+        > div:first-child {
             display: flex;
             align-items: center;
             justify-content: space-between;
             padding-left: spacing.$x-small;
             padding-right: spacing.$x-small;
 
-            >div {
+            > div {
                 display: flex;
                 align-items: center;
                 justify-content: flex-end;
@@ -249,7 +250,6 @@ $workspace-tabs-height: 34px;
             }
 
             .import-file {
-
                 form,
                 input {
                     height: 0;
@@ -268,7 +268,7 @@ $workspace-tabs-height: 34px;
     .file-tree {
         overflow: hidden;
 
-        >.scrollable>.file-items>.file-item>.indent>div {
+        > .scrollable > .file-items > .file-item > .indent > div {
             width: 55%;
         }
 
@@ -301,7 +301,7 @@ $workspace-tabs-height: 34px;
             }
 
             .suffix {
-                >button {
+                > button {
                     color: colors.$light;
                     display: none;
                 }
@@ -311,7 +311,7 @@ $workspace-tabs-height: 34px;
                 background-color: colors.opacity(colors.$blue, 50);
 
                 .suffix {
-                    >button {
+                    > button {
                         display: flex;
                     }
                 }
@@ -324,7 +324,7 @@ $workspace-tabs-height: 34px;
         display: flex;
         flex-direction: column;
 
-        >div {
+        > div {
             overflow: auto;
 
             img {
@@ -385,7 +385,7 @@ $workspace-tabs-height: 34px;
         border-top-left-radius: spacing.$small;
         position: relative;
 
-        >button {
+        > button {
             position: absolute;
             top: spacing.$x-small;
             right: spacing.$x-small;
@@ -404,12 +404,12 @@ $workspace-tabs-height: 34px;
         color: colors.$blue;
         position: relative;
 
-        >div:first-child {
+        > div:first-child {
             text-align: right;
             display: flex;
             flex-direction: column;
 
-            >div:last-child {
+            > div:last-child {
                 font-size: typography.$small;
             }
         }
