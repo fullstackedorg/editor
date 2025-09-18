@@ -18,15 +18,22 @@ import { gutter } from "@codemirror/view";
 import { Button, Icon } from "@fullstacked/ui";
 import { createDevIcon } from "../dev-icons";
 import { FileEvent, FileEventType } from "../file-event";
+import { Store } from "../../../store";
+import { BuildError } from "../../../store/editor";
+import { sassSupportedFile, sassSetDiagnostic } from "./sass";
+import { createViewImage, imageSupportedFile } from "./image";
+import { binarySupportedFile, createViewBinary } from "./binary";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
 
 const FILE_EVENT_ORIGIN = "code-editor";
 
-function createTabs(actions: {
-    open: (filePath: string) => void;
-    close: (filePath: string) => void;
-}) {
+function createTabs(
+    project: Project,
+    actions: {
+        open: (filePath: string) => void;
+        close: (filePath: string) => void;
+    }) {
     const element = document.createElement("div");
     element.classList.add("tabs");
 
@@ -53,14 +60,12 @@ function createTabs(actions: {
             );
             const [filePath, [_, text]] = tab;
             const filePathComponents = filePath.split("/");
-            console.log(filePathComponents.at(-1), otherFileNames);
             if (otherFileNames.includes(filePathComponents.at(-1))) {
                 text.innerHTML =
                     filePathComponents.at(-1) +
-                    `<small>${
-                        filePathComponents.at(-2)
-                            ? `../${filePathComponents.at(-2)}`
-                            : "/"
+                    `<small>${filePathComponents.at(-2)
+                        ? `../${filePathComponents.at(-2)}`
+                        : "/"
                     }</small>`;
             } else {
                 text.innerText = filePathComponents.at(-1);
@@ -68,8 +73,22 @@ function createTabs(actions: {
         });
     };
 
+    const onBuildErrors = (buildErrors: BuildError[]) => {
+        Array.from(tabs.entries()).forEach(([filePath, [tab]]) => {
+            if (buildErrors.find(({ file }) => file.split(project.id + "/").pop() === filePath)) {
+                tab.classList.add("has-error");
+            } else {
+                tab.classList.remove("has-error");
+            }
+        });
+    }
+    Store.editor.codeEditor.buildErrors.subscribe(onBuildErrors);
+
     return {
         element,
+        destroy() {
+            Store.editor.codeEditor.buildErrors.unsubscribe(onBuildErrors);
+        },
         open(filePath: string, oldPath?: string) {
             let tab = tabs.get(filePath);
 
@@ -96,6 +115,14 @@ function createTabs(actions: {
                 element.append(tab[0]);
 
                 tabs.set(filePath, tab);
+            }
+
+            const hasBuildErrors = Store.editor.codeEditor.buildErrors.check()
+                .find(({ file }) => file.split(project.id + "/").pop() === filePath);
+            if (hasBuildErrors) {
+                tab[0].classList.add("has-error");
+            } else {
+                tab[0].classList.remove("has-error");
             }
 
             if (oldPath) {
@@ -182,9 +209,9 @@ function createHistoryNavigation(actions: {
             history = history.map((state) =>
                 state.filePath === oldPath
                     ? {
-                          ...state,
-                          filePath: newPath
-                      }
+                        ...state,
+                        filePath: newPath
+                    }
                     : state
             );
         },
@@ -235,11 +262,89 @@ function createHistoryNavigation(actions: {
     };
 }
 
+type ViewCode = Awaited<ReturnType<typeof createViewCode>>;
+type ViewImage = ReturnType<typeof createViewImage>;
+type ViewBinary = ReturnType<typeof createViewBinary>;
+
+async function createViewCode(
+    project: Project, 
+    projectFilePath: string,
+    lsp: ReturnType<typeof createLSP>,
+    history: ReturnType<typeof createHistoryNavigation>
+) {
+    const contents = await fs.readFile(
+        `${project.id}/${projectFilePath}`,
+        {
+            encoding: "utf8"
+        }
+    );
+            
+    const view = createCodeMirrorView({
+        contents,
+        extensions: [
+            oneDark,
+            EditorView.clickAddsSelectionRange.of(
+                (e) => e.altKey && !e.metaKey
+            )
+        ]
+    });
+
+    const filePath = `${project.id}/${projectFilePath}`;
+    view.addUpdateListener(async (contents) => {
+        if ((await fs.exists(filePath)).isFile) {
+            await fs.writeFile(filePath, contents, FILE_EVENT_ORIGIN);
+        }
+    });
+
+    view.setLanguage(
+        projectFilePath.split(".").pop() as SupportedLanguage
+    );
+
+    const lspSupport = lspSupportedFile(projectFilePath);
+    const sassSupport = sassSupportedFile(projectFilePath);
+
+    if (lspSupport || sassSupport) {
+        view.extensions.add(lintGutter());
+
+        if (lspSupport) {
+            lsp.then((l) => {
+                l.bindView(projectFilePath, view);
+            });
+        }
+    }
+
+    view.extensions.add(
+        EditorView.domEventHandlers({
+            click: (e: MouseEvent) => {
+                if (e.ctrlKey || e.metaKey) return;
+                const pos = view.editorView.posAtCoords({
+                    x: e.clientX,
+                    y: e.clientY
+                });
+                history.push(projectFilePath, pos);
+            }
+        })
+    );
+
+    return {
+        ...view,
+        type: "code",
+        reloadContents() {
+            fs.readFile(
+                `${project.id}/${projectFilePath}`,
+                {
+                    encoding: "utf8"
+                }
+            ).then(view.replaceContents);
+        }
+    };
+}
+
 export function createWorkspace(project: Project) {
     const element = document.createElement("div");
     element.classList.add("workspace");
 
-    let activeView: ReturnType<typeof createCodeMirrorView> = null;
+    let activeView: ViewCode | ViewImage | ViewBinary = null;
     const views = new Map<string, typeof activeView>();
 
     const open = async (
@@ -251,53 +356,34 @@ export function createWorkspace(project: Project) {
         let view = views.get(projectFilePath);
 
         if (!view) {
-            const contents = await fs.readFile(
-                `${project.id}/${projectFilePath}`,
-                {
-                    encoding: "utf8"
+            let newView: typeof activeView;
+            if (imageSupportedFile(projectFilePath)) {
+                newView = createViewImage(project, projectFilePath);
+            } else if (lspSupportedFile(projectFilePath) || sassSupportedFile(projectFilePath)) {
+                newView = await createViewCode(project, projectFilePath, lsp, history);
+            } else if (binarySupportedFile(projectFilePath)) {
+                newView = createViewBinary(project, projectFilePath);
+            } else {
+                const fileSize = (await fs.stat(`${project.id}/${projectFilePath}`)).size;
+                if (fileSize < 1e6) { // 1mb
+                    newView = await createViewCode(project, projectFilePath, lsp, history);
+                } else {
+                    newView = createViewBinary(project, projectFilePath);
                 }
-            );
-            view = createCodeMirrorView({
-                contents,
-                extensions: [
-                    oneDark,
-                    EditorView.clickAddsSelectionRange.of(
-                        (e) => e.altKey && !e.metaKey
-                    )
-                ]
-            });
-            views.set(projectFilePath, view);
-
-            const filePath = `${project.id}/${projectFilePath}`;
-            view.addUpdateListener(async (contents) => {
-                if ((await fs.exists(filePath)).isFile) {
-                    await fs.writeFile(filePath, contents, FILE_EVENT_ORIGIN);
-                }
-            });
-
-            view.setLanguage(
-                projectFilePath.split(".").pop() as SupportedLanguage
-            );
-
-            if (lspSupportedFile(projectFilePath)) {
-                view.extensions.add(lintGutter());
-                lsp.then((l) => {
-                    l.bindView(projectFilePath, view);
-                });
             }
 
-            view.extensions.add(
-                EditorView.domEventHandlers({
-                    click: (e: MouseEvent) => {
-                        if (e.ctrlKey || e.metaKey) return;
-                        const pos = view.editorView.posAtCoords({
-                            x: e.clientX,
-                            y: e.clientY
-                        });
-                        history.push(projectFilePath, pos);
-                    }
-                })
-            );
+            views.set(projectFilePath, newView);
+            view = newView;
+        }
+
+        if(activeView === view && !oldPath && view.type === "code") {
+            (view as ViewCode).format();
+        }
+
+        if (lspSupportedFile(projectFilePath)) {
+            lsp.then(l => l.runDiagnostics(projectFilePath))
+        } else if (sassSupportedFile(projectFilePath)) {
+            sassSetDiagnostic(project, projectFilePath, (view as ViewCode).editorView);
         }
 
         if (!activeView) {
@@ -307,7 +393,7 @@ export function createWorkspace(project: Project) {
         }
 
         if (pos) {
-            view.goTo(pos);
+            (view as ViewCode).goTo(pos);
         }
 
         tabs.open(projectFilePath, oldPath);
@@ -320,9 +406,9 @@ export function createWorkspace(project: Project) {
                     typeof pos === "number"
                         ? pos
                         : pos
-                          ? view.editorView.state.doc.line(pos.line).from +
+                            ? (view as ViewCode).editorView.state.doc.line(pos.line).from +
                             pos.character
-                          : null;
+                            : null;
 
                 history.push(projectFilePath, position || 0);
             }
@@ -353,12 +439,12 @@ export function createWorkspace(project: Project) {
     };
 
     const history = createHistoryNavigation({ open });
-    const tabs = createTabs({ open, close });
+    const tabs = createTabs(project, { open, close });
     const topRow = document.createElement("div");
     topRow.append(history.element, tabs.element);
 
     const container = document.createElement("div");
-    container.classList.add("code-view");
+    container.classList.add("view-container");
 
     element.append(topRow, container);
 
@@ -393,9 +479,7 @@ export function createWorkspace(project: Project) {
                     const closeTimeout = closeTimeouts.get(projectFilePath);
                     if (closeTimeout) {
                         clearTimeout(closeTimeout);
-                        fs.readFile(`${project.id}/${projectFilePath}`, {
-                            encoding: "utf8"
-                        }).then(view.replaceContents);
+                        view.reloadContents()
                     }
                     break;
                 case FileEventType.RENAME:
@@ -405,7 +489,7 @@ export function createWorkspace(project: Project) {
                         .pop();
                     open(
                         newPath,
-                        view.editorView.state.selection.main.head,
+                        (view as ViewCode)?.editorView?.state?.selection?.main?.head,
                         false,
                         projectFilePath
                     );
@@ -415,9 +499,28 @@ export function createWorkspace(project: Project) {
     };
     core_message.addListener("file-event", fileEventsListener);
 
+    const buildErrorsListener = async (buildErrors: BuildError[]) => {
+        const projectFilePaths = new Set(buildErrors
+            .filter(({ file }) => file.includes(project.id))
+            .map(({ file }) => file.split(project.id + "/").pop()));
+        const l = await lsp;
+        Array.from(views.entries())
+            .filter(([projectFilePath, view]) => {
+                if (lspSupportedFile(projectFilePath)) {
+                    l.runDiagnostics(projectFilePath)
+                } else if (sassSupportedFile(projectFilePath)) {
+                    sassSetDiagnostic(project, projectFilePath, (view as ViewCode).editorView);
+                }
+            });
+        projectFilePaths.forEach(f => open(f));
+    }
+    Store.editor.codeEditor.buildErrors.subscribe(buildErrorsListener)
+
     const destroy = async () => {
         (await lsp).destroy();
         core_message.removeListener("file-event", fileEventsListener);
+        Store.editor.codeEditor.buildErrors.unsubscribe(buildErrorsListener);
+        tabs.destroy();
     };
 
     return {

@@ -12,11 +12,12 @@ import fs from "../../../../fullstacked_modules/fs";
 import { compilerOptions } from "./tsconfig";
 import { EditorView } from "codemirror";
 import { insertCompletionText } from "@codemirror/autocomplete";
-import { setDiagnostics } from "@codemirror/lint";
+import { setDiagnostics, Diagnostic } from "@codemirror/lint";
 import { FileEvent, FileEventType } from "../file-event";
 import { createCodeMirrorView } from "@fullstacked/codemirror-view";
 import { Extension } from "@codemirror/state";
 import { file } from "zod";
+import { Store } from "../../../store";
 
 export type CodemirrorView = ReturnType<typeof createCodeMirrorView>;
 
@@ -47,10 +48,10 @@ function toSeverity(sev: number) {
     return sev == 1
         ? "error"
         : sev == 2
-          ? "warning"
-          : sev == 3
-            ? "info"
-            : "hint";
+            ? "warning"
+            : sev == 3
+                ? "info"
+                : "hint";
 }
 
 let transportId: string = null;
@@ -108,19 +109,35 @@ async function createClientLSP(project: Project) {
         }).then((diagnostics) => {
             const view = client.workspace.getFile(uri)?.getView();
             if (!view) return;
+
+            const buildErrors: Diagnostic[] = 
+                Store.editor.codeEditor.buildErrors.check()
+                    .filter(({ file }) => uri.endsWith(file))
+                    .map(err => {
+                        const from = view.state.doc.line(err.line).from + err.col;
+                        return {
+                            from,
+                            to: from + err.length,
+                            severity: "error",
+                            message: err.message
+                        } as Diagnostic;
+                    });
+
             view.dispatch(
                 setDiagnostics(
                     view.state,
-                    diagnostics.items.map((item) => ({
-                        from:
-                            view.state.doc.line(item.range.start.line + 1)
-                                .from + item.range.start.character,
-                        to:
-                            view.state.doc.line(item.range.end.line + 1).from +
-                            item.range.end.character,
-                        severity: toSeverity(item.severity),
-                        message: item.message
-                    }))
+                    diagnostics.items
+                        .map((item) => ({
+                            from:
+                                view.state.doc.line(item.range.start.line + 1)
+                                    .from + item.range.start.character,
+                            to:
+                                view.state.doc.line(item.range.end.line + 1).from +
+                                item.range.end.character,
+                            severity: toSeverity(item.severity),
+                            message: item.message
+                        }))
+                        .concat(buildErrors)
                 )
             );
         });
@@ -297,13 +314,14 @@ export async function createLSP(
         extensions.forEach(view.extensions.add);
 
         viewsWithLSP.set(filePath, { view, extensions });
-
-        clientLSP.runDiagnostics(fileUri);
     };
 
     const restartClient = async () => {
         console.log("RESTARTING");
-        await clientLSP.end();
+
+        if(clientLSP)
+            await clientLSP.end();
+
         clientLSP = await createClientLSP(project);
         Array.from(viewsWithLSP.entries()).forEach(([filePath, { view }]) => {
             bindView(filePath, view);
@@ -339,6 +357,9 @@ export async function createLSP(
 
     return {
         bindView,
+        runDiagnostics: (projectFilePath: string) => {
+            clientLSP.runDiagnostics(`${projectRootUri}/${projectFilePath}`);
+        },
         async destroy() {
             await clientLSP.end();
             clientLSP = null;

@@ -1,0 +1,48 @@
+import { Project } from "../../../types";
+import fs from "../../../../fullstacked_modules/fs";
+const extensions = [
+    "jpg", 
+    "jpeg", 
+    "png", 
+    "webp", 
+    "bmp",
+    "gif"
+];
+
+export function imageSupportedFile(filePath: string) {
+    const ext = filePath.split(".").pop();
+    return extensions.includes(ext);
+}
+
+export function createViewImage(project: Project, projectFilePath: string) {
+    const element = document.createElement("div");
+    element.classList.add("image-container");
+
+    const image = document.createElement("img");
+    element.append(image);
+
+    let url: ReturnType<typeof URL.createObjectURL>
+    const load = () => {
+        fs.readFile(`${project.id}/${projectFilePath}`)
+            .then(data => {
+                const blob = new Blob([data], { type: "image/" + projectFilePath.split(".").pop() });
+                const url = URL.createObjectURL(blob);
+                image.src = url;
+            })
+    }
+    load();
+    
+
+    return {
+        element,
+        type: "image",
+        remove() {
+            element.remove();
+            URL.revokeObjectURL(url);
+        },
+        reloadContents() { 
+            URL.revokeObjectURL(url);
+            load();
+        }
+    }
+} 
