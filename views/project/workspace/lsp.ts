@@ -284,7 +284,9 @@ export async function createLSP(
                     ) => {
                         if (!definitions || definitions.length === 0) return;
                         const def = definitions.at(0);
-                        const fileUri = removeDriveLetter(decodeURIComponent(def.uri))
+                        const fileUri = removeDriveLetter(
+                            decodeURIComponent(def.uri)
+                        );
                         if (!fileUri.startsWith(projectRootUri)) return;
                         const filePath = decodeURIComponent(
                             fileUri.slice(projectRootUri.length + 1)
@@ -318,7 +320,7 @@ export async function createLSP(
 
         viewsWithLSP.set(filePath, { view, extensions });
 
-        clientLSP.runDiagnostics(`${projectRootUri}/${filePath}`)
+        clientLSP.runDiagnostics(`${projectRootUri}/${filePath}`);
     };
 
     const restartClient = async () => {
@@ -388,12 +390,11 @@ function filePathToLanguageId(filePath: string) {
     }
 }
 
-
-function removeDriveLetter(fileUri: string){
-    if(!fileUri.startsWith("file:///")) return fileUri;
+function removeDriveLetter(fileUri: string) {
+    if (!fileUri.startsWith("file:///")) return fileUri;
 
     const parts = fileUri.slice("file:///".length).split("/");
-    if(parts.at(0).includes(":")) {
+    if (parts.at(0).includes(":")) {
         parts.splice(0, 1);
     }
 
