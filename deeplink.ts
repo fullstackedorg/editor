@@ -29,7 +29,7 @@ export async function deeplink(fullstackedUrl: string) {
 
             let isUserMode = Store.preferences.isUserMode.check();
             if (!isUserMode) {
-                Project(existingProject);
+                Store.projects.setCurrent(existingProject);
             }
 
             Store.projects.build(existingProject);

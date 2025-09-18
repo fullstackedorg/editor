@@ -295,12 +295,14 @@ async function createViewCode(
         ]
     });
 
-    const filePath = `${project.id}/${projectFilePath}`;
-    view.addUpdateListener(async (contents) => {
+    const save = async () => {
         if ((await fs.exists(filePath)).isFile) {
-            await fs.writeFile(filePath, contents, FILE_EVENT_ORIGIN);
+            await fs.writeFile(filePath, view.value, FILE_EVENT_ORIGIN);
         }
-    });
+    };
+
+    const filePath = `${project.id}/${projectFilePath}`;
+    view.addUpdateListener(save);
 
     view.setLanguage(projectFilePath.split(".").pop() as SupportedLanguage);
 
@@ -333,6 +335,7 @@ async function createViewCode(
     return {
         ...view,
         type: "code",
+        save,
         reloadContents() {
             fs.readFile(`${project.id}/${projectFilePath}`, {
                 encoding: "utf8"
@@ -554,6 +557,12 @@ export function createWorkspace(project: Project) {
     return {
         element,
         open,
-        destroy
+        destroy,
+        save: async () => {
+            const codeViews = Array.from(views.values()).filter(
+                ({ type }) => type === "code"
+            ) as ViewCode[];
+            return Promise.all(codeViews.map((v) => v.save()));
+        }
     };
 }

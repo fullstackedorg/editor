@@ -12,6 +12,7 @@ import { Button, Icon, Loader } from "@fullstacked/ui";
 import { FileTree } from "./file-tree";
 import { openPrompt } from "../prompt";
 import { createWorkspace } from "./workspace";
+import { Workspace } from "./workspace";
 
 let lastOpenedProjectId: string;
 export function Project(project: ProjectType) {
@@ -27,8 +28,8 @@ export function Project(project: ProjectType) {
     container.id = PROJECT_VIEW_ID;
     container.classList.add("view");
 
-    const fileTreeAndEditor = FileTreeAndEditor(project);
-    const topBar = TopBar(project, fileTreeAndEditor);
+    const { fileTreeAndEditor, workspace } = FileTreeAndEditor(project);
+    const topBar = TopBar(project, fileTreeAndEditor, workspace);
 
     container.append(topBar, fileTreeAndEditor);
 
@@ -44,16 +45,21 @@ export function Project(project: ProjectType) {
     return container;
 }
 
-function TopBar(project: ProjectType, fileTreeAndEditor: HTMLElement) {
+function TopBar(
+    project: ProjectType,
+    fileTreeAndEditor: HTMLElement,
+    workspace: Workspace
+) {
     const gitWidget = GitWidget(project);
 
-    const runButton = RunButton(project);
+    const runButton = RunButton(project, workspace);
 
     const topBar = TopBarComponent({
         title: project.title,
         subtitle: project.id,
         actions: [gitWidget, runButton],
         onBack: () => {
+            console.log("ici");
             if (fileTreeAndEditor.classList.contains("closed-panel")) {
                 Store.editor.setSidePanelClosed(false);
             } else {
@@ -115,10 +121,13 @@ function FileTreeAndEditor(project: ProjectType) {
         workspace.destroy();
     };
 
-    return container;
+    return {
+        fileTreeAndEditor: container,
+        workspace
+    };
 }
 
-function RunButton(project: ProjectType) {
+function RunButton(project: ProjectType, workspace: Workspace) {
     const container = createElement("div");
     const clearContainer = () => {
         Array.from(container.children).find((c) => c.remove());
@@ -159,6 +168,7 @@ function RunButton(project: ProjectType) {
 
     button.onclick = async () => {
         showLoader();
+        await workspace.save();
         Store.projects.build(project);
     };
 

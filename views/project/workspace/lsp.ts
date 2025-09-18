@@ -88,8 +88,8 @@ async function createTransport(project: Project): Promise<
     };
 }
 
-async function tsConfig(project: Project) {
-    fs.writeFile(
+function tsConfig(project: Project) {
+    return fs.writeFile(
         `${project.id}/tsconfig.json`,
         JSON.stringify({ compilerOptions }, null, 4)
     );
@@ -346,6 +346,7 @@ export async function createLSP(
                 fileEvent.type === FileEventType.DELETED ||
                 fileEvent.type === FileEventType.RENAME
             ) {
+                console.log(fileEvent.paths.at(0));
                 restart = true;
                 break;
             }

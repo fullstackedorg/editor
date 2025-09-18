@@ -16,13 +16,15 @@ export function createViewImage(project: Project, projectFilePath: string) {
 
     let url: ReturnType<typeof URL.createObjectURL>;
     const load = () => {
-        fs.readFile(`${project.id}/${projectFilePath}`).then((data) => {
-            const blob = new Blob([data], {
-                type: "image/" + projectFilePath.split(".").pop()
-            });
-            const url = URL.createObjectURL(blob);
-            image.src = url;
-        });
+        fs.readFile(`${project.id}/${projectFilePath}`).then(
+            (data: Uint8Array<ArrayBuffer>) => {
+                const blob = new Blob([data], {
+                    type: "image/" + projectFilePath.split(".").pop()
+                });
+                const url = URL.createObjectURL(blob);
+                image.src = url;
+            }
+        );
     };
     load();
 
