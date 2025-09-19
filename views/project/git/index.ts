@@ -428,9 +428,9 @@ function ChangesList(changes: Changes, project: Project) {
         container.append(subtitleEl, FilesList(files, revertFile));
     };
 
-    addSection("Added", changes.added);
-    addSection("Modified", changes.modified);
-    addSection("Deleted", changes.deleted);
+    addSection("Added", changes.added.sort());
+    addSection("Modified", changes.modified.sort());
+    addSection("Deleted", changes.deleted.sort());
 
     return container;
 }

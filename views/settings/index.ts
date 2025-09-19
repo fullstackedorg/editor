@@ -23,7 +23,7 @@ export function Settings() {
 
     scrollable.append(
         userMode,
-        AgentProvider(),
+        // AgentProvider(),
         GitAuthentications(),
         Version()
     );

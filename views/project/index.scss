@@ -133,7 +133,7 @@ $workspace-tabs-height: 34px;
                         small {
                             padding-left: spacing.$x-small;
                             opacity: 0.6;
-                            font-size: typography.$x-small;
+                            font-size: typography.$small;
                         }
                     }
 
@@ -430,6 +430,15 @@ $workspace-tabs-height: 34px;
             }
         }
     }
+}
+
+.file-path-helper {
+    background-color: colors.$gray-dark;
+    transform: translateY(100%);
+    padding: spacing.$x-small spacing.$small;
+    border-radius: spacing.$x-small;
+    font-size: typography.$small;
+    white-space: nowrap;
 }
 
 // codemirror overriddes

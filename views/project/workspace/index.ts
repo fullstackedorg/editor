@@ -15,7 +15,7 @@ import { createLSP, lspSupportedFile } from "./lsp";
 import fs from "../../../../fullstacked_modules/fs";
 import { SupportedLanguage } from "@fullstacked/codemirror-view/languages";
 import { gutter } from "@codemirror/view";
-import { Button, Icon } from "@fullstacked/ui";
+import { Button, Icon, Popover } from "@fullstacked/ui";
 import { createDevIcon } from "../dev-icons";
 import { FileEvent, FileEventType } from "../file-event";
 import { Store } from "../../../store";
@@ -23,6 +23,7 @@ import { BuildError } from "../../../store/editor";
 import { sassSupportedFile, sassSetDiagnostic } from "./sass";
 import { createViewImage, imageSupportedFile } from "./image";
 import { binarySupportedFile, createViewBinary } from "./binary";
+import { file } from "zod";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
 
@@ -105,6 +106,35 @@ function createTabs(
                     document.createElement("span")
                 ];
                 tab[0].onclick = () => actions.open(filePath);
+                const filePathEl = document.createElement("div");
+                filePathEl.classList.add("file-path-helper");
+                let popover: ReturnType<typeof Popover>;
+                let popoverDelayTimeout: ReturnType<typeof setTimeout>;
+                filePathEl.innerText = filePath;
+                const remove = () => {
+                    setTimeout(() => popover?.remove(), 500);
+                    window.removeEventListener("mousemove", remove);
+                };
+                tab[0].onmouseenter = () => {
+                    popoverDelayTimeout = setTimeout(() => {
+                        const bb = tab[0].getBoundingClientRect();
+                        if (bb.height === 0) return;
+                        popover = Popover({
+                            content: filePathEl,
+                            align: {
+                                x: "center",
+                                y: "bottom"
+                            },
+                            anchor: tab[0]
+                        });
+                        setTimeout(() => {
+                            window.addEventListener("mousemove", remove);
+                        }, 500);
+                    }, 1000);
+                };
+                tab[0].onmouseleave = () => {
+                    clearTimeout(popoverDelayTimeout);
+                };
 
                 tab[1].innerText = filePath.split("/").pop();
 
