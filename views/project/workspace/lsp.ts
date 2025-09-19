@@ -16,7 +16,6 @@ import { setDiagnostics, Diagnostic } from "@codemirror/lint";
 import { FileEvent, FileEventType } from "../file-event";
 import { createCodeMirrorView } from "@fullstacked/codemirror-view";
 import { Extension } from "@codemirror/state";
-import { file } from "zod";
 import { Store } from "../../../store";
 
 export type CodemirrorView = ReturnType<typeof createCodeMirrorView>;
