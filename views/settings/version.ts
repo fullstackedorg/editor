@@ -5,6 +5,7 @@ import semver from "semver";
 import * as sass from "sass";
 import { Badge } from "@fullstacked/ui";
 import esbuild from "../../../fullstacked_modules/esbuild";
+import * as lsp from "../../editor_modules/lsp";
 
 export function Version() {
     const container = document.createElement("div");
@@ -103,6 +104,10 @@ function TypescriptVersion() {
     container.innerHTML = `
         <label>TypeScript</label>
     `;
+
+    lsp.version().then((v) => {
+        container.innerHTML += `<div>${v}</div>`;
+    });
 
     return container;
 }

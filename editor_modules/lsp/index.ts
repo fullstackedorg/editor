@@ -37,3 +37,9 @@ export function end(transportId: string) {
         bridge(payload);
     });
 }
+
+// 93
+export function version() {
+    const payload = new Uint8Array([93]);
+    return bridge(payload, ([version]) => version);
+}
