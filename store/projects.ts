@@ -20,7 +20,9 @@ const builds = createSubscribable(() => activeProjectBuilds);
 const activeProjectPulls = new Set<string>();
 const pulls = createSubscribable(() => activeProjectPulls);
 
-let currentOpenedProject: Project & {workspace?: ReturnType<typeof createWorkspace>} = null;
+let currentOpenedProject: Project & {
+    workspace?: ReturnType<typeof createWorkspace>;
+} = null;
 const current = createSubscribable(() => currentOpenedProject);
 
 export const projects = {

@@ -131,10 +131,9 @@ function Prompt() {
     return container;
 }
 
-
-async function promptNewChat(prompt: string){
+async function promptNewChat(prompt: string) {
     const project = Store.projects.current.check();
-    if(!project) return;
+    if (!project) return;
     await fs.mkdir(`${project.id}/chat`);
     await fs.writeFile(`${project.id}/chat/New Chat.chat`, "\n");
     project.workspace.open(`chat/New Chat.chat`);

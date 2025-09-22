@@ -5,14 +5,14 @@ export function createDevIcon(filePath: string) {
     element.classList.add("dev-icon");
     if (filePath.endsWith(".chat")) {
         const chatIcon = Icon("Glitter");
-        element.append(chatIcon)
+        element.append(chatIcon);
     } else {
         const devIconClass = pathToDevIconClass(filePath);
         if (devIconClass) {
             element.classList.add(devIconClass);
         }
     }
-   
+
     return element;
 }
 

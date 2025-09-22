@@ -26,7 +26,8 @@ import { binarySupportedFile, createViewBinary } from "./views/binary";
 import { createViewCode, FILE_EVENT_ORIGIN } from "./views/code";
 import { file } from "zod";
 import { restore } from "../../../../fullstacked_modules/git";
-import { createViewChat,chatSupportedFile } from "./views/chat";
+import { createViewChat, chatSupportedFile } from "./views/chat";
+import { hideChatExtension } from "../file-tree";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
 
@@ -41,14 +42,6 @@ function createTabs(
     element.classList.add("tabs");
 
     const tabs = new Map<string, [HTMLElement, HTMLElement]>();
-
-    const hideChatExtension = (filePath: string) => {
-        if(filePath.endsWith(".chat")) {
-            return filePath.slice(0, -".chat".length)
-        } else {
-            return filePath
-        }
-    }
 
     const setActive = (filePath: string) => {
         Array.from(tabs.entries()).forEach(([f, tab]) => {
@@ -74,9 +67,10 @@ function createTabs(
             if (otherFileNames.includes(filePathComponents.at(-1))) {
                 text.innerHTML =
                     filePathComponents.at(-1) +
-                    `<small>${filePathComponents.at(-2)
-                        ? `../${filePathComponents.at(-2)}`
-                        : "/"
+                    `<small>${
+                        filePathComponents.at(-2)
+                            ? `../${filePathComponents.at(-2)}`
+                            : "/"
                     }</small>`;
             } else {
                 text.innerText = hideChatExtension(filePathComponents.at(-1));
@@ -258,9 +252,9 @@ export function createHistoryNavigation(actions: {
             history = history.map((state) =>
                 state.filePath === oldPath
                     ? {
-                        ...state,
-                        filePath: newPath
-                    }
+                          ...state,
+                          filePath: newPath
+                      }
                     : state
             );
         },
@@ -333,9 +327,9 @@ export function createWorkspace(project: Project) {
 
         if (!view) {
             let newView: typeof activeView;
-            if(chatSupportedFile(projectFilePath)) {
-                newView = createViewChat(project, projectFilePath)
-            }else if (imageSupportedFile(projectFilePath)) {
+            if (chatSupportedFile(projectFilePath)) {
+                newView = createViewChat(project, projectFilePath);
+            } else if (imageSupportedFile(projectFilePath)) {
                 newView = createViewImage(project, projectFilePath);
             } else if (
                 lspSupportedFile(projectFilePath) ||
@@ -404,10 +398,10 @@ export function createWorkspace(project: Project) {
                     typeof pos === "number"
                         ? pos
                         : pos
-                            ? (view as ViewCode).editorView.state.doc.line(
+                          ? (view as ViewCode).editorView.state.doc.line(
                                 pos.line
                             ).from + pos.character
-                            : null;
+                          : null;
 
                 history.push(projectFilePath, position || 0);
             }
@@ -465,24 +459,29 @@ export function createWorkspace(project: Project) {
                 .pop();
             if (!projectFilePath) continue;
 
-            const view = views.get(projectFilePath);
-            if (!view) continue;
-
             switch (fileEvent.type) {
                 case FileEventType.DELETED:
-                    closeTimeouts.set(
-                        projectFilePath,
-                        setTimeout(() => {
-                            close(projectFilePath);
-                            history.remove(projectFilePath);
-                        }, 100)
+                    const deletedViews = Array.from(views.keys()).filter(
+                        (filePath) => filePath.startsWith(projectFilePath)
                     );
+                    deletedViews.forEach((filePath) => {
+                        closeTimeouts.set(
+                            filePath,
+                            setTimeout(() => {
+                                close(filePath);
+                                history.remove(filePath);
+                            }, 100)
+                        );
+                    });
+                    break;
+                case FileEventType.MODIFIED:
+                    views?.get(projectFilePath)?.reloadContents();
                     break;
                 case FileEventType.CREATED:
                     const closeTimeout = closeTimeouts.get(projectFilePath);
                     if (closeTimeout) {
                         clearTimeout(closeTimeout);
-                        view.reloadContents();
+                        views.get(projectFilePath)?.reloadContents();
                     }
                     break;
                 case FileEventType.RENAME:
@@ -490,13 +489,21 @@ export function createWorkspace(project: Project) {
                         .at(1)
                         .split(`${project.id}/`)
                         .pop();
-                    open(
-                        newPath,
-                        (view as ViewCode)?.editorView?.state?.selection?.main
-                            ?.head,
-                        false,
-                        projectFilePath
+
+                    const renamedViews = Array.from(views.keys()).filter(
+                        (filePath) => filePath.startsWith(projectFilePath)
                     );
+                    renamedViews.forEach((filePath) => {
+                        const newFilePath =
+                            newPath + filePath.slice(projectFilePath.length);
+                        open(
+                            newFilePath,
+                            (views.get(filePath) as ViewCode)?.editorView?.state
+                                ?.selection?.main?.head,
+                            false,
+                            filePath
+                        );
+                    });
                     break;
             }
         }

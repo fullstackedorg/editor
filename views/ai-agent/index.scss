@@ -1,0 +1,19 @@
+@use "../../../node_modules/@fullstacked/ui/values/spacing.scss";
+
+.ai-agent-configurator {
+    width: 100%;
+    max-width: spacing.$max-width;
+
+    .key-value-form {
+        > div {
+            display: flex;
+            flex-direction: column;
+            gap: spacing.$small;
+
+            .key-value {
+                display: flex;
+                gap: spacing.$small;
+            }
+        }
+    }
+}

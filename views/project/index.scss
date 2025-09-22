@@ -191,6 +191,11 @@ $workspace-tabs-height: 34px;
                     padding: spacing.$medium;
                 }
 
+                > .chat-container {
+                    display: flex;
+                    justify-content: center;
+                }
+
                 > .cm-container {
                     height: 100%;
                     width: 100%;

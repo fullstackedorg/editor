@@ -1,5 +1,5 @@
 import { Project } from "../../../../types";
-import { createLSP,lspSupportedFile } from "../lsp";
+import { createLSP, lspSupportedFile } from "../lsp";
 import fs from "../../../../../fullstacked_modules/fs";
 import { createCodeMirrorView } from "@fullstacked/codemirror-view";
 import { oneDark } from "@codemirror/theme-one-dark";

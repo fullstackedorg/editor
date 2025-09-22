@@ -12,33 +12,32 @@ export function chatSupportedFile(filePath: string) {
     return extensions.includes(ext);
 }
 
-export function createViewChat(
-    project: Project, 
-    filePath: string,
-) {
+export function createViewChat(project: Project, filePath: string) {
     const element = document.createElement("div");
+    element.classList.add("chat-container");
 
-    fs.readFile(`${project.id}/${filePath}`, { encoding: "utf8" })
-        .then(async chatData => {
+    fs.readFile(`${project.id}/${filePath}`, { encoding: "utf8" }).then(
+        async (chatData) => {
             let messages: any[];
             try {
-                messages = JSON.parse(chatData)
+                messages = JSON.parse(chatData);
             } catch (e) {
                 messages = [];
-             }
-
-            const provider = getDefaultAgentProvider();
-            if(!provider) {
-                element.append(createAiAgentConfigurator())
             }
-        });
+
+            const provider = await getDefaultAgentProvider();
+            if (!provider) {
+                element.append(createAiAgentConfigurator());
+            }
+        }
+    );
 
     return {
         type: "chat",
         element,
         remove() {
             element.remove();
-         },
-        reloadContents() { }
-    }
-} 
+        },
+        reloadContents() {}
+    };
+}
