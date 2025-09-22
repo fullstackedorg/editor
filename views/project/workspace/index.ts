@@ -376,7 +376,7 @@ async function createViewCode(
         ...view,
         type: "code",
         save,
-        restoreScroll(){
+        restoreScroll() {
             view.editorView.scrollDOM.scrollTo(scroll);
         },
         reloadContents() {
@@ -492,7 +492,7 @@ export function createWorkspace(project: Project) {
             activeView = view;
         }
 
-        if(view.type === "code") {
+        if (view.type === "code") {
             (view as ViewCode).restoreScroll();
         }
     };
