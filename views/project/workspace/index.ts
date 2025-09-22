@@ -24,6 +24,7 @@ import { sassSupportedFile, sassSetDiagnostic } from "./sass";
 import { createViewImage, imageSupportedFile } from "./image";
 import { binarySupportedFile, createViewBinary } from "./binary";
 import { file } from "zod";
+import { restore } from "../../../../fullstacked_modules/git";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
 
@@ -362,10 +363,22 @@ async function createViewCode(
         })
     );
 
+    let scroll = {
+        top: 0,
+        left: 0
+    };
+    view.editorView.scrollDOM.addEventListener("scroll", () => {
+        scroll.top = view.editorView.scrollDOM.scrollTop;
+        scroll.left = view.editorView.scrollDOM.scrollLeft;
+    });
+
     return {
         ...view,
         type: "code",
         save,
+        restoreScroll(){
+            view.editorView.scrollDOM.scrollTo(scroll);
+        },
         reloadContents() {
             fs.readFile(`${project.id}/${projectFilePath}`, {
                 encoding: "utf8"
@@ -477,6 +490,10 @@ export function createWorkspace(project: Project) {
             views.delete(oldPath);
         } else {
             activeView = view;
+        }
+
+        if(view.type === "code") {
+            (view as ViewCode).restoreScroll();
         }
     };
 
