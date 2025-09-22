@@ -3,7 +3,6 @@ export enum CONFIG_TYPE {
     PROJECTS = "projects",
     GIT = "git",
     AGENT = "agent"
-    // CONNECTIVITY = "connectivity"
 }
 
 export type CONFIG_DATA_TYPE = {
@@ -15,8 +14,7 @@ export type CONFIG_DATA_TYPE = {
     };
     [CONFIG_TYPE.GIT]: GitAuths;
 
-    [CONFIG_TYPE.AGENT]: any;
-    // [CONFIG_TYPE.CONNECTIVITY]: Connectivity;
+    [CONFIG_TYPE.AGENT]: any[];
 };
 
 export type Project = {
@@ -39,11 +37,3 @@ export type GitAuths = {
         email?: string;
     };
 };
-
-// export type Connectivity = {
-//     me: Peer;
-//     autoConnect: boolean;
-//     defaultNetworkInterface: string;
-//     webAddresses: WebAddress[];
-//     peersTrusted: PeerTrusted[];
-// };

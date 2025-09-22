@@ -44,12 +44,6 @@ export function FileTree(project: Project, workspace: Workspace) {
             close: directoryIconClose
         },
         prefix: (path) => {
-            if (path.endsWith(".chat")) {
-                const chatIcon = Icon("Glitter");
-                chatIcon.classList.add("chat-icon");
-                return chatIcon;
-            }
-
             return createDevIcon(path);
         },
         name: (path) => {

@@ -1,5 +1,6 @@
-import { Project } from "../../../types";
-import fs from "../../../../fullstacked_modules/fs";
+import { Project } from "../../../../types";
+import fs from "../../../../../fullstacked_modules/fs";
+
 const extensions = ["jpg", "jpeg", "png", "webp", "bmp", "gif"];
 
 export function imageSupportedFile(filePath: string) {

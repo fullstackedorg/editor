@@ -21,14 +21,14 @@ import { FileEvent, FileEventType } from "../file-event";
 import { Store } from "../../../store";
 import { BuildError } from "../../../store/editor";
 import { sassSupportedFile, sassSetDiagnostic } from "./sass";
-import { createViewImage, imageSupportedFile } from "./image";
-import { binarySupportedFile, createViewBinary } from "./binary";
+import { createViewImage, imageSupportedFile } from "./views/image";
+import { binarySupportedFile, createViewBinary } from "./views/binary";
+import { createViewCode, FILE_EVENT_ORIGIN } from "./views/code";
 import { file } from "zod";
 import { restore } from "../../../../fullstacked_modules/git";
+import { createViewChat,chatSupportedFile } from "./views/chat";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
-
-const FILE_EVENT_ORIGIN = "code-editor";
 
 function createTabs(
     project: Project,
@@ -41,6 +41,14 @@ function createTabs(
     element.classList.add("tabs");
 
     const tabs = new Map<string, [HTMLElement, HTMLElement]>();
+
+    const hideChatExtension = (filePath: string) => {
+        if(filePath.endsWith(".chat")) {
+            return filePath.slice(0, -".chat".length)
+        } else {
+            return filePath
+        }
+    }
 
     const setActive = (filePath: string) => {
         Array.from(tabs.entries()).forEach(([f, tab]) => {
@@ -66,13 +74,12 @@ function createTabs(
             if (otherFileNames.includes(filePathComponents.at(-1))) {
                 text.innerHTML =
                     filePathComponents.at(-1) +
-                    `<small>${
-                        filePathComponents.at(-2)
-                            ? `../${filePathComponents.at(-2)}`
-                            : "/"
+                    `<small>${filePathComponents.at(-2)
+                        ? `../${filePathComponents.at(-2)}`
+                        : "/"
                     }</small>`;
             } else {
-                text.innerText = filePathComponents.at(-1);
+                text.innerText = hideChatExtension(filePathComponents.at(-1));
             }
         });
     };
@@ -193,7 +200,7 @@ function createTabs(
     };
 }
 
-function createHistoryNavigation(actions: {
+export function createHistoryNavigation(actions: {
     open: (filePath: string, pos: number, fromHistory: true) => void;
 }) {
     let history: {
@@ -251,9 +258,9 @@ function createHistoryNavigation(actions: {
             history = history.map((state) =>
                 state.filePath === oldPath
                     ? {
-                          ...state,
-                          filePath: newPath
-                      }
+                        ...state,
+                        filePath: newPath
+                    }
                     : state
             );
         },
@@ -307,91 +314,13 @@ function createHistoryNavigation(actions: {
 type ViewCode = Awaited<ReturnType<typeof createViewCode>>;
 type ViewImage = ReturnType<typeof createViewImage>;
 type ViewBinary = ReturnType<typeof createViewBinary>;
-
-async function createViewCode(
-    project: Project,
-    projectFilePath: string,
-    lsp: ReturnType<typeof createLSP>,
-    history: ReturnType<typeof createHistoryNavigation>
-) {
-    const contents = await fs.readFile(`${project.id}/${projectFilePath}`, {
-        encoding: "utf8"
-    });
-
-    const view = createCodeMirrorView({
-        contents,
-        extensions: [
-            oneDark,
-            EditorView.clickAddsSelectionRange.of((e) => e.altKey && !e.metaKey)
-        ]
-    });
-
-    const save = async () => {
-        if ((await fs.exists(filePath))?.isFile) {
-            await fs.writeFile(filePath, view.value, FILE_EVENT_ORIGIN);
-        }
-    };
-
-    const filePath = `${project.id}/${projectFilePath}`;
-    view.addUpdateListener(save);
-
-    view.setLanguage(projectFilePath.split(".").pop() as SupportedLanguage);
-
-    const lspSupport = lspSupportedFile(projectFilePath);
-    const sassSupport = sassSupportedFile(projectFilePath);
-
-    if (lspSupport || sassSupport) {
-        view.extensions.add(lintGutter());
-
-        if (lspSupport) {
-            lsp.then((l) => {
-                l.bindView(projectFilePath, view);
-            });
-        }
-    }
-
-    view.extensions.add(
-        EditorView.domEventHandlers({
-            click: (e: MouseEvent) => {
-                if (e.ctrlKey || e.metaKey) return;
-                const pos = view.editorView.posAtCoords({
-                    x: e.clientX,
-                    y: e.clientY
-                });
-                history.push(projectFilePath, pos);
-            }
-        })
-    );
-
-    let scroll = {
-        top: 0,
-        left: 0
-    };
-    view.editorView.scrollDOM.addEventListener("scroll", () => {
-        scroll.top = view.editorView.scrollDOM.scrollTop;
-        scroll.left = view.editorView.scrollDOM.scrollLeft;
-    });
-
-    return {
-        ...view,
-        type: "code",
-        save,
-        restoreScroll() {
-            view.editorView.scrollDOM.scrollTo(scroll);
-        },
-        reloadContents() {
-            fs.readFile(`${project.id}/${projectFilePath}`, {
-                encoding: "utf8"
-            }).then(view.replaceContents);
-        }
-    };
-}
+type ViewChat = ReturnType<typeof createViewChat>;
 
 export function createWorkspace(project: Project) {
     const element = document.createElement("div");
     element.classList.add("workspace");
 
-    let activeView: ViewCode | ViewImage | ViewBinary = null;
+    let activeView: ViewCode | ViewImage | ViewBinary | ViewChat = null;
     const views = new Map<string, typeof activeView>();
 
     const open = async (
@@ -404,7 +333,9 @@ export function createWorkspace(project: Project) {
 
         if (!view) {
             let newView: typeof activeView;
-            if (imageSupportedFile(projectFilePath)) {
+            if(chatSupportedFile(projectFilePath)) {
+                newView = createViewChat(project, projectFilePath)
+            }else if (imageSupportedFile(projectFilePath)) {
                 newView = createViewImage(project, projectFilePath);
             } else if (
                 lspSupportedFile(projectFilePath) ||
@@ -473,10 +404,10 @@ export function createWorkspace(project: Project) {
                     typeof pos === "number"
                         ? pos
                         : pos
-                          ? (view as ViewCode).editorView.state.doc.line(
+                            ? (view as ViewCode).editorView.state.doc.line(
                                 pos.line
                             ).from + pos.character
-                          : null;
+                            : null;
 
                 history.push(projectFilePath, position || 0);
             }

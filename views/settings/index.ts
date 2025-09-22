@@ -7,6 +7,7 @@ import { GitAuthentications } from "./git-authentications";
 import { createElement } from "../../components/element";
 import { Store } from "../../store";
 import { InputSwitch } from "@fullstacked/ui";
+import { createAiAgentConfigurator } from "../ai-agent/config";
 
 export function Settings() {
     const { container, scrollable } = ViewScrollable();
@@ -23,7 +24,7 @@ export function Settings() {
 
     scrollable.append(
         userMode,
-        // AgentProvider(),
+        AgentProvider(),
         GitAuthentications(),
         Version()
     );
@@ -68,6 +69,6 @@ function AgentProvider() {
     const container = document.createElement("div");
     container.classList.add("agent-provider-config");
     container.innerHTML = `<h2>Configure Agent Providers</h2>`;
-
+    container.append(createAiAgentConfigurator());
     return container;
 }

@@ -8,7 +8,7 @@ import packages from "../../fullstacked_modules/packages";
 export type Command = {
     name: string;
     suggestions?(prefix: string): string[] | Promise<string[]>;
-    exec?(args: string[]): boolean;
+    exec?(args: string[]): void;
     alias?: string[];
     subcommand?: Command[];
 };
@@ -47,8 +47,6 @@ export const commands: Command[] = [
                             dev
                         );
                     }
-
-                    return true;
                 }
             }
         ]
@@ -65,7 +63,6 @@ export const commands: Command[] = [
                             const repo = args.at(0);
                             const deeplinkUrl = `fullstacked://https//github.com/${repo}.git`;
                             deeplink(deeplinkUrl);
-                            return true;
                         }
                     }
                 ]
@@ -76,7 +73,6 @@ export const commands: Command[] = [
         name: "back",
         exec() {
             stackNavigation.back();
-            return true;
         }
     },
     {
@@ -84,12 +80,11 @@ export const commands: Command[] = [
         exec(args) {
             const projectId = args.at(0);
             if (!projectsList.find((id) => id === projectId)) {
-                return false;
+                return;
             }
             const projects = Store.projects.list.check();
             const project = projects.find(({ id }) => id === projectId);
             Store.projects.setCurrent(project);
-            return true;
         },
         name: "code"
     },
@@ -110,10 +105,8 @@ export const commands: Command[] = [
 
             if (project) {
                 Store.projects.build(project);
-                return true;
+                return;
             }
-
-            return false;
         },
         name: "open"
     },
@@ -123,7 +116,6 @@ export const commands: Command[] = [
             const repoUrl = args.at(0);
             const deeplinkUrl = `fullstacked://${repoUrl}`;
             deeplink(deeplinkUrl);
-            return true;
         }
     }
 ];
