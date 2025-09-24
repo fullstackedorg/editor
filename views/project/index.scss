@@ -228,6 +228,11 @@ $workspace-tabs-height: 34px;
                                     align-self: flex-end;
                                 }
 
+                                img {
+                                    width: 100%;
+                                    object-fit: contain;
+                                }
+
                                 p,
                                 h1,
                                 h2,

@@ -69,6 +69,6 @@ function AgentProvider() {
     const container = document.createElement("div");
     container.classList.add("agent-provider-config");
     container.innerHTML = `<h2>Configure Agent Providers</h2>`;
-    container.append(createAiAgentConfigurator());
+    container.append(createAiAgentConfigurator().element);
     return container;
 }

@@ -47,6 +47,7 @@ export function createAiAgentConfigurator(configProvider?: string) {
     const providerSelect = InputSelect({
         label: "Provider"
     });
+    let modelSelect: ReturnType<typeof InputSelect>;
 
     let providerConfigsContainer = document.createElement("div");
     providerConfigsContainer.innerText =
@@ -71,7 +72,7 @@ export function createAiAgentConfigurator(configProvider?: string) {
             } catch (e) {}
 
             if (models) {
-                const modelSelect = InputSelect({
+                modelSelect = InputSelect({
                     label: "Default Model"
                 });
                 modelSelect.options.add(...models.map((name) => ({ name })));
@@ -171,7 +172,15 @@ export function createAiAgentConfigurator(configProvider?: string) {
         element.append(providerSelect.container, providerConfigsContainer);
     });
 
-    return element;
+    return {
+        element,
+        get current(){
+            return {
+                provider: providerSelect.select.value,
+                model: modelSelect?.select.value
+            }
+        }
+    };
 }
 
 function keyValueComponent(opts: {

@@ -7,6 +7,7 @@ import { createAiAgentConfigurator } from "../../../ai-agent/config";
 import { save } from "../../../../editor_modules/config";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { Button } from "@fullstacked/ui";
+import { EditorView } from "codemirror";
 
 const extensions = ["chat"];
 
@@ -21,7 +22,10 @@ async function getProviderAndModel(providerId: string, model: string) {
     }
 }
 
-export function createViewChat(project: Project, filePath: string) {
+export function createViewChat(
+    project: Project, 
+    filePath: string
+) {
     const element = document.createElement("div");
     element.classList.add("chat-container");
 
@@ -41,7 +45,14 @@ export function createViewChat(project: Project, filePath: string) {
                 savedChat.model
             );
             if (!agent?.info?.model) {
-                element.append(createAiAgentConfigurator(savedChat.provider));
+                const configurator = createAiAgentConfigurator(savedChat.provider);
+                const submitButton = Button({
+                    text: "Select"
+                })
+                submitButton.onclick = () => {
+                    console.log(configurator.current)
+                }
+                element.append(configurator.element, submitButton);
                 return;
             }
 
@@ -66,6 +77,9 @@ export function createViewChat(project: Project, filePath: string) {
                 iconRight: "Settings"
             });
             infos.append(settings);
+            settings.onclick = () => {
+                conversation.element.replaceWith(createAiAgentConfigurator(agent.info.id).element);
+            }
 
             element.append(infos, conversation.element);
         }
