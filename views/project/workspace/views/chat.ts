@@ -15,12 +15,10 @@ export function chatSupportedFile(filePath: string) {
     return extensions.includes(ext);
 }
 
-async function getProviderAndModel(providerId: string, model: string){
-    if(!providerId) {
+async function getProviderAndModel(providerId: string, model: string) {
+    if (!providerId) {
         return getDefaultAgentProvider();
     }
-
-
 }
 
 export function createViewChat(project: Project, filePath: string) {
@@ -30,17 +28,20 @@ export function createViewChat(project: Project, filePath: string) {
     fs.readFile(`${project.id}/${filePath}`, { encoding: "utf8" }).then(
         async (chatData) => {
             let savedChat: {
-                provider?: string,
-                model?: string,
-                messages?: any[]
+                provider?: string;
+                model?: string;
+                messages?: any[];
             } = {};
             try {
                 savedChat = JSON.parse(chatData);
-            } catch (e) { }
+            } catch (e) {}
 
-            const agent = await getProviderAndModel(savedChat.provider, savedChat.model);
+            const agent = await getProviderAndModel(
+                savedChat.provider,
+                savedChat.model
+            );
             if (!agent?.info?.model) {
-                element.append(createAiAgentConfigurator(savedChat.provider))
+                element.append(createAiAgentConfigurator(savedChat.provider));
                 return;
             }
 
@@ -50,9 +51,7 @@ export function createViewChat(project: Project, filePath: string) {
                 tools: createToolFS({
                     baseDirectory: project.id
                 }),
-                codemirrorViewExtension: [
-                    oneDark
-                ]
+                codemirrorViewExtension: [oneDark]
             });
 
             const infos = document.createElement("div");
@@ -66,7 +65,7 @@ export function createViewChat(project: Project, filePath: string) {
                 style: "icon-small",
                 iconRight: "Settings"
             });
-            infos.append(settings)
+            infos.append(settings);
 
             element.append(infos, conversation.element);
         }

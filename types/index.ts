@@ -20,9 +20,9 @@ export type CONFIG_DATA_TYPE = {
 };
 
 export type AgentProvider = ReturnType<typeof ai.providers>[0] & {
-    model?: string,
-    useDefault?: boolean
-}
+    model?: string;
+    useDefault?: boolean;
+};
 
 export type Project = {
     title: string;

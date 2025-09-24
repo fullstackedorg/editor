@@ -16,18 +16,24 @@ async function mergeConfigsWithAvailableProviders(): Promise<AgentProvider[]> {
     const savedAgentConfig = await config.get(CONFIG_TYPE.AGENT);
     const availableProvider = ai.providers();
 
-    return availableProvider.map(provider => {
-        const savedConfig = savedAgentConfig.find(({ id }) => id === provider.id);
+    return availableProvider.map((provider) => {
+        const savedConfig = savedAgentConfig.find(
+            ({ id }) => id === provider.id
+        );
         return {
             ...savedConfig,
             ...provider,
-            configs: provider.configs.map(c => ({
-                ...c,
-                value: savedConfig?.configs?.find(({ id }) => id === c.id)?.value || c.value
-            }) as any)
-        }
-    })
-
+            configs: provider.configs.map(
+                (c) =>
+                    ({
+                        ...c,
+                        value:
+                            savedConfig?.configs?.find(({ id }) => id === c.id)
+                                ?.value || c.value
+                    }) as any
+            )
+        };
+    });
 }
 
 export function createAiAgentConfigurator(configProvider?: string) {
@@ -36,7 +42,7 @@ export function createAiAgentConfigurator(configProvider?: string) {
 
     const saveConfigs = () => {
         config.save(CONFIG_TYPE.AGENT, providers);
-    }
+    };
 
     const providerSelect = InputSelect({
         label: "Provider"
@@ -62,7 +68,7 @@ export function createAiAgentConfigurator(configProvider?: string) {
             let models: string[];
             try {
                 models = await provider.models();
-            } catch (e) { }
+            } catch (e) {}
 
             if (models) {
                 const modelSelect = InputSelect({
@@ -85,14 +91,14 @@ export function createAiAgentConfigurator(configProvider?: string) {
                 modelSelect.select.onchange = () => {
                     providerInfos.model = modelSelect.select.value;
                     saveConfigs();
-                }
+                };
                 checkbox.input.onchange = () => {
-                    if(checkbox.input.checked) {
-                        providers.forEach(p => p.useDefault = false);
-                    } 
+                    if (checkbox.input.checked) {
+                        providers.forEach((p) => (p.useDefault = false));
+                    }
                     providerInfos.useDefault = checkbox.input.checked;
                     saveConfigs();
-                }
+                };
             } else if (showWarning) {
                 providerModelSelect.append(
                     Message({
@@ -139,19 +145,23 @@ export function createAiAgentConfigurator(configProvider?: string) {
         onChange(false);
     };
 
-    let providers: Awaited<ReturnType<typeof mergeConfigsWithAvailableProviders>>;
-    mergeConfigsWithAvailableProviders().then(async p => {
+    let providers: Awaited<
+        ReturnType<typeof mergeConfigsWithAvailableProviders>
+    >;
+    mergeConfigsWithAvailableProviders().then(async (p) => {
         providers = p;
 
-        providerSelect.options.add(...providers.map(provider => ({
-            name: provider.title,
-            id: provider.id
-        })))
+        providerSelect.options.add(
+            ...providers.map((provider) => ({
+                name: provider.title,
+                id: provider.id
+            }))
+        );
 
         if (configProvider) {
             providerSelect.select.value = configProvider;
         } else {
-            getDefaultAgentProvider().then(defaultAgent => {
+            getDefaultAgentProvider().then((defaultAgent) => {
                 if (!defaultAgent) return;
                 providerSelect.select.value = defaultAgent.info.id;
                 providerSelect.select.onchange(defaultAgent.info.id);
@@ -160,7 +170,7 @@ export function createAiAgentConfigurator(configProvider?: string) {
 
         element.append(providerSelect.container, providerConfigsContainer);
     });
-    
+
     return element;
 }
 
@@ -172,7 +182,7 @@ function keyValueComponent(opts: {
     if (!Array.isArray(opts.value)) {
         opts.value = [];
     }
-    
+
     const container = document.createElement("div");
     container.classList.add("key-value-form");
     container.innerHTML = `<label>${opts.title}</label>`;
@@ -187,23 +197,23 @@ function keyValueComponent(opts: {
         keyInput.input.onkeyup = () => {
             item[0] = keyInput.input.value;
             opts.onChange(opts.value);
-        }
+        };
         const valueInput = InputText();
         valueInput.input.value = item.at(1);
         valueInput.input.onkeyup = () => {
             item[1] = valueInput.input.value;
             opts.onChange(opts.value);
-        }
+        };
         const removeBtn = Button({
             style: "icon-small",
             iconRight: "Close"
-        })
+        });
         removeBtn.onclick = () => {
             const indexOf = opts.value.indexOf(item);
             opts.value.splice(indexOf, 1);
             row.remove();
             opts.onChange(opts.value);
-        }
+        };
         row.append(keyInput.container, valueInput.container, removeBtn);
         keyValuesContainer.append(row);
     };

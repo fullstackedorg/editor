@@ -8,7 +8,7 @@ export async function getDefaultAgentProvider() {
 
     if (!defaultAgent?.model) return null;
 
-    const provider = ai.getProvider(defaultAgent)
+    const provider = ai.getProvider(defaultAgent);
     if (!provider) return null;
 
     try {
@@ -17,7 +17,7 @@ export async function getDefaultAgentProvider() {
             return null;
         }
     } catch (e) {
-        return null; 
+        return null;
     }
 
     return {
