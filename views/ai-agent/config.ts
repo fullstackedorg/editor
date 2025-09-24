@@ -7,13 +7,36 @@ import {
     Message
 } from "@fullstacked/ui";
 import config from "../../editor_modules/config";
-import { CONFIG_TYPE } from "../../types";
+import { CONFIG_TYPE, AgentProvider } from "../../types";
+import { merge } from "immutable";
+import { getDefaultAgentProvider } from ".";
+import { O } from "ollama/dist/shared/ollama.d792a03f.mjs";
 
-export function createAiAgentConfigurator() {
+async function mergeConfigsWithAvailableProviders(): Promise<AgentProvider[]> {
+    const savedAgentConfig = await config.get(CONFIG_TYPE.AGENT);
+    const availableProvider = ai.providers();
+
+    return availableProvider.map(provider => {
+        const savedConfig = savedAgentConfig.find(({ id }) => id === provider.id);
+        return {
+            ...savedConfig,
+            ...provider,
+            configs: provider.configs.map(c => ({
+                ...c,
+                value: savedConfig?.configs?.find(({ id }) => id === c.id)?.value || c.value
+            }) as any)
+        }
+    })
+
+}
+
+export function createAiAgentConfigurator(configProvider?: string) {
     const element = document.createElement("div");
     element.classList.add("ai-agent-configurator");
 
-    const providers = ai.providers();
+    const saveConfigs = () => {
+        config.save(CONFIG_TYPE.AGENT, providers);
+    }
 
     const providerSelect = InputSelect({
         label: "Provider"
@@ -31,29 +54,45 @@ export function createAiAgentConfigurator() {
         let providerModelSelectContainer = document.createElement("div");
         let provider: ReturnType<typeof ai.getProvider>;
         const onChange = async (showWarning = true) => {
+            saveConfigs();
+
             const providerModelSelect = document.createElement("div");
 
             provider = ai.getProvider(providerInfos);
             let models: string[];
             try {
                 models = await provider.models();
-            } catch (e) {}
+            } catch (e) { }
 
             if (models) {
                 const modelSelect = InputSelect({
                     label: "Default Model"
                 });
                 modelSelect.options.add(...models.map((name) => ({ name })));
+                modelSelect.select.value = providerInfos.model;
 
                 const defaultCheckbox = document.createElement("div");
                 defaultCheckbox.innerHTML = `<label>Use as default agent</label>`;
                 const checkbox = InputCheckbox();
+                checkbox.input.checked = providerInfos.useDefault;
                 defaultCheckbox.append(checkbox.container);
 
                 providerModelSelect.append(
                     modelSelect.container,
                     defaultCheckbox
                 );
+
+                modelSelect.select.onchange = () => {
+                    providerInfos.model = modelSelect.select.value;
+                    saveConfigs();
+                }
+                checkbox.input.onchange = () => {
+                    if(checkbox.input.checked) {
+                        providers.forEach(p => p.useDefault = false);
+                    } 
+                    providerInfos.useDefault = checkbox.input.checked;
+                    saveConfigs();
+                }
             } else if (showWarning) {
                 providerModelSelect.append(
                     Message({
@@ -100,52 +139,85 @@ export function createAiAgentConfigurator() {
         onChange(false);
     };
 
-    config.get(CONFIG_TYPE.AGENT).then((userConfig) => {
-        element.append(providerSelect.container, providerConfigsContainer);
+    let providers: Awaited<ReturnType<typeof mergeConfigsWithAvailableProviders>>;
+    mergeConfigsWithAvailableProviders().then(async p => {
+        providers = p;
 
-        for (const provider of providers) {
-            providerSelect.options.add({
-                name: provider.title,
-                id: provider.id
+        providerSelect.options.add(...providers.map(provider => ({
+            name: provider.title,
+            id: provider.id
+        })))
+
+        if (configProvider) {
+            providerSelect.select.value = configProvider;
+        } else {
+            getDefaultAgentProvider().then(defaultAgent => {
+                if (!defaultAgent) return;
+                providerSelect.select.value = defaultAgent.info.id;
+                providerSelect.select.onchange(defaultAgent.info.id);
             });
         }
-    });
 
+        element.append(providerSelect.container, providerConfigsContainer);
+    });
+    
     return element;
 }
 
 function keyValueComponent(opts: {
     title: string;
-    value: Record<string, string>;
-    onChange: (value: Record<string, string>) => void;
+    value: [string, string][];
+    onChange: (value: [string, string][]) => void;
 }) {
+    if (!Array.isArray(opts.value)) {
+        opts.value = [];
+    }
+    
     const container = document.createElement("div");
     container.classList.add("key-value-form");
     container.innerHTML = `<label>${opts.title}</label>`;
 
     const keyValuesContainer = document.createElement("div");
 
-    const addKeyValueRow = (value?: { key: string; value: string }) => {
+    const addKeyValueRow = (item: [string, string]) => {
         const row = document.createElement("div");
         row.classList.add("key-value");
         const keyInput = InputText();
-        keyInput.input.value = value?.key || "";
+        keyInput.input.value = item.at(0);
+        keyInput.input.onkeyup = () => {
+            item[0] = keyInput.input.value;
+            opts.onChange(opts.value);
+        }
         const valueInput = InputText();
-        valueInput.input.value = value?.value || "";
-        row.append(keyInput.container, valueInput.container);
+        valueInput.input.value = item.at(1);
+        valueInput.input.onkeyup = () => {
+            item[1] = valueInput.input.value;
+            opts.onChange(opts.value);
+        }
+        const removeBtn = Button({
+            style: "icon-small",
+            iconRight: "Close"
+        })
+        removeBtn.onclick = () => {
+            const indexOf = opts.value.indexOf(item);
+            opts.value.splice(indexOf, 1);
+            row.remove();
+            opts.onChange(opts.value);
+        }
+        row.append(keyInput.container, valueInput.container, removeBtn);
         keyValuesContainer.append(row);
     };
 
-    Object.entries(opts.value).forEach(([key, value]) => {
-        addKeyValueRow({ key, value });
-    });
+    opts.value.forEach(addKeyValueRow);
 
     const addKeyValueButton = Button({
         text: "Add"
     });
 
     addKeyValueButton.onclick = () => {
-        addKeyValueRow();
+        const item: [string, string] = ["", ""];
+        opts.value.push(item);
+        addKeyValueRow(item);
     };
 
     container.append(keyValuesContainer, addKeyValueButton);
