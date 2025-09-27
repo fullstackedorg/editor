@@ -12,7 +12,9 @@ import { merge } from "immutable";
 import { getDefaultAgentProvider } from ".";
 import { O } from "ollama/dist/shared/ollama.d792a03f.mjs";
 
-async function mergeConfigsWithAvailableProviders(): Promise<AgentProvider[]> {
+export async function mergeConfigsWithAvailableProviders(): Promise<
+    AgentProvider[]
+> {
     const savedAgentConfig = await config.get(CONFIG_TYPE.AGENT);
     const availableProvider = ai.providers();
 
@@ -36,7 +38,7 @@ async function mergeConfigsWithAvailableProviders(): Promise<AgentProvider[]> {
     });
 }
 
-export function createAiAgentConfigurator(configProvider?: string) {
+export function createAiAgentConfigurator(configProviderId?: string) {
     const element = document.createElement("div");
     element.classList.add("ai-agent-configurator");
 
@@ -159,8 +161,9 @@ export function createAiAgentConfigurator(configProvider?: string) {
             }))
         );
 
-        if (configProvider) {
-            providerSelect.select.value = configProvider;
+        if (configProviderId) {
+            providerSelect.select.value = configProviderId;
+            providerSelect.select.onchange(configProviderId);
         } else {
             getDefaultAgentProvider().then((defaultAgent) => {
                 if (!defaultAgent) return;
@@ -174,11 +177,11 @@ export function createAiAgentConfigurator(configProvider?: string) {
 
     return {
         element,
-        get current(){
+        get current() {
             return {
                 provider: providerSelect.select.value,
                 model: modelSelect?.select.value
-            }
+            };
         }
     };
 }

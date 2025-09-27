@@ -8,7 +8,7 @@ import {
 import { basicSetup, EditorView } from "codemirror";
 import { Project } from "../../../types";
 import core_message from "../../../../fullstacked_modules/core_message";
-import { setDiagnostics, lintGutter } from "@codemirror/lint";
+import { setDiagnostics, lintGutter, Diagnostic } from "@codemirror/lint";
 import { compilerOptions } from "./tsconfig";
 import { insertCompletionText } from "@codemirror/autocomplete";
 import { createLSP, lspSupportedFile } from "./lsp";
@@ -24,7 +24,6 @@ import { sassSupportedFile, sassSetDiagnostic } from "./sass";
 import { createViewImage, imageSupportedFile } from "./views/image";
 import { binarySupportedFile, createViewBinary } from "./views/binary";
 import { createViewCode, FILE_EVENT_ORIGIN } from "./views/code";
-import { file } from "zod";
 import { restore } from "../../../../fullstacked_modules/git";
 import { createViewChat, chatSupportedFile } from "./views/chat";
 import { hideChatExtension } from "../file-tree";
@@ -94,10 +93,44 @@ function createTabs(
     };
     Store.editor.codeEditor.buildErrors.subscribe(onBuildErrors);
 
+    const onLspDiagnostics = (diagnostics: Map<string, Diagnostic[]>) => {
+        Array.from(tabs.entries()).forEach(([filePath, [tab]]) => {
+            if (diagnostics.get(filePath)?.length) {
+                tab.classList.add("has-error");
+            } else {
+                tab.classList.remove("has-error");
+            }
+        });
+    };
+
+    Store.editor.codeEditor.lspDiagnostics.subscribe(onLspDiagnostics);
+
+    const onChatStatus = (chats: Map<string, string>) => {
+        Array.from(tabs.entries()).forEach(([filePath, [tab]]) => {
+            const status = chats.get(filePath);
+            if (status) {
+                if (status === "ERROR") {
+                    tab.classList.remove("is-streaming");
+                    tab.classList.add("has-error");
+                } else {
+                    tab.classList.remove("has-error");
+                    tab.classList.add("is-streaming");
+                }
+            } else {
+                tab.classList.remove("is-streaming", "has-error");
+            }
+        });
+    };
+
+    Store.editor.codeEditor.chatsStatus.subscribe(onChatStatus);
+
     return {
         element,
         destroy() {
             Store.editor.codeEditor.buildErrors.unsubscribe(onBuildErrors);
+            Store.editor.codeEditor.lspDiagnostics.unsubscribe(
+                onLspDiagnostics
+            );
         },
         open(filePath: string, oldPath?: string) {
             let tab = tabs.get(filePath);

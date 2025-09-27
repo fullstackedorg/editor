@@ -103,9 +103,11 @@ async function createClientLSP(project: Project) {
     }).connect(lspTransport);
 
     const runDiagnostics = (uri: string) => {
+        const projectFilePath = uri.split(project.id + "/").pop();
+
         originalRequest("textDocument/diagnostic", {
             textDocument: { uri }
-        }).then((diagnostics) => {
+        }).then((lspDiagnostics) => {
             const view = client.workspace.getFile(uri)?.getView();
             if (!view) return;
 
@@ -124,22 +126,26 @@ async function createClientLSP(project: Project) {
                         } as Diagnostic;
                     });
 
+            const diagnostics: Diagnostic[] = lspDiagnostics.items.map(
+                (item) => ({
+                    from:
+                        view.state.doc.line(item.range.start.line + 1).from +
+                        item.range.start.character,
+                    to:
+                        view.state.doc.line(item.range.end.line + 1).from +
+                        item.range.end.character,
+                    severity: toSeverity(item.severity),
+                    message: item.message
+                })
+            );
+
+            Store.editor.codeEditor.setFileDiagnostics(
+                projectFilePath,
+                diagnostics
+            );
+
             view.dispatch(
-                setDiagnostics(
-                    view.state,
-                    diagnostics.items
-                        .map((item) => ({
-                            from:
-                                view.state.doc.line(item.range.start.line + 1)
-                                    .from + item.range.start.character,
-                            to:
-                                view.state.doc.line(item.range.end.line + 1)
-                                    .from + item.range.end.character,
-                            severity: toSeverity(item.severity),
-                            message: item.message
-                        }))
-                        .concat(buildErrors)
-                )
+                setDiagnostics(view.state, diagnostics.concat(buildErrors))
             );
         });
     };
