@@ -347,7 +347,8 @@ export async function createLSP(
                 !fileEvent.paths.at(0).includes(project.id) ||
                 fileEvent.paths.at(0).includes(`${project.id}/.build`) ||
                 fileEvent.paths.at(0).includes(`${project.id}/.git`) ||
-                fileEvent.paths.at(0).includes(`${project.id}/data`)
+                fileEvent.paths.at(0).includes(`${project.id}/data`) ||
+                fileEvent.paths.at(0).includes(`${project.id}/chat`)
             )
                 continue;
 
