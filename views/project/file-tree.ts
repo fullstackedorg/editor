@@ -16,6 +16,14 @@ const directoryIconClose = Icon("Caret");
 
 const hide = ["/.build", "/.git", "/tsconfig.json"];
 
+export function hideChatExtension(filePath: string) {
+    if (filePath.endsWith(".chat")) {
+        return filePath.slice(0, -".chat".length);
+    } else {
+        return filePath;
+    }
+}
+
 export function FileTree(project: Project, workspace: Workspace) {
     const container = createElement("div");
     container.classList.add("file-tree-container");
@@ -44,12 +52,6 @@ export function FileTree(project: Project, workspace: Workspace) {
             close: directoryIconClose
         },
         prefix: (path) => {
-            if (path.endsWith(".chat")) {
-                const chatIcon = Icon("Glitter");
-                chatIcon.classList.add("chat-icon");
-                return chatIcon;
-            }
-
             return createDevIcon(path);
         },
         name: (path) => {
@@ -59,6 +61,11 @@ export function FileTree(project: Project, workspace: Workspace) {
                     fileTree.removeItem(path);
                 });
             } else if (path !== renaming) {
+                if (path.endsWith(".chat")) {
+                    const span = document.createElement("span");
+                    span.innerText = hideChatExtension(path.split("/").pop());
+                    return span;
+                }
                 return null;
             }
 

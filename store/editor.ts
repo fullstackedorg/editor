@@ -1,13 +1,8 @@
 import { createSubscribable } from ".";
+import { Diagnostic } from "@codemirror/lint";
 
 let sidePanelClosed = false;
 const sidePanel = createSubscribable(() => sidePanelClosed);
-
-const codeEditorOpenedFiles = new Set<string>();
-const openedFiles = createSubscribable(() => codeEditorOpenedFiles);
-
-let codeEditorFocusedFile: string;
-const focusedFile = createSubscribable(() => codeEditorFocusedFile);
 
 export type BuildError = {
     file: string;
@@ -19,69 +14,36 @@ export type BuildError = {
 let codeEditorBuildErrors: BuildError[] = [];
 const buildErrors = createSubscribable(() => codeEditorBuildErrors);
 
+const lspFileDiagnostics = new Map<string, Diagnostic[]>();
+const lspDiagnostics = createSubscribable(() => lspFileDiagnostics);
+
+type ChatStatus = "ERROR" | "STREAMING";
+const chats = new Map<string, ChatStatus>();
+const chatsStatus = createSubscribable(() => chats);
+
 export const editor = {
     sidePanelClosed: sidePanel.subscription,
     setSidePanelClosed,
 
     codeEditor: {
-        openedFiles: openedFiles.subscription,
-        openFile,
-        closeFile,
-        closeFilesUnderDirectory,
-
-        focusedFile: focusedFile.subscription,
-        focusFile,
-
-        clearFiles,
-
         buildErrors: buildErrors.subscription,
         addBuildErrors,
-        clearAllBuildErrors
+        clearAllBuildErrors,
+
+        chatsStatus: chatsStatus.subscription,
+        setChatStatus,
+        removeChatStatus,
+        clearAllChats,
+
+        lspDiagnostics: lspDiagnostics.subscription,
+        setFileDiagnostics,
+        clearAllFileDiagnostics
     }
 };
 
 function setSidePanelClosed(closed: boolean) {
     sidePanelClosed = closed;
     sidePanel.notify();
-}
-
-function openFile(path: string) {
-    codeEditorOpenedFiles.add(path);
-    openedFiles.notify();
-}
-
-function closeFile(path: string) {
-    codeEditorOpenedFiles.delete(path);
-    if (path === codeEditorFocusedFile) {
-        if (codeEditorOpenedFiles.size > 0) {
-            codeEditorFocusedFile = Array.from(codeEditorOpenedFiles).at(-1);
-        } else {
-            codeEditorFocusedFile = null;
-        }
-        focusedFile.notify();
-    }
-    openedFiles.notify();
-}
-
-function closeFilesUnderDirectory(path: string) {
-    for (const openedFile of codeEditorOpenedFiles.values()) {
-        if (openedFile.startsWith(path)) {
-            codeEditorOpenedFiles.delete(openedFile);
-        }
-    }
-    openedFiles.notify();
-}
-
-function focusFile(path: string) {
-    codeEditorFocusedFile = path;
-    focusedFile.notify();
-}
-
-function clearFiles() {
-    codeEditorOpenedFiles.clear();
-    codeEditorFocusedFile = null;
-    openedFiles.notify();
-    focusedFile.notify();
 }
 
 function addBuildErrors(errors: BuildError[]) {
@@ -92,4 +54,27 @@ function addBuildErrors(errors: BuildError[]) {
 function clearAllBuildErrors() {
     codeEditorBuildErrors = [];
     buildErrors.notify();
+}
+
+function setFileDiagnostics(filePath: string, diasgnostics: Diagnostic[]) {
+    lspFileDiagnostics.set(filePath, diasgnostics);
+    lspDiagnostics.notify();
+}
+function clearAllFileDiagnostics() {
+    lspFileDiagnostics.clear();
+    lspDiagnostics.notify();
+}
+
+function setChatStatus(filePath: string, status: ChatStatus) {
+    chats.set(filePath, status);
+    chatsStatus.notify();
+}
+
+function removeChatStatus(filePath: string) {
+    chats.delete(filePath);
+    chatsStatus.notify();
+}
+function clearAllChats() {
+    chats.clear();
+    chatsStatus.notify();
 }

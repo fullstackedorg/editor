@@ -1,5 +1,7 @@
-import { Project } from "../../../types";
-import fs from "../../../../fullstacked_modules/fs";
+import { Project } from "../../../../types";
+import fs from "../../../../../fullstacked_modules/fs";
+import { restore } from "../../../../../fullstacked_modules/git";
+
 const extensions = ["jpg", "jpeg", "png", "webp", "bmp", "gif"];
 
 export function imageSupportedFile(filePath: string) {
@@ -38,6 +40,7 @@ export function createViewImage(project: Project, projectFilePath: string) {
         reloadContents() {
             URL.revokeObjectURL(url);
             load();
-        }
+        },
+        restore() {}
     };
 }

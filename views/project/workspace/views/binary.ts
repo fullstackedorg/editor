@@ -1,6 +1,7 @@
-import { Project } from "../../../types";
-import fs from "../../../../fullstacked_modules/fs";
 import prettyBytes from "pretty-bytes";
+import { Project } from "../../../../types";
+import fs from "../../../../../fullstacked_modules/fs";
+
 const extensions = ["zip", "tar", "tff", "otf"];
 
 export function binarySupportedFile(filePath: string) {
@@ -27,6 +28,7 @@ export function createViewBinary(project: Project, projectFilePath: string) {
         },
         reloadContents() {
             load();
-        }
+        },
+        restore() {}
     };
 }

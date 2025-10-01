@@ -1,10 +1,18 @@
+import { Icon } from "@fullstacked/ui";
+
 export function createDevIcon(filePath: string) {
     const element = document.createElement("div");
     element.classList.add("dev-icon");
-    const devIconClass = pathToDevIconClass(filePath);
-    if (devIconClass) {
-        element.classList.add(devIconClass);
+    if (filePath.endsWith(".chat")) {
+        const chatIcon = Icon("Glitter");
+        element.append(chatIcon);
+    } else {
+        const devIconClass = pathToDevIconClass(filePath);
+        if (devIconClass) {
+            element.classList.add(devIconClass);
+        }
     }
+
     return element;
 }
 

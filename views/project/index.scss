@@ -143,7 +143,8 @@ $workspace-tabs-height: 34px;
                         }
                     }
 
-                    &.has-error {
+                    &.has-error,
+                    &.is-streaming {
                         > span::after {
                             content: "";
                             background-color: colors.$red;
@@ -153,6 +154,12 @@ $workspace-tabs-height: 34px;
                             border-radius: 50%;
                             top: -2px;
                             right: -6px;
+                        }
+                    }
+
+                    &.is-streaming {
+                        > span::after {
+                            animation: flash 1s linear infinite alternate;
                         }
                     }
 
@@ -189,6 +196,112 @@ $workspace-tabs-height: 34px;
                 > .binary-container {
                     text-align: center;
                     padding: spacing.$medium;
+                }
+
+                > .chat-container {
+                    display: flex;
+                    justify-content: center;
+                    height: 100%;
+                    flex-direction: column;
+                    position: relative;
+
+                    .infos {
+                        font-size: typography.$small;
+                        padding: spacing.$x-small;
+                        border-bottom: 1px solid colors.$gray;
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                    }
+
+                    .ai-agent-selector {
+                        flex: 1;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: flex-end;
+                        padding: spacing.$small;
+                        width: 100%;
+                        max-width: spacing.$max-width;
+                        margin: 0 auto;
+                    }
+
+                    .conversation {
+                        width: 100%;
+                        flex: 1;
+                        overflow: auto;
+
+                        .messages {
+                            display: flex;
+                            flex-direction: column;
+                            gap: spacing.$small;
+                            margin-top: spacing.$small;
+                            margin-bottom: 80px;
+
+                            > div {
+                                max-width: 800px;
+                                padding-left: spacing.$small;
+                                padding-right: spacing.$small;
+
+                                &.human {
+                                    align-self: flex-end;
+                                }
+
+                                img {
+                                    width: 100%;
+                                    object-fit: contain;
+                                }
+
+                                p,
+                                h1,
+                                h2,
+                                h3,
+                                h4,
+                                h5,
+                                h6 {
+                                    margin-top: spacing.$small;
+                                    margin-bottom: spacing.$small;
+                                }
+
+                                code {
+                                    background-color: colors.$gray-dark;
+                                    padding: 2px 5px;
+                                    border-radius: 5px;
+                                    font-size: calc(typography.$medium - 1px);
+                                }
+
+                                ul,
+                                ol {
+                                    padding-left: spacing.$large;
+
+                                    li {
+                                        margin-top: spacing.$x-small;
+                                        margin-bottom: spacing.$x-small;
+                                    }
+                                }
+                            }
+                        }
+
+                        .input {
+                            background-color: colors.$gray-dark;
+                            padding: spacing.$small;
+                            border-radius: spacing.$x-small;
+                            width: calc(100% - 40px);
+                            max-width: 800px;
+                            margin: 20px;
+                            position: absolute;
+                            bottom: 0;
+                            left: 50%;
+                            transform: translateX(calc(-50% - 20px));
+                            border: 1px solid colors.$gray;
+                            box-shadow: 0 0 30px 20px
+                                colors.opacity(colors.$dark, 30);
+
+                            &:focus-visible {
+                                outline: 2px solid colors.$blue;
+                                outline-offset: 3px;
+                            }
+                        }
+                    }
                 }
 
                 > .cm-container {
@@ -291,13 +404,6 @@ $workspace-tabs-height: 34px;
         .file-item {
             &:hover {
                 background-color: colors.$gray-dark;
-            }
-
-            .prefix {
-                .chat-icon {
-                    height: 12px;
-                    color: #c678dd;
-                }
             }
 
             .suffix {

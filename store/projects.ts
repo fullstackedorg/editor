@@ -10,6 +10,7 @@ import { buildSASS } from "../../fullstacked_modules/esbuild/sass";
 import core_open from "../../fullstacked_modules/core_open";
 import packages from "../../fullstacked_modules/packages";
 import config from "../editor_modules/config";
+import type { createWorkspace } from "../views/project/workspace";
 
 const list = createSubscribable(listP, []);
 
@@ -19,7 +20,9 @@ const builds = createSubscribable(() => activeProjectBuilds);
 const activeProjectPulls = new Set<string>();
 const pulls = createSubscribable(() => activeProjectPulls);
 
-let currentOpenedProject: Project = null;
+let currentOpenedProject: Project & {
+    workspace?: ReturnType<typeof createWorkspace>;
+} = null;
 const current = createSubscribable(() => currentOpenedProject);
 
 export const projects = {

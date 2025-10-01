@@ -1,6 +1,11 @@
 import { Button, Dialog, InputPredictive } from "@fullstacked/ui";
 import { createElement } from "../../components/element";
 import { commands } from "../../commands";
+import { Store } from "../../store";
+import { createConversation } from "@fullstacked/ai-agent";
+import { createToolFS } from "../../../fullstacked_modules/ai";
+import fs from "../../../fullstacked_modules/fs";
+import { ViewChat } from "../project/workspace";
 
 let promptDialog = null;
 function closeDialog() {
@@ -115,10 +120,34 @@ function Prompt() {
             },
             commands.find(({ name }) => name === firstWord)
         );
-        command?.exec?.(args);
+        if (command?.exec) {
+            command.exec(args);
+        } else {
+            promptNewChat(value);
+        }
         closeDialog();
     });
 
     setTimeout(() => inputPredictive.input.focus());
     return container;
+}
+
+export async function promptNewChat(prompt?: string) {
+    const project = Store.projects.current.check();
+    if (!project) return;
+    let count = 1;
+    let filePath = `chat/New Chat.chat`;
+    const updateSuffix = () => {
+        if (count > 1) {
+            filePath = `chat/New Chat-${count}.chat`;
+        }
+        count++;
+    };
+    do {
+        updateSuffix();
+    } while (await fs.exists(`${project.id}/${filePath}`));
+    await fs.mkdir(`${project.id}/chat`);
+    await fs.writeFile(`${project.id}/${filePath}`, "\n");
+    const chatView = (await project.workspace.open(filePath)) as ViewChat;
+    if (prompt) chatView.prompt(prompt);
 }

@@ -59,7 +59,6 @@ function TopBar(
         subtitle: project.id,
         actions: [gitWidget, runButton],
         onBack: () => {
-            console.log("ici");
             if (fileTreeAndEditor.classList.contains("closed-panel")) {
                 Store.editor.setSidePanelClosed(false);
             } else {
@@ -95,6 +94,7 @@ function FileTreeAndEditor(project: ProjectType) {
         Store.editor.sidePanelClosed.unsubscribe(toggleSidePanel);
 
     const workspace = createWorkspace(project);
+    Store.projects.current.check().workspace = workspace;
     const fileTree = FileTree(project, workspace);
 
     const leftPanel = document.createElement("div");

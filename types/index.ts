@@ -1,9 +1,10 @@
+import * as ai from "@fullstacked/ai-agent";
+
 export enum CONFIG_TYPE {
     GENERAL = "general",
     PROJECTS = "projects",
     GIT = "git",
     AGENT = "agent"
-    // CONNECTIVITY = "connectivity"
 }
 
 export type CONFIG_DATA_TYPE = {
@@ -15,8 +16,12 @@ export type CONFIG_DATA_TYPE = {
     };
     [CONFIG_TYPE.GIT]: GitAuths;
 
-    [CONFIG_TYPE.AGENT]: any;
-    // [CONFIG_TYPE.CONNECTIVITY]: Connectivity;
+    [CONFIG_TYPE.AGENT]: AgentProvider[];
+};
+
+export type AgentProvider = ReturnType<typeof ai.providers>[0] & {
+    model?: string;
+    useDefault?: boolean;
 };
 
 export type Project = {
@@ -39,11 +44,3 @@ export type GitAuths = {
         email?: string;
     };
 };
-
-// export type Connectivity = {
-//     me: Peer;
-//     autoConnect: boolean;
-//     defaultNetworkInterface: string;
-//     webAddresses: WebAddress[];
-//     peersTrusted: PeerTrusted[];
-// };
