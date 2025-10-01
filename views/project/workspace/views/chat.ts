@@ -47,44 +47,78 @@ async function getProviderAndModel(providerId: string, model: string) {
     }
 }
 
+function aiAgentSelector(
+    provider: string,
+    didSelect: (selection: { provider: string; model: string }) => void
+) {
+    const element = document.createElement("div");
+    element.classList.add("ai-agent-selector");
+
+    const configurator = createAiAgentConfigurator(provider);
+    const submitButton = Button({
+        text: "Select"
+    });
+    submitButton.onclick = () => didSelect(configurator.current);
+
+    element.append(configurator.element, submitButton);
+    return element;
+}
+
 export function createViewChat(project: Project, projectFilePath: string) {
     const element = document.createElement("div");
     element.classList.add("chat-container");
 
+    let lastScrollY = 0;
+
     const filePath = `${project.id}/${projectFilePath}`;
 
-    fs.readFile(filePath, { encoding: "utf8" }).then(async (chatData) => {
-        let chat: {
-            provider?: string;
-            model?: string;
-            messages?: any[];
-        } = {};
-        try {
-            chat = JSON.parse(chatData);
-        } catch (e) {}
+    let conversation: ReturnType<typeof createConversation>;
 
-        const agent = await getProviderAndModel(chat.provider, chat.model);
-
-        console.log(agent);
-        if (!agent?.info?.model) {
-            const configurator = createAiAgentConfigurator(chat.provider);
-            const submitButton = Button({
-                text: "Select"
-            });
-            submitButton.onclick = () => {
-                console.log(configurator.current);
-            };
-            element.append(configurator.element, submitButton);
-            return;
+    const messageToPrompt: string[] = [];
+    const prompt = (message: string) => {
+        if (conversation) {
+            conversation.prompt(message);
         } else {
-            chat.provider = agent.info.id;
-            chat.model = agent.info.model;
+            messageToPrompt.push(message);
+        }
+    };
+
+    const initAgentConversation = async (chat: {
+        provider?: string;
+        model?: string;
+        messages?: any[];
+    }) => {
+        let agent = await getProviderAndModel(chat?.provider, chat?.model);
+
+        if (!agent?.info?.model) {
+            const agentSelector = aiAgentSelector(
+                chat.provider,
+                (selection) => {
+                    initAgentConversation({
+                        provider: selection.provider,
+                        model: selection.model,
+                        messages: chat?.messages
+                    });
+                    agentSelector.remove();
+                }
+            );
+            element.append(agentSelector);
+            return;
         }
 
-        const conversation = createConversation({
+        if (chat === null) {
+            chat = {};
+        }
+
+        const saveChat = () => {
+            chat.messages = conversation.serialize();
+            fs.writeFile(filePath, JSON.stringify(chat, null, 2));
+        };
+
+        conversation = createConversation({
             provider: agent.provider,
             model: agent.info.model,
-            messages: chat.messages || undefined,
+            messages: chat?.messages || undefined,
             tools: createToolFS({
                 baseDirectory: project.id
             }),
@@ -92,8 +126,20 @@ export function createViewChat(project: Project, projectFilePath: string) {
             onStateChange: (state) => {
                 if (state === "IDLE") {
                     Store.editor.codeEditor.removeChatStatus(projectFilePath);
-                    chat.messages = conversation.serialize();
-                    fs.writeFile(filePath, JSON.stringify(chat, null, 2));
+                    saveChat();
+                    if (
+                        projectFilePath.startsWith("chat/New Chat") &&
+                        chat.messages.length <= 5
+                    ) {
+                        conversation.generateConversationTitle().then((t) => {
+                            if (t && t.split(" ").length <= 5) {
+                                fs.rename(
+                                    filePath,
+                                    `${project.id}/chat/${t}.chat`
+                                );
+                            }
+                        });
+                    }
                 } else {
                     Store.editor.codeEditor.setChatStatus(
                         projectFilePath,
@@ -103,12 +149,31 @@ export function createViewChat(project: Project, projectFilePath: string) {
             }
         });
 
+        setTimeout(() => {
+            lastScrollY = conversation.element.scrollHeight;
+            conversation.element.scrollTo(0, lastScrollY);
+            conversation.element.addEventListener("scroll", () => {
+                lastScrollY = conversation.element.scrollTop;
+            });
+        });
+
         const infos = document.createElement("div");
         infos.classList.add("infos");
-        infos.innerHTML = `<div>
-                <label>${agent.info.title}</label>
-                <div>${agent.info.model}</div>
-            </div>`;
+
+        const providerAndModel = document.createElement("div");
+        const agentTitle = document.createElement("label");
+        const modelName = document.createElement("div");
+
+        providerAndModel.append(agentTitle, modelName);
+        infos.append(providerAndModel);
+
+        const setProviderInfo = () => {
+            chat.provider = agent.info.id;
+            chat.model = agent.info.model;
+            agentTitle.innerText = agent.info.title;
+            modelName.innerText = agent.info.model;
+        };
+        setProviderInfo();
 
         const settings = Button({
             style: "icon-small",
@@ -116,20 +181,57 @@ export function createViewChat(project: Project, projectFilePath: string) {
         });
         infos.append(settings);
         settings.onclick = () => {
-            conversation.element.replaceWith(
-                createAiAgentConfigurator(agent.info.id).element
+            const agentSelector = aiAgentSelector(
+                agent.info.id,
+                async (selection) => {
+                    const newAgent = await getProviderAndModel(
+                        selection.provider,
+                        selection.model
+                    );
+                    if (!newAgent) return;
+                    agent = newAgent;
+                    setProviderInfo();
+                    conversation.updateChatModel(
+                        agent.provider,
+                        agent.info.model
+                    );
+                    agentSelector.replaceWith(conversation.element);
+                    conversation.element.scrollTo(0, lastScrollY);
+                    saveChat();
+                }
             );
+            conversation.element.replaceWith(agentSelector);
         };
 
         element.append(infos, conversation.element);
+
+        if (messageToPrompt.length) {
+            while (messageToPrompt.length) {
+                conversation.prompt(messageToPrompt.shift());
+            }
+        }
+    };
+
+    fs.readFile(filePath, { encoding: "utf8" }).then((chatDataStr) => {
+        let chat: any;
+        try {
+            chat = JSON.parse(chatDataStr);
+        } catch (e) {
+            chat = null;
+        }
+        initAgentConversation(chat);
     });
 
     return {
         type: "chat",
         element,
+        prompt,
         remove() {
             element.remove();
         },
-        reloadContents() {}
+        reloadContents() {},
+        restore() {
+            conversation?.element?.scrollTo(0, lastScrollY);
+        }
     };
 }

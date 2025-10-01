@@ -4,6 +4,8 @@ import { Store } from "../store";
 import { Project } from "../types";
 import { updatePackagesView } from "../views/packages";
 import packages from "../../fullstacked_modules/packages";
+import fs from "../../fullstacked_modules/fs";
+import { promptNewChat } from "../views/prompt";
 
 export type Command = {
     name: string;
@@ -116,6 +118,12 @@ export const commands: Command[] = [
             const repoUrl = args.at(0);
             const deeplinkUrl = `fullstacked://${repoUrl}`;
             deeplink(deeplinkUrl);
+        }
+    },
+    {
+        name: "chat",
+        exec() {
+            promptNewChat();
         }
     }
 ];

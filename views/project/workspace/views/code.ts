@@ -4,7 +4,7 @@ import fs from "../../../../../fullstacked_modules/fs";
 import { createCodeMirrorView } from "@fullstacked/codemirror-view";
 import { oneDark } from "@codemirror/theme-one-dark";
 import { EditorView } from "codemirror";
-import type { createHistoryNavigation } from "..";
+import type { createHistoryNavigation } from "../history";
 import { SupportedLanguage } from "@fullstacked/codemirror-view/languages";
 import { sassSupportedFile } from "../sass";
 import { lintGutter } from "@codemirror/lint";
@@ -79,13 +79,13 @@ export async function createViewCode(
         ...view,
         type: "code",
         save,
-        restoreScroll() {
-            view.editorView.scrollDOM.scrollTo(scroll);
-        },
         reloadContents() {
             fs.readFile(`${project.id}/${projectFilePath}`, {
                 encoding: "utf8"
             }).then(view.replaceContents);
+        },
+        restore() {
+            view.editorView.scrollDOM.scrollTo(scroll);
         }
     };
 }

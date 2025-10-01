@@ -28,6 +28,7 @@ export function createViewBinary(project: Project, projectFilePath: string) {
         },
         reloadContents() {
             load();
-        }
+        },
+        restore() {}
     };
 }

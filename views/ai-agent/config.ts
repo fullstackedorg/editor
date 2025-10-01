@@ -10,7 +10,6 @@ import config from "../../editor_modules/config";
 import { CONFIG_TYPE, AgentProvider } from "../../types";
 import { merge } from "immutable";
 import { getDefaultAgentProvider } from ".";
-import { O } from "ollama/dist/shared/ollama.d792a03f.mjs";
 
 export async function mergeConfigsWithAvailableProviders(): Promise<
     AgentProvider[]

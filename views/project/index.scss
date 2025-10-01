@@ -214,10 +214,15 @@ $workspace-tabs-height: 34px;
                         align-items: center;
                     }
 
-                    .ai-agent-configurator {
+                    .ai-agent-selector {
                         flex: 1;
-                        align-self: center;
+                        display: flex;
+                        flex-direction: column;
+                        align-items: flex-end;
                         padding: spacing.$small;
+                        width: 100%;
+                        max-width: spacing.$max-width;
+                        margin: 0 auto;
                     }
 
                     .conversation {
