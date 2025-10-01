@@ -92,7 +92,7 @@ export function createViewChat(project: Project, projectFilePath: string) {
 
         if (!agent?.info?.model) {
             const agentSelector = aiAgentSelector(
-                chat.provider,
+                chat?.provider,
                 (selection) => {
                     initAgentConversation({
                         provider: selection.provider,
@@ -127,10 +127,7 @@ export function createViewChat(project: Project, projectFilePath: string) {
                 if (state === "IDLE") {
                     Store.editor.codeEditor.removeChatStatus(projectFilePath);
                     saveChat();
-                    if (
-                        projectFilePath.startsWith("chat/New Chat") &&
-                        chat.messages.length <= 5
-                    ) {
+                    if (projectFilePath.startsWith("chat/New Chat")) {
                         conversation.generateConversationTitle().then((t) => {
                             if (t && t.split(" ").length <= 5) {
                                 fs.rename(

@@ -14,15 +14,15 @@ import { getDefaultAgentProvider } from ".";
 export async function mergeConfigsWithAvailableProviders(): Promise<
     AgentProvider[]
 > {
-    const savedAgentConfig = await config.get(CONFIG_TYPE.AGENT);
+    const savedAgentConfig = await config.get(CONFIG_TYPE.AGENT, true);
     const availableProvider = ai.providers();
 
     return availableProvider.map((provider) => {
-        const savedConfig = savedAgentConfig.find(
+        const savedConfig = savedAgentConfig?.find(
             ({ id }) => id === provider.id
         );
         return {
-            ...savedConfig,
+            ...(savedConfig || {}),
             ...provider,
             configs: provider.configs.map(
                 (c) =>

@@ -3,8 +3,8 @@ import { CONFIG_TYPE } from "../../types";
 import ai from "../../../fullstacked_modules/ai";
 
 export async function getDefaultAgentProvider() {
-    const agentConfigs = await config.get(CONFIG_TYPE.AGENT);
-    const defaultAgent = agentConfigs.find((c) => c.useDefault);
+    const agentConfigs = await config.get(CONFIG_TYPE.AGENT, true);
+    const defaultAgent = agentConfigs?.find((c) => c.useDefault);
 
     if (!defaultAgent?.model) return null;
 
