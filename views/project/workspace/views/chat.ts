@@ -128,21 +128,20 @@ export function createViewChat(project: Project, projectFilePath: string) {
                     Store.editor.codeEditor.removeChatStatus(projectFilePath);
                     saveChat();
                     if (projectFilePath.startsWith("chat/New Chat")) {
-                        conversation.generateConversationTitle().then(async (t) => {
-                            if (t && t.split(" ").length <= 5) {
-                                let count = 1;
-                                let newChatFilePath = `${project.id}/chat/${t}.chat`
-                                while((await fs.exists(newChatFilePath))) {
-                                    count++;
-                                    newChatFilePath = `${project.id}/chat/${t}-${count}.chat`;
-                                }
+                        conversation
+                            .generateConversationTitle()
+                            .then(async (t) => {
+                                if (t && t.split(" ").length <= 5) {
+                                    let count = 1;
+                                    let newChatFilePath = `${project.id}/chat/${t}.chat`;
+                                    while (await fs.exists(newChatFilePath)) {
+                                        count++;
+                                        newChatFilePath = `${project.id}/chat/${t}-${count}.chat`;
+                                    }
 
-                                fs.rename(
-                                    filePath,
-                                    newChatFilePath
-                                );
-                            }
-                        });
+                                    fs.rename(filePath, newChatFilePath);
+                                }
+                            });
                     }
                 } else {
                     Store.editor.codeEditor.setChatStatus(
