@@ -134,6 +134,8 @@ async function build(project: Project) {
         } else {
             core_open(project.id);
         }
+    } else {
+        core_open(project.id);
     }
 
     removeProjectBuild();
