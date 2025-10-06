@@ -137,15 +137,10 @@ export async function promptNewChat(prompt?: string) {
     if (!project) return;
     let count = 1;
     let filePath = `chat/New Chat.chat`;
-    const updateSuffix = () => {
-        if (count > 1) {
-            filePath = `chat/New Chat-${count}.chat`;
-        }
+    while (await fs.exists(`${project.id}/${filePath}`)) {
         count++;
-    };
-    do {
-        updateSuffix();
-    } while (await fs.exists(`${project.id}/${filePath}`));
+        filePath = `chat/New Chat-${count}.chat`;
+    }
     await fs.mkdir(`${project.id}/chat`);
     await fs.writeFile(`${project.id}/${filePath}`, "\n");
     const chatView = (await project.workspace.open(filePath)) as ViewChat;

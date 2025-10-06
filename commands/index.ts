@@ -113,12 +113,17 @@ export const commands: Command[] = [
         name: "open"
     },
     {
-        name: "add",
-        exec(args) {
-            const repoUrl = args.at(0);
-            const deeplinkUrl = `fullstacked://${repoUrl}`;
-            deeplink(deeplinkUrl);
-        }
+        name: "git",
+        subcommand: [
+            {
+                name: "clone",
+                exec(args) {
+                    const repoUrl = args.at(0);
+                    const deeplinkUrl = `fullstacked://${repoUrl}`;
+                    deeplink(deeplinkUrl);
+                }
+            }
+        ]
     },
     {
         name: "chat",
