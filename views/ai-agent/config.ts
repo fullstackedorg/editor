@@ -51,13 +51,17 @@ export function createAiAgentConfigurator(configProviderId?: string) {
     let modelSelect: ReturnType<typeof InputSelect>;
 
     let providerConfigsContainer = document.createElement("div");
-    providerConfigsContainer.innerText =
-        "Select an agent provider to configure";
+
+    const emptyText = document.createElement("div");
+    emptyText.classList.add("ai-configurator-empty");
+    emptyText.innerText = "Select an agent provider to configure";
+    providerConfigsContainer.append(emptyText);
 
     providerSelect.select.onchange = (providerId) => {
         const providerInfos = providers.find(({ id }) => id === providerId);
 
         const providerConfigs = document.createElement("div");
+        providerConfigs.classList.add("ai-provider-configs");
 
         let providerModelSelectContainer = document.createElement("div");
         let provider: ReturnType<typeof ai.getProvider>;
@@ -65,6 +69,7 @@ export function createAiAgentConfigurator(configProviderId?: string) {
             saveConfigs();
 
             const providerModelSelect = document.createElement("div");
+            providerModelSelect.classList.add("ai-provider-model-select");
 
             provider = ai.getProvider(providerInfos);
             let models: string[];
@@ -80,6 +85,7 @@ export function createAiAgentConfigurator(configProviderId?: string) {
                 modelSelect.select.value = providerInfos.model;
 
                 const defaultCheckbox = document.createElement("div");
+                defaultCheckbox.classList.add("input-checkbox-wrap");
                 defaultCheckbox.innerHTML = `<label>Use as default agent</label>`;
                 const checkbox = InputCheckbox();
                 checkbox.input.checked = providerInfos.useDefault;

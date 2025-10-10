@@ -25,7 +25,6 @@ type TransportHandler = (value: string) => void;
 const rootBaseUri = await directories.root();
 const rootUri = (project: Project) => `file://${rootBaseUri}/${project.id}`;
 
-// file://./../../../../core/typescript-go/internal/project/watch.go#20
 const supportedExtensions = [
     "ts",
     "tsx",

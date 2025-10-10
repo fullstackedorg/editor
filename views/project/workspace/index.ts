@@ -107,7 +107,7 @@ export function createWorkspace(project: Project) {
 
         if (!activeView) {
             container.append(view.element);
-        } else {
+        } else if (!oldPath) {
             activeView.element.replaceWith(view.element);
         }
 
@@ -137,6 +137,7 @@ export function createWorkspace(project: Project) {
         if (oldPath) {
             const oldView = views.get(oldPath);
             if (oldView === activeView) {
+                activeView.element.replaceWith(view.element);
                 activeView = view;
             }
             views.delete(oldPath);

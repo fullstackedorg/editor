@@ -223,6 +223,9 @@ $workspace-tabs-height: 34px;
                         width: 100%;
                         max-width: spacing.$max-width;
                         margin: 0 auto;
+                        .ai-agent-configurator {
+                            padding-bottom: spacing.$small;
+                        }
                     }
 
                     .conversation {
