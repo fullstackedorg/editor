@@ -3,7 +3,7 @@ import { BuildError } from "../../../store/editor";
 import { hideChatExtension } from "../file-tree";
 import { Diagnostic } from "@codemirror/lint";
 import { Store } from "../../../store";
-import { Popover, Button } from "@fullstacked/ui";
+import { Button } from "@fullstacked/ui";
 import { createDevIcon } from "../dev-icons";
 
 export function createTabs(
@@ -16,7 +16,7 @@ export function createTabs(
     const element = document.createElement("div");
     element.classList.add("tabs");
 
-    const tabs = new Map<string, [HTMLElement, HTMLElement]>();
+    const tabs = new Map<string, [HTMLElement, HTMLElement, HTMLElement]>();
 
     const setActive = (filePath: string) => {
         Array.from(tabs.entries()).forEach(([f, tab]) => {
@@ -42,10 +42,9 @@ export function createTabs(
             if (otherFileNames.includes(filePathComponents.at(-1))) {
                 text.innerHTML =
                     filePathComponents.at(-1) +
-                    `<small>${
-                        filePathComponents.at(-2)
-                            ? `../${filePathComponents.at(-2)}`
-                            : "/"
+                    `<small>${filePathComponents.at(-2)
+                        ? `../${filePathComponents.at(-2)}`
+                        : "/"
                     }</small>`;
             } else {
                 text.innerText = hideChatExtension(filePathComponents.at(-1));
@@ -114,35 +113,30 @@ export function createTabs(
             if (!tab) {
                 tab = [
                     document.createElement("div"),
-                    document.createElement("span")
+                    document.createElement("span"),
+                    document.createElement("div")
                 ];
                 tab[0].onclick = () => actions.open(filePath);
-                const filePathEl = document.createElement("div");
-                filePathEl.classList.add("file-path-helper");
-                let popover: ReturnType<typeof Popover>;
+                tab[2].classList.add("file-path-helper");
                 let popoverDelayTimeout: ReturnType<typeof setTimeout>;
-                filePathEl.innerText = filePath;
+                tab[2].innerText = filePath;
                 const remove = () => {
-                    setTimeout(() => popover?.remove(), 500);
-                    window.removeEventListener("mousemove", remove);
+                    setTimeout(() => tab[2]?.remove(), 200);
+                    tab[0].removeEventListener("mouseleave", remove);
                 };
-                tab[1].onmouseenter = () => {
+                let lastEvent: MouseEvent = null
+                tab[1].onmouseenter = (e) => {
+                    lastEvent = e;
                     popoverDelayTimeout = setTimeout(() => {
                         const bb = tab[0].getBoundingClientRect();
                         if (bb.height === 0) return;
-                        popover = Popover({
-                            content: filePathEl,
-                            align: {
-                                x: "center",
-                                y: "bottom"
-                            },
-                            anchor: tab[0]
-                        });
-                        setTimeout(() => {
-                            window.addEventListener("mousemove", remove);
-                        }, 500);
+                        tab[2].style.top = lastEvent.clientY + 5 + "px";
+                        tab[2].style.left = lastEvent.clientX + 5 + "px";
+                        document.body.append(tab[2]);
+                        tab[0].addEventListener("mouseleave", remove);
                     }, 1000);
                 };
+                tab[0].onmousemove = e => lastEvent = e
                 tab[0].onmouseleave = () => {
                     clearTimeout(popoverDelayTimeout);
                 };
@@ -196,6 +190,7 @@ export function createTabs(
         close(filePath: string) {
             const tab = tabs.get(filePath);
             tab?.at(0)?.remove();
+            tab?.at(2)?.remove();
             tabs.delete(filePath);
 
             displayDirectoryIfNeeded();

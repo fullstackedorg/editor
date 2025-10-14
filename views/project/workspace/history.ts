@@ -94,7 +94,7 @@ export function createHistoryNavigation(actions: {
         },
         remove(filePath: string) {
             for (let i = history.length - 1; i >= 0; i--) {
-                if (history.at(i).filePath === filePath) {
+                if (history.at(i).filePath.startsWith(filePath)) {
                     history.splice(i, 1);
                     if (i <= cursor) {
                         cursor--;

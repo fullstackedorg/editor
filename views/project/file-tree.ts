@@ -9,6 +9,7 @@ import { FileEvent, FileEventType } from "./file-event";
 import { Button, ButtonGroup, Icon, InputText, Popover } from "@fullstacked/ui";
 import { Workspace } from "./workspace";
 import { createDevIcon } from "./dev-icons";
+import { promptNewChat } from "../prompt";
 
 const directoryIconOpen = Icon("Caret");
 directoryIconOpen.classList.add("open");
@@ -234,6 +235,12 @@ function TopActions(
     left.append(toggleSidePanel);
 
     const right = document.createElement("div");
+    const newChatButton = Button({
+        style: "icon-small",
+        iconLeft: "Glitter"
+    });
+    newChatButton.onclick = () => promptNewChat();
+
     const newFileButton = Button({
         style: "icon-small",
         iconLeft: "File Add"
@@ -290,7 +297,7 @@ function TopActions(
         fileInput.click();
     };
 
-    right.append(newFileButton, newDirectoryButton, uploadButton);
+    right.append(newChatButton, newFileButton, newDirectoryButton, uploadButton);
 
     container.append(left, right);
 
