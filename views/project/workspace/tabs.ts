@@ -42,9 +42,10 @@ export function createTabs(
             if (otherFileNames.includes(filePathComponents.at(-1))) {
                 text.innerHTML =
                     filePathComponents.at(-1) +
-                    `<small>${filePathComponents.at(-2)
-                        ? `../${filePathComponents.at(-2)}`
-                        : "/"
+                    `<small>${
+                        filePathComponents.at(-2)
+                            ? `../${filePathComponents.at(-2)}`
+                            : "/"
                     }</small>`;
             } else {
                 text.innerText = hideChatExtension(filePathComponents.at(-1));
@@ -124,7 +125,7 @@ export function createTabs(
                     setTimeout(() => tab[2]?.remove(), 200);
                     tab[0].removeEventListener("mouseleave", remove);
                 };
-                let lastEvent: MouseEvent = null
+                let lastEvent: MouseEvent = null;
                 tab[1].onmouseenter = (e) => {
                     lastEvent = e;
                     popoverDelayTimeout = setTimeout(() => {
@@ -136,7 +137,7 @@ export function createTabs(
                         tab[0].addEventListener("mouseleave", remove);
                     }, 1000);
                 };
-                tab[0].onmousemove = e => lastEvent = e
+                tab[0].onmousemove = (e) => (lastEvent = e);
                 tab[0].onmouseleave = () => {
                     clearTimeout(popoverDelayTimeout);
                 };

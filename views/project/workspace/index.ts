@@ -125,10 +125,10 @@ export function createWorkspace(project: Project) {
                     typeof pos === "number"
                         ? pos
                         : pos
-                            ? (view as ViewCode).editorView.state.doc.line(
+                          ? (view as ViewCode).editorView.state.doc.line(
                                 pos.line
                             ).from + pos.character
-                            : null;
+                          : null;
 
                 history.push(projectFilePath, position || 0);
             }
@@ -192,7 +192,7 @@ export function createWorkspace(project: Project) {
                     const deletedViews = Array.from(views.keys()).filter(
                         (filePath) => filePath.startsWith(projectFilePath)
                     );
-                    history.remove(projectFilePath)
+                    history.remove(projectFilePath);
                     deletedViews.forEach((filePath) => {
                         closeTimeouts.set(
                             filePath,
@@ -240,14 +240,17 @@ export function createWorkspace(project: Project) {
     core_message.addListener("file-event", fileEventsListener);
 
     const buildErrorsListener = async (buildErrors: BuildError[]) => {
-        const projectFilePaths = new Map<string, { line: number; character: number }>()
+        const projectFilePaths = new Map<
+            string,
+            { line: number; character: number }
+        >();
         buildErrors
             .filter(({ file }) => file.includes(project.id))
             .forEach(({ file, line, col }) => {
                 const projectFilePath = file.split(project.id + "/").pop();
                 if (projectFilePaths.has(projectFilePath)) return;
-                projectFilePaths.set(projectFilePath, { line, character: col })
-            })
+                projectFilePaths.set(projectFilePath, { line, character: col });
+            });
         const l = await lsp;
         Array.from(views.entries()).filter(([projectFilePath, view]) => {
             if (lspSupportedFile(projectFilePath)) {
@@ -260,7 +263,9 @@ export function createWorkspace(project: Project) {
                 );
             }
         });
-        Array.from(projectFilePaths.entries()).forEach(([f, pos]) => open(f, pos));
+        Array.from(projectFilePaths.entries()).forEach(([f, pos]) =>
+            open(f, pos)
+        );
     };
     Store.editor.codeEditor.buildErrors.subscribe(buildErrorsListener);
 

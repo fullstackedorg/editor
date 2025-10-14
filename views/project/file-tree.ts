@@ -297,7 +297,12 @@ function TopActions(
         fileInput.click();
     };
 
-    right.append(newChatButton, newFileButton, newDirectoryButton, uploadButton);
+    right.append(
+        newChatButton,
+        newFileButton,
+        newDirectoryButton,
+        uploadButton
+    );
 
     container.append(left, right);
 
