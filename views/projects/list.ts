@@ -47,7 +47,9 @@ function Grid(projects: ProjectType[]) {
     filterProjects = (searchString) => {
         lastFilter = searchString;
         if (!searchString) {
-            filteredGrid.refresh([...projects].sort((a, b) => b.createdDate - a.createdDate));
+            filteredGrid.refresh(
+                [...projects].sort((a, b) => b.createdDate - a.createdDate)
+            );
         } else {
             const fuseResults = fuse.search(searchString);
             filteredGrid.refresh(fuseResults.map(({ item }) => item));
