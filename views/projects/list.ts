@@ -47,7 +47,7 @@ function Grid(projects: ProjectType[]) {
     filterProjects = (searchString) => {
         lastFilter = searchString;
         if (!searchString) {
-            filteredGrid.refresh(projects);
+            filteredGrid.refresh([...projects].sort((a, b) => b.createdDate - a.createdDate));
         } else {
             const fuseResults = fuse.search(searchString);
             filteredGrid.refresh(fuseResults.map(({ item }) => item));
@@ -68,9 +68,7 @@ function GridFiltered(projects: ProjectType[]) {
     const container = createElement("div");
     container.classList.add("projects-list");
 
-    const projectsTiles = [...projects] // sorts in place and screws up Fuse
-        .sort((a, b) => b.createdDate - a.createdDate)
-        .map(ProjectTile);
+    const projectsTiles = projects.map(ProjectTile);
 
     container.append(...projectsTiles);
 

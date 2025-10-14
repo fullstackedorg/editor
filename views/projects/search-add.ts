@@ -15,7 +15,8 @@ export function SearchAdd() {
 
 function Search() {
     const inputSearch = InputText({
-        label: "Search"
+        label: "Search",
+        clear: true
     });
 
     inputSearch.input.onkeyup = () => {
