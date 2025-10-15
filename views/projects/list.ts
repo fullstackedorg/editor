@@ -35,8 +35,7 @@ const fuseOptions: IFuseOptions<ProjectType> = {
     ]
 };
 
-let lastFilter = "";
-export let filterProjects: (searchStr: string) => void;
+export let filterProjects: (searchStr?: string) => void;
 function Grid(projects: ProjectType[]) {
     const container = createElement("div");
 
@@ -44,8 +43,7 @@ function Grid(projects: ProjectType[]) {
 
     const filteredGrid = createRefresheable(GridFiltered);
 
-    filterProjects = (searchString) => {
-        lastFilter = searchString;
+    filterProjects = (searchString = "") => {
         if (!searchString) {
             filteredGrid.refresh(
                 [...projects].sort((a, b) => b.createdDate - a.createdDate)
@@ -55,7 +53,7 @@ function Grid(projects: ProjectType[]) {
             filteredGrid.refresh(fuseResults.map(({ item }) => item));
         }
     };
-    filterProjects(lastFilter);
+    filterProjects();
 
     container.append(filteredGrid.element);
 
