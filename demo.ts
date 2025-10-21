@@ -24,7 +24,7 @@ async function demoFromZip() {
     const payload = new Uint8Array([
         1, // static file serving
 
-        ...serializeArgs(["Demo.zip"])
+        ...serializeArgs(["demo.zip"])
     ]);
 
     const [_, demoZipData] = (await bridge(payload)) as [string, Uint8Array];
