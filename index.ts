@@ -15,7 +15,7 @@ import config from "./editor_modules/config";
 core_message.addListener("deeplink", deeplink);
 core_message.addListener("git-authentication", gitAuthCallback);
 
-// fix windows scrollbars
+// fix windows scrollbars for browser and app
 if (navigator.userAgent.includes("Windows")) {
     const link = document.createElement("link");
     link.rel = "stylesheet";
