@@ -4,7 +4,7 @@ import core_fetch from "../../../fullstacked_modules/fetch";
 import semver from "semver";
 import * as sass from "sass";
 import { Badge } from "@fullstacked/ui";
-import esbuild from "../../../fullstacked_modules/esbuild";
+import esbuild from "../../../fullstacked_modules/build";
 import * as lsp from "../../editor_modules/lsp";
 
 export function Version() {

@@ -5,8 +5,7 @@ import { SnackBar } from "../../fullstacked_modules/components/snackbar";
 import git from "../../fullstacked_modules/git";
 import { updatePackagesView } from "../views/packages";
 import stackNavigation from "../stack-navigation";
-import esbuild from "../../fullstacked_modules/esbuild";
-import { buildSASS } from "../../fullstacked_modules/esbuild/sass";
+import build from "../../fullstacked_modules/build";
 import core_open from "../../fullstacked_modules/core_open";
 import packages from "../../fullstacked_modules/packages";
 import config from "../editor_modules/config";
@@ -34,7 +33,7 @@ export const projects = {
     setCurrent,
     current: current.subscription,
 
-    build,
+    build: buildProject,
     builds: builds.subscription,
 
     pull,
@@ -92,7 +91,7 @@ async function deleteP(project: Project) {
     fs.rmdir(project.id);
 }
 
-async function build(project: Project) {
+async function buildProject(project: Project) {
     Store.editor.codeEditor.clearAllBuildErrors();
 
     activeProjectBuilds.add(project.id);
@@ -104,13 +103,9 @@ async function build(project: Project) {
     };
 
     const isUserMode = Store.preferences.isUserMode.check();
-    if (!isUserMode || (await esbuild.shouldBuild(project))) {
+    if (!isUserMode || (await build.shouldBuild(project))) {
         await packages.installQuick(project, updatePackagesView);
-        const buildErrorsSASS = await buildSASS(fs, project);
-        const buildErrorsEsbuild = await esbuild.build(project);
-        const buildErrors = [buildErrorsSASS, ...(buildErrorsEsbuild || [])]
-            .flat()
-            .filter(Boolean);
+        const buildErrors = await build.buildProject(project);
         const errors = buildErrors.map((error) => {
             return {
                 file: error.location?.file,
