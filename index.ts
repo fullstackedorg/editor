@@ -16,19 +16,13 @@ core_message.addListener("deeplink", deeplink);
 core_message.addListener("git-authentication", gitAuthCallback);
 
 // fix windows scrollbars for browser and app
-if (navigator.userAgent.includes("Windows")) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "/windows.css";
-    document.head.append(link);
+if (navigator.userAgent.toLocaleLowerCase().includes("windows")) {
+    document.documentElement.classList.add("windows");
 }
 
 // remove top padding for apple devices
 if (platform === Platform.APPLE) {
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = "/apple.css";
-    document.head.append(link);
+    document.documentElement.classList.add("apple");
 }
 
 document.querySelector("#splash")?.remove();
