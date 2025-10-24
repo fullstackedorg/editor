@@ -93,18 +93,30 @@ export function createHistoryNavigation(actions: {
             }
         },
         remove(filePath: string) {
+            let didChangeHistory = false;
+
             for (let i = history.length - 1; i >= 0; i--) {
                 if (history.at(i).filePath.startsWith(filePath)) {
+
+                    didChangeHistory = true;
+
                     history.splice(i, 1);
                     if (i <= cursor) {
                         cursor--;
                     }
+                    
                 }
             }
+
+            if (!didChangeHistory) {
+                return;
+            }
+
             const lastState = history.at(cursor);
             if (lastState) {
                 actions.open(lastState.filePath, lastState.pos, true);
             }
+
             refreshState();
         }
     };
