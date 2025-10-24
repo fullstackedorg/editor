@@ -1,4 +1,4 @@
-import * as ai from "@fullstacked/ai-agent";
+import { providersInfo } from "@fullstacked/ai-agent";
 
 export enum CONFIG_TYPE {
     GENERAL = "general",
@@ -19,10 +19,11 @@ export type CONFIG_DATA_TYPE = {
     [CONFIG_TYPE.AGENT]: AgentProvider[];
 };
 
-export type AgentProvider = ReturnType<typeof ai.providers>[0] & {
-    model?: string;
-    useDefault?: boolean;
-};
+export type AgentProvider =
+    (typeof providersInfo)[keyof typeof providersInfo] & {
+        model?: string;
+        useDefault?: boolean;
+    };
 
 export type Project = {
     title: string;

@@ -8,32 +8,30 @@ import {
 } from "@fullstacked/ui";
 import config from "../../editor_modules/config";
 import { CONFIG_TYPE, AgentProvider } from "../../types";
-import { merge } from "immutable";
 import { getDefaultAgentProvider } from ".";
 
 export async function mergeConfigsWithAvailableProviders(): Promise<
     AgentProvider[]
 > {
-    const savedAgentConfig = await config.get(CONFIG_TYPE.AGENT, true);
-    const availableProvider = ai.providers();
+    const savedAgentConfig: (typeof ai.providersInfo)[keyof typeof ai.providersInfo][] =
+        await config.get(CONFIG_TYPE.AGENT, true);
+    const availableProvider = Object.values(ai.providersInfo);
 
     return availableProvider.map((provider) => {
         const savedConfig = savedAgentConfig?.find(
             ({ id }) => id === provider.id
         );
+
+        const configs = provider.configs;
+        Object.entries(configs).forEach(([id, c]) => {
+            configs[id].value = savedConfig?.configs?.[id]?.value || c.value;
+        });
+
         return {
             ...(savedConfig || {}),
             ...provider,
-            configs: provider.configs.map(
-                (c) =>
-                    ({
-                        ...c,
-                        value:
-                            savedConfig?.configs?.find(({ id }) => id === c.id)
-                                ?.value || c.value
-                    }) as any
-            )
-        };
+            configs
+        } as AgentProvider;
     });
 }
 
@@ -120,14 +118,14 @@ export function createAiAgentConfigurator(configProviderId?: string) {
             providerModelSelectContainer = providerModelSelect;
         };
 
-        providerInfos.configs.forEach((c) => {
+        Object.entries(providerInfos.configs).forEach(([id, c]) => {
             if (c.type === "string") {
                 const inputText = InputText({
                     label: c.title
                 });
                 inputText.input.value = c.value;
                 inputText.input.onkeyup = () => {
-                    c.value = inputText.input.value;
+                    providerInfos.configs[id].value = inputText.input.value;
                     onChange();
                 };
                 providerConfigs.append(inputText.container);
@@ -137,7 +135,7 @@ export function createAiAgentConfigurator(configProviderId?: string) {
                         title: c.title,
                         value: c.value,
                         onChange: (v) => {
-                            c.value = v;
+                            providerInfos.configs[id].value = v;
                             onChange();
                         }
                     })
@@ -158,6 +156,7 @@ export function createAiAgentConfigurator(configProviderId?: string) {
     >;
     mergeConfigsWithAvailableProviders().then(async (p) => {
         providers = p;
+        console.log(providers);
 
         providerSelect.options.add(
             ...providers.map((provider) => ({
