@@ -97,14 +97,12 @@ export function createHistoryNavigation(actions: {
 
             for (let i = history.length - 1; i >= 0; i--) {
                 if (history.at(i).filePath.startsWith(filePath)) {
-
                     didChangeHistory = true;
 
                     history.splice(i, 1);
                     if (i <= cursor) {
                         cursor--;
                     }
-                    
                 }
             }
 
