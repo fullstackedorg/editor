@@ -103,10 +103,10 @@ export function createTabs(
     return {
         element,
         destroy() {
-            Array.from(tabs.values()).forEach(t => {
-                t?.at(0)?.remove()
-                t?.at(2)?.remove()
-            })
+            Array.from(tabs.values()).forEach((t) => {
+                t?.at(0)?.remove();
+                t?.at(2)?.remove();
+            });
             Store.editor.codeEditor.buildErrors.unsubscribe(onBuildErrors);
             Store.editor.codeEditor.lspDiagnostics.unsubscribe(
                 onLspDiagnostics
