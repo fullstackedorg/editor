@@ -181,11 +181,12 @@ export function createWorkspace(project: Project) {
         for (const fileEvent of fileEvents) {
             if (fileEvent.origin === FILE_EVENT_ORIGIN) continue;
 
+            if (!fileEvent.paths.at(0).includes(project.id)) continue;
+
             const projectFilePath = fileEvent.paths
                 .at(0)
                 .split(`${project.id}/`)
                 .pop();
-            if (!projectFilePath) continue;
 
             switch (fileEvent.type) {
                 case FileEventType.DELETED:
