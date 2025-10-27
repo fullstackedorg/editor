@@ -2,14 +2,13 @@ import { Project } from "../../../types";
 import {
     Transport,
     LSPClient,
-    languageServerExtensions,
-    Workspace
+    languageServerExtensions
 } from "@codemirror/lsp-client";
 import * as lsp from "../../../editor_modules/lsp";
 import core_message from "../../../../fullstacked_modules/core_message";
 import * as directories from "../../../editor_modules/directories";
 import fs from "../../../../fullstacked_modules/fs";
-import { compilerOptions } from "./tsconfig";
+import { compilerOptions } from "../../../../platform/node/src/tsconfig";
 import { EditorView } from "codemirror";
 import { insertCompletionText } from "@codemirror/autocomplete";
 import { setDiagnostics, Diagnostic } from "@codemirror/lint";

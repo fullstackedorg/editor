@@ -1,22 +1,7 @@
-import { createCodeMirrorView } from "@fullstacked/codemirror-view";
-import { oneDark } from "@codemirror/theme-one-dark";
-import {
-    Transport,
-    LSPClient,
-    languageServerExtensions
-} from "@codemirror/lsp-client";
-import { basicSetup, EditorView } from "codemirror";
 import { Project } from "../../../types";
 import core_message from "../../../../fullstacked_modules/core_message";
-import { setDiagnostics, lintGutter, Diagnostic } from "@codemirror/lint";
-import { compilerOptions } from "./tsconfig";
-import { insertCompletionText } from "@codemirror/autocomplete";
 import { createLSP, lspSupportedFile } from "./lsp";
 import fs from "../../../../fullstacked_modules/fs";
-import { SupportedLanguage } from "@fullstacked/codemirror-view/languages";
-import { gutter } from "@codemirror/view";
-import { Button, Icon, Popover } from "@fullstacked/ui";
-import { createDevIcon } from "../dev-icons";
 import { FileEvent, FileEventType } from "../file-event";
 import { Store } from "../../../store";
 import { BuildError } from "../../../store/editor";
@@ -24,9 +9,7 @@ import { sassSupportedFile, sassSetDiagnostic } from "./sass";
 import { createViewImage, imageSupportedFile } from "./views/image";
 import { binarySupportedFile, createViewBinary } from "./views/binary";
 import { createViewCode, FILE_EVENT_ORIGIN } from "./views/code";
-import { restore } from "../../../../fullstacked_modules/git";
 import { createViewChat, chatSupportedFile } from "./views/chat";
-import { hideChatExtension } from "../file-tree";
 import { createTabs } from "./tabs";
 import { createHistoryNavigation } from "./history";
 
