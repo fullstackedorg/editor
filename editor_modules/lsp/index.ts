@@ -15,6 +15,7 @@ async function processRequests() {
     if (!req) return;
     const payload = new Uint8Array([91, ...serializeArgs(req)]);
     await bridge(payload);
+    processRequests();
 }
 
 // 91
