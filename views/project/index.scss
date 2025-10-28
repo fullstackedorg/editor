@@ -186,6 +186,12 @@ $workspace-tabs-height: 34px;
                 height: calc(100% - $workspace-tabs-height);
                 flex: 1;
 
+                >.code-container {
+                    .cm-content {
+                        padding-bottom: calc(100vh - 150px);
+                    }
+                }
+
                 > .image-container {
                     height: 100%;
                     width: 100%;

@@ -28,6 +28,7 @@ export async function createViewCode(
             EditorView.clickAddsSelectionRange.of((e) => e.altKey && !e.metaKey)
         ]
     });
+    view.element.classList.add("code-container")
 
     const save = async () => {
         if ((await fs.exists(filePath))?.isFile) {
