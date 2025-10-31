@@ -3,8 +3,7 @@ import { createElement } from "../../components/element";
 import { commands } from "../../commands";
 import { Store } from "../../store";
 import { createConversation } from "@fullstacked/ai-agent";
-import { createToolFS } from "../../../fullstacked_modules/ai";
-import fs from "../../../fullstacked_modules/fs";
+import fs from "fs";
 import { ViewChat } from "../project/workspace";
 
 let promptDialog = null;

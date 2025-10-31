@@ -1,6 +1,6 @@
 import config from "../../editor_modules/config";
 import { CONFIG_TYPE } from "../../types";
-import ai from "../../../fullstacked_modules/ai";
+import ai from "@fullstacked/ai-agent";
 
 export async function getDefaultAgentProvider() {
     const agentConfigs = await config.get(CONFIG_TYPE.AGENT, true);

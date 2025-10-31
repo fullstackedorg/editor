@@ -1,13 +1,13 @@
 import { createSequential, createSubscribable, Store } from ".";
 import { CONFIG_TYPE, Project } from "../types";
-import fs from "../../fullstacked_modules/fs";
-import { SnackBar } from "../../fullstacked_modules/components/snackbar";
-import git from "../../fullstacked_modules/git";
+import fs from "fs";
+import { SnackBar } from "components/snackbar";
+import git from "git";
 import { updatePackagesView } from "../views/packages";
 import stackNavigation from "../stack-navigation";
-import build from "../../fullstacked_modules/build";
-import core_open from "../../fullstacked_modules/core_open";
-import packages from "../../fullstacked_modules/packages";
+import build from "build";
+import core_open from "core_open";
+import packages from "packages";
 import config from "../editor_modules/config";
 import type { createWorkspace } from "../views/project/workspace";
 

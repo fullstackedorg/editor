@@ -1,7 +1,6 @@
 import { Project, CONFIG_TYPE } from "../../../../types";
 import fs from "../../../../../fullstacked_modules/fs";
-import { createConversation } from "@fullstacked/ai-agent";
-import ai, { createToolFS } from "../../../../../fullstacked_modules/ai";
+import ai from "@fullstacked/ai-agent";
 import { getDefaultAgentProvider } from "../../../ai-agent";
 import {
     createAiAgentConfigurator,
@@ -12,6 +11,7 @@ import { oneDark } from "@codemirror/theme-one-dark";
 import { Button } from "@fullstacked/ui";
 import { EditorView } from "codemirror";
 import { Store } from "../../../../store";
+import { z } from "zod";
 
 const extensions = ["chat"];
 
@@ -72,7 +72,7 @@ export function createViewChat(project: Project, projectFilePath: string) {
 
     const filePath = `${project.id}/${projectFilePath}`;
 
-    let conversation: ReturnType<typeof createConversation>;
+    let conversation: ReturnType<typeof ai.createConversation>;
 
     const messageToPrompt: string[] = [];
     const prompt = (message: string) => {
@@ -115,7 +115,7 @@ export function createViewChat(project: Project, projectFilePath: string) {
             fs.writeFile(filePath, JSON.stringify(chat, null, 2));
         };
 
-        conversation = createConversation({
+        conversation = ai.createConversation({
             provider: agent.provider,
             model: agent.info.model,
             messages: chat?.messages || undefined,
@@ -237,4 +237,68 @@ export function createViewChat(project: Project, projectFilePath: string) {
             conversation?.element?.scrollTo(0, lastScrollY);
         }
     };
+}
+
+type ToolFSOptions = {
+    baseDirectory: string;
+};
+
+export function createToolFS(opts?: Partial<ToolFSOptions>) {
+    let basePath = opts?.baseDirectory || "";
+
+    if (basePath !== "" && !basePath.endsWith("/")) {
+        basePath += "/";
+    }
+
+    const fixPath = (path: string) => basePath + path;
+
+    return [
+        ai.createTool({
+            name: "CreateDir",
+            description: "Create a directory.",
+            schema: z.object({
+                path: z.string()
+            }),
+            fn: async ({ path }) => {
+                const success = await fs.mkdir(fixPath(path));
+                return success
+                    ? `Successfully created directory ${path}.`
+                    : `Failed to create directory ${path}.`;
+            },
+            message: ({ path }) => `Creating directory \`${path}\``
+        }),
+        ai.createTool({
+            name: "ListFiles",
+            description: "List files in a directory.",
+            schema: z.object({
+                path: z.string()
+            }),
+            fn: ({ path }) => fs.readdir(fixPath(path)),
+            message: ({ path }) => `Listing files at \`${path}\``
+        }),
+        ai.createTool({
+            name: "ReadFile",
+            description: "Read the content of a file.",
+            schema: z.object({
+                path: z.string()
+            }),
+            fn: ({ path }) => fs.readFile(fixPath(path), { encoding: "utf8" }),
+            message: ({ path }) => `Reading file at \`${path}\``
+        }),
+        ai.createTool({
+            name: "WriteFile",
+            description: "Write content to file.",
+            schema: z.object({
+                path: z.string(),
+                contents: z.string()
+            }),
+            fn: async ({ path, contents }) => {
+                const success = await fs.writeFile(fixPath(path), contents);
+                return success
+                    ? `Successfully written ${contents.length} characters to ${path}.`
+                    : `Failed to write to ${path}.`;
+            },
+            message: ({ path }) => `Writing to \`${path}\``
+        })
+    ];
 }

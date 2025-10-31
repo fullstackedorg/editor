@@ -12,7 +12,7 @@ export type CONFIG_DATA_TYPE = {
         userMode: boolean;
     };
     [CONFIG_TYPE.PROJECTS]: {
-        projects: Project[];
+        projects: ProjectsList;
     };
     [CONFIG_TYPE.GIT]: GitAuths;
 
@@ -25,16 +25,18 @@ export type AgentProvider =
         useDefault?: boolean;
     };
 
+export type ProjectsList = Project[];
+
 export type Project = {
     title: string;
     id: string;
     createdDate: number;
+    lists?: string[];
     location?: string;
     gitRepository?: {
         url: string;
         name?: string;
         email?: string;
-        merging?: string;
     };
 };
 

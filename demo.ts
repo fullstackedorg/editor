@@ -1,14 +1,14 @@
-import { bridge } from "../fullstacked_modules/bridge";
-import { serializeArgs } from "../fullstacked_modules/bridge/serialization";
-import core_fetch from "../fullstacked_modules/fetch";
-import core_message from "../fullstacked_modules/core_message";
-import git from "../fullstacked_modules/git";
+import { bridge } from "bridge";
+import { serializeArgs } from "bridge/serialization";
+import core_fetch from "fetch";
+import core_message from "core_message";
+import git from "git";
 import {
     createAndMoveProject,
     randomStr,
     tmpDir
 } from "./views/add-project/import-zip";
-import archive from "../fullstacked_modules/archive";
+import archive from "archive";
 
 export async function Demo() {
     try {

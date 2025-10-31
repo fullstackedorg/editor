@@ -3,8 +3,7 @@ import stackNavigation from "../stack-navigation";
 import { Store } from "../store";
 import { Project } from "../types";
 import { updatePackagesView } from "../views/packages";
-import packages from "../../fullstacked_modules/packages";
-import fs from "../../fullstacked_modules/fs";
+import packages from "packages";
 import { promptNewChat } from "../views/prompt";
 
 export type Command = {
