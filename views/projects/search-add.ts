@@ -1,7 +1,8 @@
 import { Button, InputText } from "@fullstacked/ui";
 import { NEW_PROJECT_ID } from "../../constants";
 import { AddProject } from "../add-project";
-import { filterProjects } from "./list";
+import { projectsList } from "./list";
+import { Store } from "../../store";
 
 export function SearchAdd() {
     const container = document.createElement("div");
@@ -14,16 +15,28 @@ export function SearchAdd() {
 }
 
 function Search() {
+    const form = document.createElement("form");
+
     const inputSearch = InputText({
         label: "Search",
         clear: true
     });
 
     inputSearch.input.onkeyup = () => {
-        filterProjects(inputSearch.input.value);
+        projectsList.filter(inputSearch.input.value);
     };
 
-    return inputSearch.container;
+    form.onsubmit = (e) => {
+        e.preventDefault();
+        const firstProjectDisplayed = projectsList.displayed?.at(0);
+        if (firstProjectDisplayed) {
+            Store.projects.setCurrent(firstProjectDisplayed);
+        }
+    };
+
+    form.append(inputSearch.container);
+
+    return form;
 }
 
 function Add() {
