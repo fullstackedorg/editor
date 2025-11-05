@@ -2,6 +2,7 @@ import { Button } from "@fullstacked/ui";
 import { BACK_BUTTON_CLASS } from "../constants";
 import stackNavigation from "../stack-navigation";
 import { createElement } from "./element";
+import { topBarNoBackClass, topBarTitlesClass, topBarClass } from "./top-bar.s";
 
 type TopBarOpts = {
     noBack: boolean;
@@ -15,7 +16,7 @@ let h1Height: number, getH1HeightInterval: ReturnType<typeof setInterval>;
 
 export function TopBar(opts?: Partial<TopBarOpts>) {
     const container = createElement("div");
-    container.classList.add("top-bar");
+    container.classList.add(topBarClass);
 
     const left = document.createElement("div");
 
@@ -35,11 +36,11 @@ export function TopBar(opts?: Partial<TopBarOpts>) {
         };
         left.append(backButton);
     } else {
-        container.classList.add("no-back");
+        container.classList.add(topBarNoBackClass);
     }
 
     const titlesContainer = document.createElement("div");
-    titlesContainer.classList.add("titles");
+    titlesContainer.classList.add(topBarTitlesClass);
     left.append(titlesContainer);
 
     let title: HTMLHeadingElement;
