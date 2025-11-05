@@ -3,10 +3,11 @@ import { NEW_PROJECT_ID } from "../../constants";
 import { AddProject } from "../add-project";
 import { projectsList } from "./list";
 import { Store } from "../../store";
+import { searchAndAddClass } from "./search-add.s";
 
 export function SearchAdd() {
     const container = document.createElement("div");
-    container.classList.add("search-and-add");
+    container.classList.add(searchAndAddClass);
 
     const search = Search();
     const add = Add();

@@ -12,10 +12,12 @@ import { TopBar as TopBarComponent } from "../../components/top-bar";
 import { PeersWidget } from "./peers-widget";
 import { Settings } from "../settings";
 import { Button } from "@fullstacked/ui";
+import { projectsViewClass } from "./index.s";
 
 export function Projects() {
     const { container, scrollable } = ViewScrollable();
     container.id = PROJECTS_VIEW_ID;
+    container.classList.add(projectsViewClass);
 
     const topBar = TopBar();
     container.prepend(topBar);

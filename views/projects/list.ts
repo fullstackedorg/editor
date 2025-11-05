@@ -7,6 +7,7 @@ import { Project } from "../project";
 import { ProjectSettings } from "../project-settings";
 import { Loader, Button, ButtonGroup, Popover, Dialog } from "@fullstacked/ui";
 import archive from "../../../fullstacked_modules/archive";
+import { projectsListClass } from "./list.s";
 
 export function List() {
     const container = createElement("div");
@@ -73,7 +74,7 @@ function Grid(projects: ProjectType[]) {
 
 function GridFiltered(projects: ProjectType[]) {
     const container = createElement("div");
-    container.classList.add("projects-list");
+    container.classList.add(projectsListClass);
 
     const projectsTiles = projects.map(ProjectTile);
 
