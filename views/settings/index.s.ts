@@ -24,13 +24,12 @@ export const settingsClass = style.createClass("settings", {
 });
 
 export const userModeClass = style.createClass("user-mode", {
-
     paddingTop: spacing.s,
     display: "flex",
     gap: spacing.xs,
     flexDirection: "column",
-    "h2": {
-        minWidth: 200,
+    h2: {
+        minWidth: 200
     },
 
     "> div:first-child": {
@@ -41,10 +40,10 @@ export const userModeClass = style.createClass("user-mode", {
     "> p": {
         fontSize: typography.s
     }
-})
+});
 
 export const agentConfigsClass = style.createClass("agent-provider-config", {
     display: "flex",
     flexDirection: "column",
     gap: spacing.xs
-})
+});

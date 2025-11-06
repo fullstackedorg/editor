@@ -8,4 +8,4 @@ export const promptClass = style.createClass("prompt-container", {
     "> button": {
         alignSelf: "flex-end"
     }
-})
+});

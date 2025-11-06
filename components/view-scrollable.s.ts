@@ -7,7 +7,7 @@ export const viewScrollableClass = style.createClass("view-scrollable", {
     flexDirection: "column",
     height: "100%",
     overflow: "hidden",
-    
+
     [`.${scrollableClass}`]: {
         overflow: "auto",
         marginLeft: 0 - spacing.m,

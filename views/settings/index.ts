@@ -9,9 +9,7 @@ import { Store } from "../../store";
 import { InputSwitch } from "@fullstacked/ui";
 import { createAiAgentConfigurator } from "../ai-agent/config";
 import { viewClass } from "../../style/index.s";
-import { agentConfigsClass,
-userModeClass,
-settingsClass } from "./index.s";
+import { agentConfigsClass, userModeClass, settingsClass } from "./index.s";
 
 export function Settings() {
     const { container, scrollable } = ViewScrollable();

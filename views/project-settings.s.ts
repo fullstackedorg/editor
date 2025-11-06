@@ -14,4 +14,4 @@ export const projectSettingsClass = style.createClass("project-settings", {
             alignSelf: "flex-end"
         }
     }
-})
+});
