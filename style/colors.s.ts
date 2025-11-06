@@ -1,4 +1,4 @@
-export const colors = {
+export default {
     blue: {
         main: "#007aff",
         accent: "#04b8ec",

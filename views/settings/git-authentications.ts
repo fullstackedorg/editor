@@ -3,6 +3,7 @@ import { createElement } from "../../components/element";
 import { createRefresheable } from "../../components/refresheable";
 import { CONFIG_TYPE, GitAuths } from "../../types";
 import config from "../../editor_modules/config";
+import { gitAuthClass } from "./git-authentications.s";
 
 let gitAuthRefresh: ReturnType<typeof createRefresheable>["refresh"];
 const refreshGitAuthsList = () => {
@@ -10,7 +11,7 @@ const refreshGitAuthsList = () => {
 };
 export function GitAuthentications() {
     const container = document.createElement("div");
-    container.classList.add("git-authentications");
+    container.classList.add(gitAuthClass);
 
     const top = document.createElement("div");
 

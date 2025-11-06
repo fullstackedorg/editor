@@ -6,10 +6,11 @@ import { BG_COLOR } from "../constants";
 import { Project } from "../types";
 import { Store } from "../store";
 import { Button, InputText } from "@fullstacked/ui";
+import { projectSettingsClass } from "./project-settings.s";
 
 export function ProjectSettings(project: Project) {
     const { container, scrollable } = ViewScrollable();
-    container.classList.add("project-settings");
+    container.classList.add(projectSettingsClass);
 
     container.prepend(
         TopBar({

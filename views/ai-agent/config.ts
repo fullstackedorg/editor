@@ -156,7 +156,6 @@ export function createAiAgentConfigurator(configProviderId?: string) {
     >;
     mergeConfigsWithAvailableProviders().then(async (p) => {
         providers = p;
-        console.log(providers);
 
         providerSelect.options.add(
             ...providers.map((provider) => ({

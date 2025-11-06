@@ -1,6 +1,6 @@
 import style from "style";
 import spacing from "../../style/spacing.s";
-import { opacity, colors } from "../../style/colors.s";
+import colors, { opacity } from "../../style/colors.s";
 import breakpoints from "../../style/breakpoints.s";
 
 export const projectsListClass = style.createClass("projects-list", {

@@ -8,11 +8,15 @@ import { createElement } from "../../components/element";
 import { Store } from "../../store";
 import { InputSwitch } from "@fullstacked/ui";
 import { createAiAgentConfigurator } from "../ai-agent/config";
+import { viewClass } from "../../style/index.s";
+import { agentConfigsClass,
+userModeClass,
+settingsClass } from "./index.s";
 
 export function Settings() {
     const { container, scrollable } = ViewScrollable();
     container.id = SETTINGS_VIEW_ID;
-    container.classList.add("view");
+    container.classList.add(viewClass, settingsClass);
 
     const topBar = TopBar({
         title: "Settings"
@@ -37,7 +41,7 @@ export function Settings() {
 
 function UserMode() {
     const container = createElement("div");
-    container.classList.add("user-mode");
+    container.classList.add(userModeClass);
 
     const top = document.createElement("div");
     top.innerHTML = `<h2>User Mode</h2>`;
@@ -67,7 +71,7 @@ Projects start faster, builds only when needed.`;
 
 function AgentProvider() {
     const container = document.createElement("div");
-    container.classList.add("agent-provider-config");
+    container.classList.add(agentConfigsClass);
     container.innerHTML = `<h2>Configure Agent Providers</h2>`;
     container.append(createAiAgentConfigurator().element);
     return container;

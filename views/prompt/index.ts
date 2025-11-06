@@ -2,9 +2,9 @@ import { Button, Dialog, InputPredictive } from "@fullstacked/ui";
 import { createElement } from "../../components/element";
 import { commands } from "../../commands";
 import { Store } from "../../store";
-import { createConversation } from "@fullstacked/ai-agent";
 import fs from "fs";
 import { ViewChat } from "../project/workspace";
+import { promptClass } from "./index.s";
 
 let promptDialog = null;
 function closeDialog() {
@@ -35,7 +35,7 @@ export function InitPrompt() {
 
 function Prompt() {
     const container = createElement("div");
-    container.classList.add("prompt-container");
+    container.classList.add(promptClass);
 
     const inputPredictive = InputPredictive({
         label: "Prompt",

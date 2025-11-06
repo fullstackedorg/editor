@@ -6,10 +6,11 @@ import * as sass from "sass";
 import { Badge } from "@fullstacked/ui";
 import build from "../../../fullstacked_modules/build";
 import * as lsp from "../../editor_modules/lsp";
+import { versionClass } from "./version.s";
 
 export function Version() {
     const container = document.createElement("div");
-    container.classList.add("version");
+    container.classList.add(versionClass);
 
     container.innerHTML = `<h2>Version</h2>`;
 
