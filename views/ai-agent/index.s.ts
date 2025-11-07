@@ -7,8 +7,8 @@ export const aiAgentConfigClass = style.createClass("ai-agent-configurator", {
     maxWidth,
     display: "flex",
     flexDirection: "column",
-    gap: spacing.s,   
-})
+    gap: spacing.s
+});
 
 export const aiConfigEmpty = style.createClass("ai-configurator-empty", {
     fontSize: typography.s
@@ -28,28 +28,28 @@ export const inputCheckboxWrapClass = style.createClass("input-checkbox-wrap", {
 
 export const keyValueClass = "key-value";
 export const keyValueFormClass = style.createClass("key-value-form", {
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "flex-start",
+
+    "> label": {
+        paddingBottom: spacing.xs
+    },
+
+    "> div": {
         display: "flex",
         flexDirection: "column",
-        alignItems: "flex-start",
+        gap: spacing.s,
+        width: "100%",
 
-        "> label": {
-            paddingBottom: spacing.xs
-        },
-
-        "> div": {
+        [`.${keyValueClass}`]: {
             display: "flex",
-            flexDirection: "column",
             gap: spacing.s,
-            width: "100%",
+            alignItems: "center",
 
-            [`.${keyValueClass}`]: {
-                display: "flex",
-                gap: spacing.s,
-                alignItems: "center",
-
-                "&:last-child": {
-                    paddingBottom: spacing.xs
-                }
+            "&:last-child": {
+                paddingBottom: spacing.xs
             }
         }
-    })
+    }
+});

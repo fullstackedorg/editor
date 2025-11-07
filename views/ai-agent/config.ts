@@ -9,13 +9,14 @@ import {
 import config from "../../editor_modules/config";
 import { CONFIG_TYPE, AgentProvider } from "../../types";
 import { getDefaultAgentProvider } from ".";
-import { 
+import {
     keyValueClass,
     keyValueFormClass,
     inputCheckboxWrapClass,
     alignColCenterClass,
     aiConfigEmpty,
-    aiAgentConfigClass } from "./index.s";
+    aiAgentConfigClass
+} from "./index.s";
 
 export async function mergeConfigsWithAvailableProviders(): Promise<
     AgentProvider[]
@@ -80,7 +81,7 @@ export function createAiAgentConfigurator(configProviderId?: string) {
             let models: string[];
             try {
                 models = await provider.models();
-            } catch (e) { }
+            } catch (e) {}
 
             if (models) {
                 modelSelect = InputSelect({

@@ -11,9 +11,11 @@ import { InputFile, Loader } from "@fullstacked/ui";
 import archive from "../../../fullstacked_modules/archive";
 import config from "../../editor_modules/config";
 import { viewClass } from "../../style/index.s";
-import { createLoaderClass,
-createTerminalClass,
-createFormClass } from "./index.s";
+import {
+    createLoaderClass,
+    createTerminalClass,
+    createFormClass
+} from "./index.s";
 
 export function ImportZip() {
     const { container, scrollable } = ViewScrollable();

@@ -12,8 +12,7 @@ export const addProjectClass = style.createClass("add-project", {
         gap: spacing.l,
         paddingTop: spacing.l
     }
-
-})
+});
 
 export const createFormClass = style.createClass("create-form", {
     minHeight: "100%",
@@ -24,7 +23,7 @@ export const createFormClass = style.createClass("create-form", {
         paddingBottom: spacing.s
     },
 
-    "form": {
+    form: {
         paddingTop: spacing.m,
         paddingBottom: spacing.m,
 
@@ -37,11 +36,11 @@ export const createFormClass = style.createClass("create-form", {
 
         margin: "0 auto",
 
-        "button": {
+        button: {
             alignSelf: "flex-end"
         }
     }
-})
+});
 
 export const createLoaderClass = style.createClass("create-loader", {
     display: "flex",
@@ -52,9 +51,9 @@ export const createLoaderClass = style.createClass("create-loader", {
     gap: spacing.m,
     paddingBottom: spacing.m,
     ".loader": {
-        width: 60,
+        width: 60
     }
-})
+});
 
 export const createTerminalClass = style.createClass("create-terminal", {
     backgroundColor: colors.dark,
@@ -69,4 +68,4 @@ export const createTerminalClass = style.createClass("create-terminal", {
         padding: spacing.m,
         minHeight: "100%"
     }
-})
+});
