@@ -2,6 +2,7 @@ import prettyBytes from "pretty-bytes";
 import { createElement } from "../../components/element";
 import { Dialog } from "@fullstacked/ui";
 import { PackageInfoProgress } from "../../../fullstacked_modules/packages";
+import { progressBarClass, packagesViewClass } from "./index.s";
 
 let packagesView: {
     dialog: ReturnType<typeof Dialog>;
@@ -71,7 +72,7 @@ function removePackagesViewDialog() {
 
 function createPackagesView() {
     const container = createElement("div");
-    container.classList.add("packages-view");
+    container.classList.add(packagesViewClass);
     const title = document.createElement("h3");
     title.innerText = "Dependencies";
     container.append(title);
@@ -89,7 +90,7 @@ function createPackageInfoView(packageName: string) {
     const status = document.createElement("div");
 
     const progressLine = document.createElement("div");
-    progressLine.classList.add("progress-bar");
+    progressLine.classList.add(progressBarClass);
 
     container.append(name, status, progressLine);
 

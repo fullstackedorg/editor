@@ -5,6 +5,7 @@ import { Button, Dialog, InputText } from "@fullstacked/ui";
 import core_message from "../../../fullstacked_modules/core_message";
 import { gitAuthResponse } from "../../../fullstacked_modules/git";
 import config from "../../editor_modules/config";
+import { gitAuthClass } from "./index.s";
 
 function GitAuth(hostname: string): Promise<boolean> {
     if (hostname === "github.com") {
@@ -12,7 +13,7 @@ function GitAuth(hostname: string): Promise<boolean> {
     }
 
     const container = createElement("div");
-    container.classList.add("git-auth");
+    container.classList.add(gitAuthClass);
 
     container.innerHTML = `<h3>Git Authentication</h3>
     <p>Authenticate for <b>${hostname}</b></p>`;

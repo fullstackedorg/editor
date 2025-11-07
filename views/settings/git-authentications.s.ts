@@ -2,7 +2,7 @@ import style from "style";
 import spacing from "../../style/spacing.s";
 import colors from "../../style/colors.s";
 
-export const gitAuthClass = style.createClass("git-authentications", {
+export const settingsGitAuthClass = style.createClass("git-authentications", {
     "> div:first-child": {
         display: "flex",
         justifyContent: "space-between",

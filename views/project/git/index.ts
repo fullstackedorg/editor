@@ -14,6 +14,19 @@ import git, { Status } from "../../../../fullstacked_modules/git";
 import { Store } from "../../../store";
 import { Project } from "../../../types";
 import { Branches } from "./branches";
+import {
+    gitAuthorClass,
+    gitAuthorFormClass,
+    gitAuthorInfoClass,
+    gitChangesClass,
+    gitFormButtonClass,
+    gitFormClass,
+    gitInfoClass,
+    gitStatusClass,
+    gitTopClass,
+    gitStatusPlacholderClass,
+    gitDialogClass
+} from "./index.s";
 
 let branchView = false;
 let refreshMainView: () => void;
@@ -26,7 +39,7 @@ export function Git(project: Project) {
     branchView = false;
 
     const container = createElement("div");
-    container.classList.add("git-dialog");
+    container.classList.add(gitDialogClass);
 
     const { remove } = Dialog(container);
 
@@ -75,7 +88,7 @@ function CommitView(
     const authorRefresheable = createRefresheable(Author);
 
     const statusPlaceholder = createElement("div");
-    statusPlaceholder.classList.add("status-placeholder");
+    statusPlaceholder.classList.add(gitStatusPlacholderClass);
     statusPlaceholder.innerText = "Calculating diffs...";
     const statusRefresheable = createRefresheable(Status, statusPlaceholder);
 
@@ -101,7 +114,7 @@ function CommitView(
     };
 
     const top = document.createElement("div");
-    top.classList.add("git-top");
+    top.classList.add(gitTopClass);
 
     const branchButton = Button({
         style: "icon-large",
@@ -154,10 +167,10 @@ async function CommitAndPushButtons(
     closeButton: HTMLButtonElement
 ) {
     const container = createElement("div");
-    container.classList.add("git-form");
+    container.classList.add(gitFormClass);
 
     const buttonsRow = document.createElement("div");
-    buttonsRow.classList.add("git-buttons");
+    buttonsRow.classList.add(gitFormButtonClass);
 
     const commitAndPushButtons = document.createElement("div");
 
@@ -268,7 +281,7 @@ async function CommitAndPushButtons(
 
 function RepoInfos(project: Project) {
     const container = createElement("div");
-    container.classList.add("git-info");
+    container.classList.add(gitInfoClass);
 
     const webLink = document.createElement("a");
     webLink.target = "_blank";
@@ -289,7 +302,7 @@ function RepoInfos(project: Project) {
 
 function Author(project: Project) {
     const container = createElement("div");
-    container.classList.add("git-author");
+    container.classList.add(gitAuthorClass);
 
     let formView = false;
     const render = () => {
@@ -315,7 +328,7 @@ function Author(project: Project) {
 
 function AuthorForm(project: Project, toggleView: () => void) {
     const form = createElement("form");
-    form.classList.add("git-author-form");
+    form.classList.add(gitAuthorFormClass);
 
     const nameInput = InputText({
         label: "Name"
@@ -377,7 +390,7 @@ function AuthorForm(project: Project, toggleView: () => void) {
 
 function AuthorInfos(project: Project, toggleView: () => void) {
     const container = createElement("div");
-    container.classList.add("git-author-infos");
+    container.classList.add(gitAuthorInfoClass);
 
     const editButton = Button({
         style: "icon-small",
@@ -398,7 +411,7 @@ function AuthorInfos(project: Project, toggleView: () => void) {
 
 async function Status(project: Project) {
     const container = createElement("div");
-    container.classList.add("git-status");
+    container.classList.add(gitStatusClass);
 
     const { changes, hasChanges } = await projectChanges(project);
 
@@ -415,7 +428,7 @@ type Changes = Awaited<ReturnType<typeof git.status>>;
 
 function ChangesList(changes: Changes, project: Project) {
     const container = document.createElement("div");
-    container.classList.add("git-changes");
+    container.classList.add(gitChangesClass);
 
     const revertFile = (file: string) => git.restore(project.id, [file]);
 

@@ -3,10 +3,11 @@ import { CONFIG_TYPE } from "../../types";
 import core_fetch from "../../../fullstacked_modules/fetch";
 import { Button, Dialog, Icon } from "@fullstacked/ui";
 import config from "../../editor_modules/config";
+import { githubAuthClass } from "./github.s";
 
 export function GitHubDeviceFlow() {
     const container = createElement("div");
-    container.classList.add("github-auth");
+    container.classList.add(githubAuthClass);
 
     container.innerHTML = `<h3>GitHub Authentication</h3>`;
 

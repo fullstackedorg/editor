@@ -13,12 +13,17 @@ import { createElement } from "../../../components/element";
 import { createRefresheable } from "../../../components/refresheable";
 import git from "../../../../fullstacked_modules/git";
 import { Project } from "../../../types";
+import {
+    gitBranchListClass,
+    createBranchFormClass,
+    gitBranchesClass
+} from "./branches.s";
 
 let refreshBranches: ReturnType<typeof createRefresheable>["refresh"];
 
 export function Branches(project: Project, closeButton: HTMLButtonElement) {
     const container = createElement("div");
-    container.classList.add("git-branches");
+    container.classList.add(gitBranchesClass);
 
     const top = document.createElement("div");
 
@@ -78,7 +83,7 @@ export function Branches(project: Project, closeButton: HTMLButtonElement) {
 
 async function BranchesList(project: Project) {
     const container = createElement("ul");
-    container.classList.add("git-branch-list");
+    container.classList.add(gitBranchListClass);
 
     const [branches, head, { hasChanges }] = await Promise.all([
         git.branches(project),
@@ -184,7 +189,7 @@ async function BranchesList(project: Project) {
 
 function CreateBranchForm(project: Project, close: () => void) {
     const form = createElement("form");
-    form.classList.add("create-branch-form");
+    form.classList.add(createBranchFormClass);
 
     const branchNameInput = InputText({
         label: "Branch name"
