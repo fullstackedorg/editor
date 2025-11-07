@@ -12,10 +12,12 @@ import { BG_COLOR } from "../../constants";
 import core_message from "../../../fullstacked_modules/core_message";
 import git from "../../../fullstacked_modules/git";
 import { Button, InputText } from "@fullstacked/ui";
+import { createFormClass } from "./index.s";
+import { viewClass } from "../../style/index.s";
 
 export function CloneGit(repoUrl?: string) {
     const { container, scrollable } = ViewScrollable();
-    container.classList.add("view", "create-form");
+    container.classList.add(viewClass, createFormClass);
 
     const topBar = TopBar({
         title: "Clone git repository"

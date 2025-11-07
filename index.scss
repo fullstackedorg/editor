@@ -10,11 +10,9 @@ https://www.figma.com/design/xb3JBRCvEWpbwGda03T5QQ/Mockups
 @use "style/winbox.scss";
 
 // views
-@use "views/add-project/index.scss" as index2;
 @use "views/project/index.scss" as index4;
 @use "views/project/git/index.scss" as index5;
 @use "views/packages/index.scss" as index6;
-@use "views/ai-agent/index.scss" as index8;
 
 // deps
 @use "../node_modules/@fullstacked/ui/ui.scss";

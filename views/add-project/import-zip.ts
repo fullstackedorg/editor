@@ -10,10 +10,14 @@ import fs from "../../../fullstacked_modules/fs";
 import { InputFile, Loader } from "@fullstacked/ui";
 import archive from "../../../fullstacked_modules/archive";
 import config from "../../editor_modules/config";
+import { viewClass } from "../../style/index.s";
+import { createLoaderClass,
+createTerminalClass,
+createFormClass } from "./index.s";
 
 export function ImportZip() {
     const { container, scrollable } = ViewScrollable();
-    container.classList.add("view", "create-form");
+    container.classList.add(viewClass, createFormClass);
 
     const topBar = TopBar({
         title: "Import zip"
@@ -47,7 +51,7 @@ export function ImportZip() {
 
 export function CreateLoader(opts: { text: string }) {
     const container = document.createElement("div");
-    container.classList.add("create-loader");
+    container.classList.add(createLoaderClass);
 
     const text = document.createElement("div");
     text.innerText = opts.text;
@@ -59,7 +63,7 @@ export function CreateLoader(opts: { text: string }) {
 
 export function ConsoleTerminal() {
     const container = document.createElement("div");
-    container.classList.add("create-terminal");
+    container.classList.add(createTerminalClass);
 
     const text = document.createElement("pre");
     container.append(text);

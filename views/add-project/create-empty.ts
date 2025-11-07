@@ -5,10 +5,12 @@ import stackNavigation from "../../stack-navigation";
 import { BG_COLOR } from "../../constants";
 import fs from "../../../fullstacked_modules/fs";
 import { Button, InputText } from "@fullstacked/ui";
+import { viewClass } from "../../style/index.s";
+import { createFormClass } from "./index.s";
 
 export function CreateEmpty() {
     const container = document.createElement("div");
-    container.classList.add("view", "create-form");
+    container.classList.add(viewClass, createFormClass);
 
     const topBar = TopBar({
         title: "Create empty project"

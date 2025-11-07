@@ -9,6 +9,13 @@ import {
 import config from "../../editor_modules/config";
 import { CONFIG_TYPE, AgentProvider } from "../../types";
 import { getDefaultAgentProvider } from ".";
+import { 
+    keyValueClass,
+    keyValueFormClass,
+    inputCheckboxWrapClass,
+    alignColCenterClass,
+    aiConfigEmpty,
+    aiAgentConfigClass } from "./index.s";
 
 export async function mergeConfigsWithAvailableProviders(): Promise<
     AgentProvider[]
@@ -37,7 +44,7 @@ export async function mergeConfigsWithAvailableProviders(): Promise<
 
 export function createAiAgentConfigurator(configProviderId?: string) {
     const element = document.createElement("div");
-    element.classList.add("ai-agent-configurator");
+    element.classList.add(aiAgentConfigClass);
 
     const saveConfigs = () => {
         config.save(CONFIG_TYPE.AGENT, providers);
@@ -51,7 +58,7 @@ export function createAiAgentConfigurator(configProviderId?: string) {
     let providerConfigsContainer = document.createElement("div");
 
     const emptyText = document.createElement("div");
-    emptyText.classList.add("ai-configurator-empty");
+    emptyText.classList.add(aiConfigEmpty);
     emptyText.innerText = "Select an agent provider to configure";
     providerConfigsContainer.append(emptyText);
 
@@ -59,7 +66,7 @@ export function createAiAgentConfigurator(configProviderId?: string) {
         const providerInfos = providers.find(({ id }) => id === providerId);
 
         const providerConfigs = document.createElement("div");
-        providerConfigs.classList.add("ai-provider-configs");
+        providerConfigs.classList.add(alignColCenterClass);
 
         let providerModelSelectContainer = document.createElement("div");
         let provider: ReturnType<typeof ai.getProvider>;
@@ -67,13 +74,13 @@ export function createAiAgentConfigurator(configProviderId?: string) {
             saveConfigs();
 
             const providerModelSelect = document.createElement("div");
-            providerModelSelect.classList.add("ai-provider-model-select");
+            providerModelSelect.classList.add(alignColCenterClass);
 
             provider = ai.getProvider(providerInfos);
             let models: string[];
             try {
                 models = await provider.models();
-            } catch (e) {}
+            } catch (e) { }
 
             if (models) {
                 modelSelect = InputSelect({
@@ -83,7 +90,7 @@ export function createAiAgentConfigurator(configProviderId?: string) {
                 modelSelect.select.value = providerInfos.model;
 
                 const defaultCheckbox = document.createElement("div");
-                defaultCheckbox.classList.add("input-checkbox-wrap");
+                defaultCheckbox.classList.add(inputCheckboxWrapClass);
                 defaultCheckbox.innerHTML = `<label>Use as default agent</label>`;
                 const checkbox = InputCheckbox();
                 checkbox.input.checked = providerInfos.useDefault;
@@ -199,14 +206,14 @@ function keyValueComponent(opts: {
     }
 
     const container = document.createElement("div");
-    container.classList.add("key-value-form");
+    container.classList.add(keyValueFormClass);
     container.innerHTML = `<label>${opts.title}</label>`;
 
     const keyValuesContainer = document.createElement("div");
 
     const addKeyValueRow = (item: [string, string]) => {
         const row = document.createElement("div");
-        row.classList.add("key-value");
+        row.classList.add(keyValueClass);
         const keyInput = InputText();
         keyInput.input.value = item.at(0);
         keyInput.input.onkeyup = () => {

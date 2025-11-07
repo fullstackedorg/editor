@@ -6,11 +6,13 @@ import { Store } from "../../store";
 import { CloneGit } from "./clone-git";
 import { CreateEmpty } from "./create-empty";
 import { ImportZip } from "./import-zip";
+import { viewClass } from "../../style/index.s";
+import { addProjectClass } from "./index.s";
 
 export function AddProject() {
     const container = document.createElement("div");
     container.id = "add-project";
-    container.classList.add("view");
+    container.classList.add(viewClass, addProjectClass);
 
     const topBar = TopBar({
         title: "Add Project"
