@@ -5,6 +5,13 @@ import { Diagnostic } from "@codemirror/lint";
 import { Store } from "../../../store";
 import { Button } from "@fullstacked/ui";
 import { createDevIcon } from "../dev-icons";
+import {
+    activeTabClass,
+    errorTabClass,
+    filePathHelperClass,
+    streamingTabClass,
+    tabsClass
+} from "./tabs.s";
 
 export function createTabs(
     project: Project,
@@ -14,17 +21,17 @@ export function createTabs(
     }
 ) {
     const element = document.createElement("div");
-    element.classList.add("tabs");
+    element.classList.add(tabsClass);
 
     const tabs = new Map<string, [HTMLElement, HTMLElement, HTMLElement]>();
 
     const setActive = (filePath: string) => {
         Array.from(tabs.entries()).forEach(([f, tab]) => {
             if (filePath === f) {
-                tab[0].classList.add("active");
+                tab[0].classList.add(activeTabClass);
                 tab[0].scrollIntoView();
             } else {
-                tab[0].classList.remove("active");
+                tab[0].classList.remove(activeTabClass);
             }
         });
     };
@@ -61,9 +68,9 @@ export function createTabs(
                         file.split(project.id + "/").pop() === filePath
                 )
             ) {
-                tab.classList.add("has-error");
+                tab.classList.add(errorTabClass);
             } else {
-                tab.classList.remove("has-error");
+                tab.classList.remove(errorTabClass);
             }
         });
     };
@@ -72,9 +79,9 @@ export function createTabs(
     const onLspDiagnostics = (diagnostics: Map<string, Diagnostic[]>) => {
         Array.from(tabs.entries()).forEach(([filePath, [tab]]) => {
             if (diagnostics.get(filePath)?.length) {
-                tab.classList.add("has-error");
+                tab.classList.add(errorTabClass);
             } else {
-                tab.classList.remove("has-error");
+                tab.classList.remove(errorTabClass);
             }
         });
     };
@@ -86,14 +93,14 @@ export function createTabs(
             const status = chats.get(filePath);
             if (status) {
                 if (status === "ERROR") {
-                    tab.classList.remove("is-streaming");
-                    tab.classList.add("has-error");
+                    tab.classList.remove(streamingTabClass);
+                    tab.classList.add(errorTabClass);
                 } else {
-                    tab.classList.remove("has-error");
-                    tab.classList.add("is-streaming");
+                    tab.classList.remove(errorTabClass);
+                    tab.classList.add(streamingTabClass);
                 }
             } else {
-                tab.classList.remove("is-streaming", "has-error");
+                tab.classList.remove(streamingTabClass, errorTabClass);
             }
         });
     };
@@ -122,7 +129,7 @@ export function createTabs(
                     document.createElement("div")
                 ];
                 tab[0].onclick = () => actions.open(filePath);
-                tab[2].classList.add("file-path-helper");
+                tab[2].classList.add(filePathHelperClass);
                 let popoverDelayTimeout: ReturnType<typeof setTimeout>;
                 tab[2].innerText = filePath;
                 const remove = () => {
@@ -171,15 +178,16 @@ export function createTabs(
                         file.split(project.id + "/").pop() === filePath
                 );
             if (hasBuildErrors) {
-                tab[0].classList.add("has-error");
+                tab[0].classList.add(errorTabClass);
             } else {
-                tab[0].classList.remove("has-error");
+                tab[0].classList.remove(errorTabClass);
             }
 
             if (oldPath) {
                 const oldTab = tabs.get(oldPath);
                 if (oldTab) {
-                    const wasActive = oldTab[0].classList.contains("active");
+                    const wasActive =
+                        oldTab[0].classList.contains(activeTabClass);
                     oldTab[0].replaceWith(tab[0]);
                     tabs.delete(oldPath);
                     if (wasActive) {

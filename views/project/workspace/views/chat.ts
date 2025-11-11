@@ -12,6 +12,7 @@ import { Button } from "@fullstacked/ui";
 import { EditorView } from "codemirror";
 import { Store } from "../../../../store";
 import { z } from "zod";
+import { chatAgentSelectorClass, chatInfoClass, chatViewClass } from "./chat.s";
 
 const extensions = ["chat"];
 
@@ -52,7 +53,7 @@ function aiAgentSelector(
     didSelect: (selection: { provider: string; model: string }) => void
 ) {
     const element = document.createElement("div");
-    element.classList.add("ai-agent-selector");
+    element.classList.add(chatAgentSelectorClass);
 
     const configurator = createAiAgentConfigurator(provider);
     const submitButton = Button({
@@ -66,7 +67,7 @@ function aiAgentSelector(
 
 export function createViewChat(project: Project, projectFilePath: string) {
     const element = document.createElement("div");
-    element.classList.add("chat-container");
+    element.classList.add(chatViewClass);
 
     let lastScrollY = 0;
 
@@ -161,7 +162,7 @@ export function createViewChat(project: Project, projectFilePath: string) {
         });
 
         const infos = document.createElement("div");
-        infos.classList.add("infos");
+        infos.classList.add(chatInfoClass);
 
         const providerAndModel = document.createElement("div");
         const agentTitle = document.createElement("label");

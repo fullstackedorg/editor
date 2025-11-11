@@ -1,4 +1,5 @@
 import { Button } from "@fullstacked/ui";
+import { historyClass } from "./history.s";
 export function createHistoryNavigation(actions: {
     open: (filePath: string, pos: number, fromHistory: true) => void;
 }) {
@@ -8,7 +9,7 @@ export function createHistoryNavigation(actions: {
     }[] = [];
 
     const element = document.createElement("div");
-    element.classList.add("history");
+    element.classList.add(historyClass);
 
     const back = Button({
         style: "icon-small",

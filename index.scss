@@ -25,3 +25,13 @@ body {
     height: 100%;
     -webkit-text-size-adjust: 100%;
 }
+
+@keyframes flash {
+    from {
+        opacity: 1;
+    }
+
+    to {
+        opacity: 0.3;
+    }
+}

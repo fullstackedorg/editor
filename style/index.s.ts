@@ -1,8 +1,11 @@
-import style from "style";
+import style, { CSSProperties } from "style";
 import spacing from "./spacing.s";
 
-const commonViewStyle = {
-    padding: `${spacing.s}px ${spacing.m}px ${spacing.m}px`
+const commonViewStyle: CSSProperties = {
+    padding: `${spacing.s}px ${spacing.m}px ${spacing.m}px`,
+    "&.project": {
+        paddingBottom: 0
+    }
 };
 
 export const viewClass = style.createClass("view", commonViewStyle);

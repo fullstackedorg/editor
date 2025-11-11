@@ -8,6 +8,7 @@ import type { createHistoryNavigation } from "../history";
 import { SupportedLanguage } from "@fullstacked/codemirror-view/languages";
 import { sassSupportedFile } from "../sass";
 import { lintGutter } from "@codemirror/lint";
+import { codeViewClass } from "./code.s";
 
 export const FILE_EVENT_ORIGIN = "code-editor";
 
@@ -28,7 +29,7 @@ export async function createViewCode(
             EditorView.clickAddsSelectionRange.of((e) => e.altKey && !e.metaKey)
         ]
     });
-    view.element.classList.add("code-container");
+    view.element.classList.add(codeViewClass);
 
     const save = async () => {
         if ((await fs.exists(filePath))?.isFile) {

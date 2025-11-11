@@ -13,20 +13,23 @@ import { FileTree } from "./file-tree";
 import { openPrompt } from "../prompt";
 import { createWorkspace } from "./workspace";
 import { Workspace } from "./workspace";
+import { viewClass } from "../../style/index.s";
+import {
+    fileAndEditorClosedClass,
+    fileTreeAndEditorClass,
+    gitStatusArrowClass,
+    gitStatusArrowRedClass,
+    gitWidgetClass,
+    leftPanelClass,
+    projectClass
+} from "./index.s";
 
-let lastOpenedProjectId: string;
 export function Project(project: ProjectType) {
     if (!project) return;
 
-    // gives a chance if back button by mistake
-    if (lastOpenedProjectId !== project.id) {
-    }
-
-    lastOpenedProjectId = project.id;
-
     const container = createElement("div");
     container.id = PROJECT_VIEW_ID;
-    container.classList.add("view");
+    container.classList.add(viewClass, projectClass);
 
     const { fileTreeAndEditor, workspace } = FileTreeAndEditor(project);
     const topBar = TopBar(project, fileTreeAndEditor, workspace);
@@ -59,7 +62,9 @@ function TopBar(
         subtitle: project.id,
         actions: [gitWidget, runButton],
         onBack: () => {
-            if (fileTreeAndEditor.classList.contains("closed-panel")) {
+            if (
+                fileTreeAndEditor.classList.contains(fileAndEditorClosedClass)
+            ) {
                 Store.editor.setSidePanelClosed(false);
             } else {
                 Store.projects.setCurrent(null);
@@ -79,13 +84,13 @@ function TopBar(
 
 function FileTreeAndEditor(project: ProjectType) {
     const container = createElement("div");
-    container.classList.add("file-tree-and-editor");
+    container.classList.add(fileTreeAndEditorClass);
 
     const toggleSidePanel = (closed: boolean) => {
         if (closed) {
-            container.classList.add("closed-panel");
+            container.classList.add(fileAndEditorClosedClass);
         } else {
-            container.classList.remove("closed-panel");
+            container.classList.remove(fileAndEditorClosedClass);
         }
     };
 
@@ -98,7 +103,7 @@ function FileTreeAndEditor(project: ProjectType) {
     const fileTree = FileTree(project, workspace);
 
     const leftPanel = document.createElement("div");
-    leftPanel.classList.add("left-panel");
+    leftPanel.classList.add(leftPanelClass);
 
     const buttonContainer = document.createElement("div");
 
@@ -113,7 +118,6 @@ function FileTreeAndEditor(project: ProjectType) {
 
     leftPanel.append(fileTree, buttonContainer);
 
-    const editor = document.createElement("div");
     container.append(leftPanel, workspace.element);
 
     container.ondestroy = () => {
@@ -187,7 +191,7 @@ export const refreshGitWidgetBranchAndCommit = () => {
 };
 function GitWidget(project: ProjectType) {
     const container = createElement("div");
-    container.classList.add("git-widget");
+    container.classList.add(gitWidgetClass);
 
     const hasGit = Boolean(project.gitRepository?.url);
     const gitButton = Button({
@@ -216,13 +220,13 @@ function GitWidget(project: ProjectType) {
     refreshBranchAndCommit();
 
     const statusArrow = Icon("Arrow 2");
-    statusArrow.classList.add("git-status-arrow");
+    statusArrow.classList.add(gitStatusArrowClass);
     statusArrow.style.display = "none";
     container.append(statusArrow);
 
     const pullEvent = (gitProgress: string) => {
         statusArrow.style.display = "flex";
-        statusArrow.classList.remove("red");
+        statusArrow.classList.remove(gitStatusArrowRedClass);
 
         let json: { finished: boolean };
         try {
@@ -239,7 +243,7 @@ function GitWidget(project: ProjectType) {
 
     const pushEvent = (gitProgress: string) => {
         statusArrow.style.display = "flex";
-        statusArrow.classList.add("red");
+        statusArrow.classList.add(gitStatusArrowRedClass);
 
         let json: { finished: boolean };
         try {

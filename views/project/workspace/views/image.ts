@@ -1,6 +1,6 @@
 import { Project } from "../../../../types";
 import fs from "../../../../../fullstacked_modules/fs";
-import { restore } from "../../../../../fullstacked_modules/git";
+import { imageViewClass } from "./image.s";
 
 const extensions = ["jpg", "jpeg", "png", "webp", "bmp", "gif"];
 
@@ -11,7 +11,7 @@ export function imageSupportedFile(filePath: string) {
 
 export function createViewImage(project: Project, projectFilePath: string) {
     const element = document.createElement("div");
-    element.classList.add("image-container");
+    element.classList.add(imageViewClass);
 
     const image = document.createElement("img");
     element.append(image);

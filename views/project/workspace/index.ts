@@ -12,6 +12,7 @@ import { createViewCode, FILE_EVENT_ORIGIN } from "./views/code";
 import { createViewChat, chatSupportedFile } from "./views/chat";
 import { createTabs } from "./tabs";
 import { createHistoryNavigation } from "./history";
+import { workspaceClass } from "./index.s";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
 
@@ -22,7 +23,7 @@ export type ViewChat = ReturnType<typeof createViewChat>;
 
 export function createWorkspace(project: Project) {
     const element = document.createElement("div");
-    element.classList.add("workspace");
+    element.classList.add(workspaceClass);
 
     let activeView: ViewCode | ViewImage | ViewBinary | ViewChat = null;
     const views = new Map<string, typeof activeView>();

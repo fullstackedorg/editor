@@ -17,9 +17,10 @@ export default {
 };
 
 export function opacity(color: string, opacity: number) {
-    return `rgba(
-        ${parseInt(color.slice(1, 3), 16)},
-        ${parseInt(color.slice(3, 5), 16)},
-        ${parseInt(color.slice(5), 16)},
-        ${opacity / 100})`;
+    return [
+        "rgba(" + parseInt(color.slice(1, 3), 16),
+        parseInt(color.slice(3, 5), 16),
+        parseInt(color.slice(5), 16),
+        opacity / 100 + ")"
+    ].join(",");
 }
