@@ -48,15 +48,15 @@ function EditorVersion() {
 
             const badge = isDev
                 ? Badge({
-                    text: "Development",
-                    type: "info"
-                })
+                      text: "Development",
+                      type: "info"
+                  })
                 : semver.eq(versionStr, latestVersion)
-                    ? Badge({
+                  ? Badge({
                         text: "Latest",
                         type: "info-2"
                     })
-                    : Badge({
+                  : Badge({
                         text: "Update Available",
                         type: "warning"
                     });
