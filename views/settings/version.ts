@@ -6,7 +6,7 @@ import * as sass from "sass";
 import { Badge } from "@fullstacked/ui";
 import build from "../../../fullstacked_modules/build";
 import * as lsp from "../../editor_modules/lsp";
-import { versionClass } from "./version.s";
+import { editorVersionClass, versionClass } from "./version.s";
 
 export function Version() {
     const container = document.createElement("div");
@@ -35,7 +35,7 @@ function EditorVersion() {
         const versionStr = `${version.major}.${version.minor}.${version.patch}`;
 
         const editorVersionContainer = document.createElement("div");
-        editorVersionContainer.classList.add("editor-version");
+        editorVersionContainer.classList.add(editorVersionClass);
 
         const topRow = document.createElement("div");
         topRow.innerText = versionStr;

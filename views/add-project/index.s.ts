@@ -2,10 +2,11 @@ import style from "style";
 import spacing, { maxWidth } from "../../style/spacing.s";
 import colors from "../../style/colors.s";
 
+export const addProjectButtonsClass = "buttons";
 export const addProjectClass = style.createClass("add-project", {
     paddingBottom: spacing.s,
 
-    ".buttons": {
+    [`.${addProjectButtonsClass}`]: {
         display: "flex",
         flexDirection: "column",
         alignItems: "center",

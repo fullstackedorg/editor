@@ -3,7 +3,9 @@ import spacing from "../../style/spacing.s";
 import typography from "../../style/typography.s";
 import { fileTreePanelWidth, workspaceClass } from "./workspace/index.s";
 import colors from "../../style/colors.s";
+import { topBarActionsClass } from "../../components/top-bar.s";
 
+export const loaderContainerClass = "loader-container";
 export const projectClass = style.createClass("project", {
     display: "flex",
     flexDirection: "column",
@@ -21,8 +23,8 @@ export const projectClass = style.createClass("project", {
             fontSize: typography.s
         },
 
-        ".top-bar-actions": {
-            ".loader-container": {
+        [`.${topBarActionsClass}`]: {
+            [`.${loaderContainerClass}`]: {
                 width: 38,
                 height: 38,
                 padding: 4

@@ -7,7 +7,13 @@ import { Project } from "../project";
 import { ProjectSettings } from "../project-settings";
 import { Loader, Button, ButtonGroup, Popover, Dialog } from "@fullstacked/ui";
 import archive from "../../../fullstacked_modules/archive";
-import { projectsListClass } from "./list.s";
+import {
+    projectTitleIdClass,
+    projectLoadingClass,
+    projectOptionsPopoverClass,
+    projectTileClass,
+    projectsListClass
+} from "./list.s";
 
 export function List() {
     const container = createElement("div");
@@ -89,16 +95,16 @@ function GridFiltered(projects: ProjectType[]) {
 
 function ProjectTile(project: ProjectType) {
     const container = createElement("div");
-    container.classList.add("project-tile");
+    container.classList.add(projectTileClass);
 
     const loader = Loader();
 
     const onPullAndBuild = (projectIds: Set<string>) => {
         if (projectIds.has(project.id)) {
-            container.classList.add("loading");
+            container.classList.add(projectLoadingClass);
             container.prepend(loader);
         } else {
-            container.classList.remove("loading");
+            container.classList.remove(projectLoadingClass);
             loader.remove();
         }
     };
@@ -122,7 +128,7 @@ function ProjectTile(project: ProjectType) {
     };
 
     const titleAndId = document.createElement("div");
-    titleAndId.classList.add("title-id");
+    titleAndId.classList.add(projectTitleIdClass);
     titleAndId.innerHTML = `
         <h2>${project.title}</h2>
         <div><small>${project.id}</small></div>
@@ -138,7 +144,7 @@ function ProjectTile(project: ProjectType) {
         e.stopPropagation();
 
         const content = document.createElement("div");
-        content.classList.add("options-popover");
+        content.classList.add(projectOptionsPopoverClass);
 
         const deleteButton = Button({
             text: "Delete",

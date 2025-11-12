@@ -7,7 +7,7 @@ import { CloneGit } from "./clone-git";
 import { CreateEmpty } from "./create-empty";
 import { ImportZip } from "./import-zip";
 import { viewClass } from "../../style/index.s";
-import { addProjectClass } from "./index.s";
+import { addProjectButtonsClass, addProjectClass } from "./index.s";
 
 export function AddProject() {
     const container = document.createElement("div");
@@ -21,7 +21,7 @@ export function AddProject() {
     container.append(topBar);
 
     const buttonsContainer = document.createElement("div");
-    buttonsContainer.classList.add("buttons");
+    buttonsContainer.classList.add(addProjectButtonsClass);
 
     const cloneGitButton = Button({
         text: "Clone git repository",

@@ -10,10 +10,14 @@ import { Button, ButtonGroup, Icon, InputText, Popover } from "@fullstacked/ui";
 import { Workspace } from "./workspace";
 import { createDevIcon } from "./dev-icons";
 import { promptNewChat } from "../prompt";
-import { importFileClass, fileTreeContainerClass } from "./file-tree.s";
+import {
+    openDirectoryClass,
+    importFileClass,
+    fileTreeContainerClass
+} from "./file-tree.s";
 
 const directoryIconOpen = Icon("Caret");
-directoryIconOpen.classList.add("open");
+directoryIconOpen.classList.add(openDirectoryClass);
 const directoryIconClose = Icon("Caret");
 
 const hide = ["/.build", "/.git", "/tsconfig.json"];

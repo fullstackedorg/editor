@@ -2,7 +2,12 @@ import { Button } from "@fullstacked/ui";
 import { BACK_BUTTON_CLASS } from "../constants";
 import stackNavigation from "../stack-navigation";
 import { createElement } from "./element";
-import { topBarNoBackClass, topBarTitlesClass, topBarClass } from "./top-bar.s";
+import {
+    topBarActionsClass,
+    topBarNoBackClass,
+    topBarTitlesClass,
+    topBarClass
+} from "./top-bar.s";
 
 type TopBarOpts = {
     noBack: boolean;
@@ -56,7 +61,7 @@ export function TopBar(opts?: Partial<TopBarOpts>) {
     }
 
     const right = document.createElement("div");
-    right.classList.add("top-bar-actions");
+    right.classList.add(topBarActionsClass);
 
     if (opts?.actions) {
         right.append(...opts.actions);

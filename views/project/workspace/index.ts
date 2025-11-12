@@ -12,7 +12,7 @@ import { createViewCode, FILE_EVENT_ORIGIN } from "./views/code";
 import { createViewChat, chatSupportedFile } from "./views/chat";
 import { createTabs } from "./tabs";
 import { createHistoryNavigation } from "./history";
-import { workspaceClass } from "./index.s";
+import { viewContainerClass, workspaceClass } from "./index.s";
 
 export type Workspace = ReturnType<typeof createWorkspace>;
 
@@ -153,7 +153,7 @@ export function createWorkspace(project: Project) {
     topRow.append(history.element, tabs.element);
 
     const container = document.createElement("div");
-    container.classList.add("view-container");
+    container.classList.add(viewContainerClass);
 
     element.append(topRow, container);
 

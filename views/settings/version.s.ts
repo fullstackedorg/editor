@@ -1,6 +1,7 @@
 import style from "style";
 import spacing from "../../style/spacing.s";
 
+export const editorVersionClass = "editor-version";
 export const versionClass = style.createClass("version", {
     display: "flex",
     flexDirection: "column",
@@ -16,7 +17,7 @@ export const versionClass = style.createClass("version", {
         }
     },
 
-    ".editor-version": {
+    [`.${editorVersionClass}`]: {
         display: "flex",
         flexDirection: "column",
         alignItems: "flex-end",

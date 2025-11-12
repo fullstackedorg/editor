@@ -3,6 +3,11 @@ import spacing from "../../style/spacing.s";
 import colors, { opacity } from "../../style/colors.s";
 import breakpoints from "../../style/breakpoints.s";
 
+export const projectTileClass = "project-tile";
+export const projectLoadingClass = "loading";
+export const projectTitleIdClass = "title-id";
+export const projectOptionsPopoverClass = "options-popover";
+export const projectDeleteDialogClass = "confirm";
 export const projectsListClass = style.createClass("projects-list", {
     display: "grid",
     gap: spacing.m,
@@ -18,7 +23,7 @@ export const projectsListClass = style.createClass("projects-list", {
         gridTemplateColumns: "repeat(1, 1fr)"
     },
 
-    ".project-tile": {
+    [`.${projectTileClass}`]: {
         position: "relative",
         cursor: "pointer",
         backgroundColor: opacity(colors.light, 15),
@@ -31,11 +36,11 @@ export const projectsListClass = style.createClass("projects-list", {
         overflow: "hidden",
         padding: spacing.s,
 
-        "&.loading": {
+        [`&.${projectLoadingClass}`]: {
             backgroundColor: opacity(colors.light, 25)
         },
 
-        "> .title-id": {
+        [`> .${projectTitleIdClass}`]: {
             width: "100%",
             display: "flex",
             flexDirection: "column",
@@ -58,7 +63,7 @@ export const projectsListClass = style.createClass("projects-list", {
             right: spacing.xs
         },
 
-        ".option-popover": {
+        [`.${projectOptionsPopoverClass}`]: {
             padding: spacing.xs
         },
 

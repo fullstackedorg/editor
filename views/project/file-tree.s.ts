@@ -14,6 +14,7 @@ const hidden: CSSProperties = {
 };
 
 export const importFileClass = "import-file";
+export const openDirectoryClass = "open";
 export const fileTreeContainerClass = style.createClass("file-tree-container", {
     height: "100%",
     display: "flex",
@@ -65,7 +66,7 @@ export const fileTreeContainerClass = style.createClass("file-tree-container", {
             }
         },
 
-        ".icon.open": {
+        [`.icon.${openDirectoryClass}`]: {
             transform: "rotate(90deg)"
         },
 

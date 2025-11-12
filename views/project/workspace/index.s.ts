@@ -33,3 +33,25 @@ export const workspaceClass = style.createClass("workspace", {
         outline: "none"
     }
 });
+
+export const viewContainerClass = style.createClass("view-container", {
+    width: "100%",
+    height: `calc(100% - ${workspaceTabsHeight}px)`,
+    flex: 1,
+
+    "> .cm-container": {
+        height: "100%",
+        width: "100%",
+
+        "> div": {
+            height: "100%",
+            maxHeight: "100%",
+            width: "100%",
+            maxWidth: "100%"
+        },
+
+        input: {
+            width: "auto"
+        }
+    }
+});

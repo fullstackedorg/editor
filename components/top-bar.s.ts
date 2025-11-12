@@ -3,6 +3,7 @@ import spacing from "../style/spacing.s";
 
 export const topBarNoBackClass = "no-back";
 export const topBarTitlesClass = "titles";
+export const topBarActionsClass = "top-bar-actions";
 export const topBarClass = style.createClass("top-bar", {
     display: "flex",
     alignItems: "center",

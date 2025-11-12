@@ -21,6 +21,7 @@ import {
     gitStatusArrowRedClass,
     gitWidgetClass,
     leftPanelClass,
+    loaderContainerClass,
     projectClass
 } from "./index.s";
 
@@ -151,7 +152,7 @@ function RunButton(project: ProjectType, workspace: Workspace) {
     };
 
     const loaderContainer = document.createElement("div");
-    loaderContainer.classList.add("loader-container");
+    loaderContainer.classList.add(loaderContainerClass);
     loaderContainer.append(Loader());
     const showLoader = () => {
         if (Array.from(container.children).find((c) => c === loaderContainer)) {
