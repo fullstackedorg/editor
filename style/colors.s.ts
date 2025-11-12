@@ -1,4 +1,6 @@
-export default {
+import style, { CSSProperties } from "style";
+
+const colors = {
     blue: {
         main: "#007aff",
         accent: "#04b8ec",
@@ -16,6 +18,8 @@ export default {
     overlay: "#15171b99"
 };
 
+export default colors;
+
 export function opacity(color: string, opacity: number) {
     return [
         "rgba(" + parseInt(color.slice(1, 3), 16),
@@ -24,3 +28,13 @@ export function opacity(color: string, opacity: number) {
         opacity / 100 + ")"
     ].join(",");
 }
+
+const htmlBodyStyle: CSSProperties = {
+    backgroundColor: colors.blue.dark,
+    color: colors.light
+};
+
+style.createGlobalStyle({
+    html: htmlBodyStyle,
+    body: htmlBodyStyle
+});

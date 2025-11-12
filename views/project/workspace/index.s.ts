@@ -1,9 +1,13 @@
-import style from "style";
+import style, { CSSProperties } from "style";
 import spacing from "../../../style/spacing.s";
 import colors from "../../../style/colors.s";
 
 export const fileTreePanelWidth = 235;
 const workspaceTabsHeight = 34;
+
+const darkBackground: CSSProperties = {
+    backgroundColor: colors.dark
+};
 
 export const workspaceClass = style.createClass("workspace", {
     width: `calc(100% - ${fileTreePanelWidth}px)`,
@@ -20,5 +24,12 @@ export const workspaceClass = style.createClass("workspace", {
         borderBottom: `1px solid ${colors.gray.main}`,
         height: workspaceTabsHeight,
         alignItems: "center"
+    },
+
+    // codemirror overrides
+    ".cm-editor": darkBackground,
+    ".cm-gutters": darkBackground,
+    ".cm-focused": {
+        outline: "none"
     }
 });

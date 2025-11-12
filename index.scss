@@ -3,26 +3,12 @@ All styles follows the official figma design file
 https://www.figma.com/design/xb3JBRCvEWpbwGda03T5QQ/Mockups
 */
 
-// globals
-@use "style/colors.scss";
-@use "style/spacing.scss";
-@use "style/list.scss";
-@use "style/winbox.scss";
-
-// views
-@use "views/project/index.scss" as index4;
-
 // deps
 @use "../node_modules/@fullstacked/ui/ui.scss";
 @use "../node_modules/@fullstacked/file-tree/file-tree.scss";
 
-// platform specifics
-@use "style/apple.scss";
-@use "style/windows.scss";
-
 html,
 body {
-    height: 100%;
     -webkit-text-size-adjust: 100%;
 }
 

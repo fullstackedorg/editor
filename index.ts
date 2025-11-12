@@ -1,4 +1,6 @@
 import "./init";
+import "./style/winbox.s";
+import "./style/list.s";
 import core_message from "core_message";
 import { deeplink, WindowsAskForAdmin } from "./deeplink";
 import { Demo } from "./demo";
@@ -11,18 +13,20 @@ import { Store } from "./store";
 import { Project } from "./views/project";
 import { gitAuthCallback } from "./views/git-auth";
 import config from "./editor_modules/config";
+import { appleClass } from "./style/apple.s";
+import { windowsClass } from "./style/windows.s";
 
 core_message.addListener("deeplink", deeplink);
 core_message.addListener("git-authentication", gitAuthCallback);
 
 // fix windows scrollbars for browser and app
 if (navigator.userAgent.toLocaleLowerCase().includes("windows")) {
-    document.documentElement.classList.add("windows");
+    document.documentElement.classList.add(windowsClass);
 }
 
 // remove top padding for apple devices
 if (platform === Platform.APPLE) {
-    document.documentElement.classList.add("apple");
+    document.documentElement.classList.add(appleClass);
 }
 
 document.querySelector("#splash")?.remove();

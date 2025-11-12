@@ -10,6 +10,7 @@ import { Button, ButtonGroup, Icon, InputText, Popover } from "@fullstacked/ui";
 import { Workspace } from "./workspace";
 import { createDevIcon } from "./dev-icons";
 import { promptNewChat } from "../prompt";
+import { importFileClass, fileTreeContainerClass } from "./file-tree.s";
 
 const directoryIconOpen = Icon("Caret");
 directoryIconOpen.classList.add("open");
@@ -27,7 +28,7 @@ export function hideChatExtension(filePath: string) {
 
 export function FileTree(project: Project, workspace: Workspace) {
     const container = createElement("div");
-    container.classList.add("file-tree-container");
+    container.classList.add(fileTreeContainerClass);
 
     let creating: "file" | "directory" = null;
     let renaming = null;
@@ -258,7 +259,7 @@ function TopActions(
         style: "icon-small",
         iconLeft: "Upload"
     });
-    uploadButton.classList.add("import-file");
+    uploadButton.classList.add(importFileClass);
     const form = document.createElement("form");
     const fileInput = document.createElement("input");
     fileInput.type = "file";

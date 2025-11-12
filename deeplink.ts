@@ -5,6 +5,7 @@ import { CONFIG_TYPE, Project as ProjectType } from "./types";
 import { CloneGit } from "./views/add-project/clone-git";
 import { Project } from "./views/project";
 import config from "./editor_modules/config";
+import { windAdminDialogClass } from "./deeplink.s";
 
 // fullstacked://http//github.....git
 export async function deeplink(fullstackedUrl: string) {
@@ -49,7 +50,7 @@ export async function deeplink(fullstackedUrl: string) {
 
 export function WindowsAskForAdmin() {
     const container = createElement("div");
-    container.classList.add("win-admin-dialog");
+    container.classList.add(windAdminDialogClass);
     container.innerHTML = `
         <h1>Welcome,</h1>
         <p>Please close FullStacked and reopen it with <b>Run as administrator</b>.<p>
