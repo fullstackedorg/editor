@@ -130,8 +130,8 @@ export const gitChangesClass = style.createClass("git-changes", {
     ul: {
         display: "flex",
         flexDirection: "column",
-        gap: spacing["x-s"],
-        paddingTop: spacing["x-s"],
+        gap: spacing.xs,
+        paddingTop: spacing.xs,
         paddingBottom: spacing.s,
 
         li: {
