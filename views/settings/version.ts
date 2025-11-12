@@ -6,7 +6,7 @@ import * as sass from "sass";
 import { Badge } from "@fullstacked/ui";
 import build from "../../../fullstacked_modules/build";
 import * as lsp from "../../editor_modules/lsp";
-import { editorVersionClass, versionClass } from "./version.s";
+import { editorVersionClass, tsVersionClass, versionClass } from "./version.s";
 
 export function Version() {
     const container = document.createElement("div");
@@ -48,15 +48,15 @@ function EditorVersion() {
 
             const badge = isDev
                 ? Badge({
-                      text: "Development",
-                      type: "info"
-                  })
+                    text: "Development",
+                    type: "info"
+                })
                 : semver.eq(versionStr, latestVersion)
-                  ? Badge({
+                    ? Badge({
                         text: "Latest",
                         type: "info-2"
                     })
-                  : Badge({
+                    : Badge({
                         text: "Update Available",
                         type: "warning"
                     });
@@ -101,14 +101,21 @@ function EsbuildVersion() {
 
 function TypescriptVersion() {
     const container = document.createElement("div");
+    container.classList.add(tsVersionClass)
 
     container.innerHTML = `
         <label>TypeScript</label>
     `;
 
-    lsp.version().then((v) => {
-        container.innerHTML += `<div>${v}</div>`;
-    });
+    Promise.all([
+        lsp.version(),
+        getVersionJSON(true)
+    ]).then(([v, { branch, hash, build }]) => {
+        container.innerHTML += `<div>
+        <div>${v} (${build})</div>
+        <div><small>${hash.slice(0, 8)} (${branch})</small></div>
+    </div>`;
+    })
 
     return container;
 }
@@ -126,7 +133,7 @@ function SassVersion() {
 
 const td = new TextDecoder();
 
-function getVersionJSON(): Promise<{
+function getVersionJSON(tsgo?: boolean): Promise<{
     major: string;
     minor: string;
     patch: string;
@@ -136,7 +143,7 @@ function getVersionJSON(): Promise<{
 }> {
     const payload = new Uint8Array([
         1, // static file serving,
-        ...serializeArgs(["/version.json"])
+        ...serializeArgs([tsgo ? "/version-tsgo.json" : "/version.json"])
     ]);
 
     return bridge(payload, ([_, jsonData]) => JSON.parse(td.decode(jsonData)));

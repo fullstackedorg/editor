@@ -2,6 +2,7 @@ import style from "style";
 import spacing from "../../style/spacing.s";
 
 export const editorVersionClass = "editor-version";
+export const tsVersionClass = "ts-version";
 export const versionClass = style.createClass("version", {
     display: "flex",
     flexDirection: "column",
@@ -14,6 +15,14 @@ export const versionClass = style.createClass("version", {
 
         "> div": {
             alignSelf: "flex-end"
+        }
+    },
+
+    [`.${tsVersionClass}`]: {
+        "> div": {
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "flex-end"
         }
     },
 
