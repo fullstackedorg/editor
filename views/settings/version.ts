@@ -48,15 +48,15 @@ function EditorVersion() {
 
             const badge = isDev
                 ? Badge({
-                    text: "Development",
-                    type: "info"
-                })
+                      text: "Development",
+                      type: "info"
+                  })
                 : semver.eq(versionStr, latestVersion)
-                    ? Badge({
+                  ? Badge({
                         text: "Latest",
                         type: "info-2"
                     })
-                    : Badge({
+                  : Badge({
                         text: "Update Available",
                         type: "warning"
                     });
@@ -101,21 +101,20 @@ function EsbuildVersion() {
 
 function TypescriptVersion() {
     const container = document.createElement("div");
-    container.classList.add(tsVersionClass)
+    container.classList.add(tsVersionClass);
 
     container.innerHTML = `
         <label>TypeScript</label>
     `;
 
-    Promise.all([
-        lsp.version(),
-        getVersionJSON(true)
-    ]).then(([v, { branch, hash, build }]) => {
-        container.innerHTML += `<div>
+    Promise.all([lsp.version(), getVersionJSON(true)]).then(
+        ([v, { branch, hash, build }]) => {
+            container.innerHTML += `<div>
         <div>${v} (${build})</div>
         <div><small>${hash.slice(0, 8)} (${branch})</small></div>
     </div>`;
-    })
+        }
+    );
 
     return container;
 }
