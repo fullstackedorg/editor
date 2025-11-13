@@ -99,7 +99,7 @@ export function createTabs(
                     tab.classList.remove(errorTabClass);
                     tab.classList.add(streamingTabClass);
                 }
-            } else {
+            } else if (filePath.endsWith(".chat")) {
                 tab.classList.remove(streamingTabClass, errorTabClass);
             }
         });

@@ -5,7 +5,7 @@ import typography from "../../../style/typography.s";
 
 const tabsRedDot: CSSProperties = {
     "> span::after": {
-        content: "",
+        content: '""',
         backgroundColor: colors.red,
         position: "absolute",
         height: 8,
@@ -55,7 +55,14 @@ export const tabsClass = style.createClass("tabs", {
         [`&.${streamingTabClass}`]: {
             "> span::after": {
                 ...tabsRedDot["> span::after"],
-                animation: "flash 1s linear infinite alternate"
+                animation: `${style.createAnimation("flash", {
+                    from: {
+                        opacity: 1
+                    },
+                    to: {
+                        opacity: 0.3
+                    }
+                })} 1s linear infinite alternate`
             }
         },
 
