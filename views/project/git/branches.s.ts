@@ -1,6 +1,6 @@
-import colors from "../../../style/colors.s";
-import spacing from "../../../style/spacing.s";
 import style from "style";
+import spacing from "@fullstacked/ui/values/spacing.s";
+import colors from "@fullstacked/ui/values/colors.s";
 
 export const gitBranchesClass = style.createClass("git-branches", {
     "> div:first-child": {

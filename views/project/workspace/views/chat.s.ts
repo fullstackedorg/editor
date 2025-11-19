@@ -1,7 +1,7 @@
 import style, { CSSProperties } from "style";
-import typography from "../../../../style/typography.s";
-import spacing, { maxWidth } from "../../../../style/spacing.s";
-import colors, { opacity } from "../../../../style/colors.s";
+import typography from "@fullstacked/ui/values/typography.s";
+import spacing, { maxWidth } from "@fullstacked/ui/values/spacing.s";
+import colors, { opacity } from "@fullstacked/ui/values/colors.s";
 
 const smallMargins: CSSProperties = {
     marginTop: spacing.s,
@@ -59,8 +59,8 @@ export const chatViewClass = style.createClass("chat-container", {
             display: "flex",
             flexDirection: "column",
             gap: spacing.s,
-            marginTop: spacing.s,
-            marginBottom: 80,
+            paddingTop: spacing.s,
+            paddingBottom: 80,
 
             "> div": {
                 maxWidth: 800,
@@ -96,24 +96,34 @@ export const chatViewClass = style.createClass("chat-container", {
             }
         },
 
-        ".input": {
-            backgroundColor: colors.gray.dark,
-            padding: spacing.s,
-            borderRadius: spacing.xs,
-            width: `calc(100% - 40px)`,
-            maxWidth: 800,
-            margin: spacing.m,
+        ".input-container": {
             position: "absolute",
             bottom: 0,
-            left: "50%",
-            transform: `translateX(calc(-50% - ${spacing.m}px))`,
-            border: `1px solid ${colors.gray.main}`,
-            boxShadow: `0 0 30px 20px ${opacity(colors.dark, 30)}`,
+            left: 0,
+            width: "100%",
+            padding: spacing.m,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            backgroundImage: `linear-gradient(${opacity(colors.dark, 0)}, ${colors.dark} 90%)`,
 
-            "&:focus-visible": {
-                outline: `2px solid ${colors.blue.main}`,
-                outlineOffset: 3
+            ".input": {
+                backgroundColor: colors.gray.dark,
+                padding: spacing.s,
+                borderRadius: spacing.xs,
+                maxWidth: 800,
+                width: "100%",
+                height: "100%",
+                border: `1px solid ${colors.gray.main}`,
+                boxShadow: `0 0 30px 20px ${opacity(colors.dark, 30)}`,
+
+                "&:focus-visible": {
+                    outline: `2px solid ${colors.blue.main}`,
+                    outlineOffset: 3
+                }
             }
-        }
+        },
+
+        
     }
 });

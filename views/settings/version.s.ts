@@ -1,5 +1,5 @@
 import style from "style";
-import spacing from "../../style/spacing.s";
+import spacing from "@fullstacked/ui/values/spacing.s";
 
 export const editorVersionClass = "editor-version";
 export const tsVersionClass = "ts-version";

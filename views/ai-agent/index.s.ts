@@ -1,6 +1,6 @@
 import style from "style";
-import spacing, { maxWidth } from "../../style/spacing.s";
-import typography from "../../style/typography.s";
+import spacing, {maxWidth} from "@fullstacked/ui/values/spacing.s";
+import typography from "@fullstacked/ui/values/typography.s";
 
 export const aiAgentConfigClass = style.createClass("ai-agent-configurator", {
     width: "100%",

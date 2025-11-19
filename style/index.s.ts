@@ -1,5 +1,5 @@
 import style, { CSSProperties } from "style";
-import spacing from "./spacing.s";
+import spacing from "@fullstacked/ui/values/spacing.s";
 
 const commonViewStyle: CSSProperties = {
     padding: `${spacing.s}px ${spacing.m}px ${spacing.m}px`,

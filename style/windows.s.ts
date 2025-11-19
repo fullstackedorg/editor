@@ -1,5 +1,5 @@
 import style from "style";
-import colors, { opacity } from "./colors.s";
+import colors, { opacity } from "@fullstacked/ui/values/colors.s";
 
 export const windowsClass = style.createClass("windows", {
     "*::-webkit-scrollbar": {

@@ -1,6 +1,6 @@
 import style from "style";
-import spacing from "../../../style/spacing.s";
-import colors from "../../../style/colors.s";
+import spacing from "@fullstacked/ui/values/spacing.s";
+import colors from "@fullstacked/ui/values/colors.s";
 
 export const historyClass = style.createClass("history", {
     padding: `0 ${spacing.xs}px`,

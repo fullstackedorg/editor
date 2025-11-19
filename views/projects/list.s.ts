@@ -1,7 +1,7 @@
 import style from "style";
-import spacing from "../../style/spacing.s";
-import colors, { opacity } from "../../style/colors.s";
-import breakpoints from "../../style/breakpoints.s";
+import spacing from "@fullstacked/ui/values/spacing.s";
+import breakpoints from "@fullstacked/ui/values/breakpoints.s"
+import colors, { opacity } from "@fullstacked/ui/values/colors.s";
 
 export const projectTileClass = "project-tile";
 export const projectLoadingClass = "loading";

@@ -1,6 +1,6 @@
 import style, { CSSProperties } from "style";
-import spacing from "../../../style/spacing.s";
-import colors from "../../../style/colors.s";
+import colors from "@fullstacked/ui/values/colors.s";
+import spacing from "@fullstacked/ui/values/spacing.s";
 
 export const fileTreePanelWidth = 235;
 const workspaceTabsHeight = 34;

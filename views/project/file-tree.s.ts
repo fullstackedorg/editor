@@ -1,6 +1,6 @@
 import style, { CSSProperties } from "style";
-import spacing from "../../style/spacing.s";
-import colors, { opacity } from "../../style/colors.s";
+import spacing from "@fullstacked/ui/values/spacing.s";
+import colors, { opacity } from "@fullstacked/ui/values/colors.s";
 
 const hidden: CSSProperties = {
     height: 0,

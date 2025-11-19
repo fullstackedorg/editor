@@ -1,7 +1,7 @@
 import style from "style";
-import spacing from "../../../style/spacing.s";
-import typography from "../../../style/typography.s";
-import colors from "../../../style/colors.s";
+import spacing from "@fullstacked/ui/values/spacing.s";
+import typography from "@fullstacked/ui/values/typography.s";
+import colors from "@fullstacked/ui/values/colors.s";
 
 export const gitDialogClass = style.createClass("git-dialog", {
     display: "flex",

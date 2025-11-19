@@ -1,6 +1,4 @@
 import "./init";
-import "./style/winbox.s";
-import "./style/list.s";
 import core_message from "core_message";
 import { deeplink, WindowsAskForAdmin } from "./deeplink";
 import { Demo } from "./demo";

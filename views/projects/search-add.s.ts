@@ -1,5 +1,5 @@
 import style from "style";
-import spacing, { maxWidth } from "../../style/spacing.s";
+import spacing, { maxWidth } from "@fullstacked/ui/values/spacing.s";
 
 export const searchAndAddClass = style.createClass("search-and-add", {
     paddingTop: spacing.s,

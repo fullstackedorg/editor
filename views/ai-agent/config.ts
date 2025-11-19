@@ -32,7 +32,7 @@ export async function mergeConfigsWithAvailableProviders(): Promise<
 
         const configs = provider.configs;
         Object.entries(configs).forEach(([id, c]) => {
-            configs[id].value = savedConfig?.configs?.[id]?.value || c.value;
+            configs[id].value = savedConfig?.configs?.[id]?.value ?? c.value;
         });
 
         return {
@@ -148,6 +148,20 @@ export function createAiAgentConfigurator(configProviderId?: string) {
                         }
                     })
                 );
+            } else if (c.type === "boolean") {
+                const checkboxContainer = document.createElement("div");
+                checkboxContainer.classList.add(inputCheckboxWrapClass);
+                providerConfigs.append(checkboxContainer);
+
+                const checkboxLabel = document.createElement("label");
+                checkboxLabel.innerText = c.title;
+                const checkbox = InputCheckbox();
+                checkbox.input.checked = c.value;
+                checkbox.input.onchange = () => {
+                    providerInfos.configs[id].value = checkbox.input.checked;
+                    onChange();
+                };
+                checkboxContainer.append(checkboxLabel, checkbox.container);
             }
         });
 

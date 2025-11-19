@@ -1,7 +1,7 @@
 import style, { CSSProperties } from "style";
-import spacing from "../../../style/spacing.s";
-import colors, { opacity } from "../../../style/colors.s";
-import typography from "../../../style/typography.s";
+import colors, { opacity } from "@fullstacked/ui/values/colors.s";
+import spacing from "@fullstacked/ui/values/spacing.s";
+import typography from "@fullstacked/ui/values/typography.s";
 
 const tabsRedDot: CSSProperties = {
     "> span::after": {

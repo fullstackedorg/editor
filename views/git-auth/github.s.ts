@@ -1,7 +1,7 @@
 import style from "style";
-import spacing from "../../style/spacing.s";
-import colors from "../../style/colors.s";
-import typography from "../../style/typography.s";
+import spacing from "@fullstacked/ui/values/spacing.s";
+import colors from "@fullstacked/ui/values/colors.s";
+import typography from "@fullstacked/ui/values/typography.s";
 
 export const githubAuthClass = style.createClass("github-auth", {
     h3: {

@@ -1,6 +1,6 @@
 import style from "style";
-import spacing, { maxWidth } from "../../style/spacing.s";
-import colors from "../../style/colors.s";
+import spacing, { maxWidth } from "@fullstacked/ui/values/spacing.s";
+import colors from "@fullstacked/ui/values/colors.s";
 
 export const addProjectButtonsClass = "buttons";
 export const addProjectClass = style.createClass("add-project", {
