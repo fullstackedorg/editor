@@ -1,5 +1,5 @@
 import style from "style";
-import spacing, {maxWidth} from "@fullstacked/ui/values/spacing.s";
+import spacing, { maxWidth } from "@fullstacked/ui/values/spacing.s";
 import typography from "@fullstacked/ui/values/typography.s";
 
 export const aiAgentConfigClass = style.createClass("ai-agent-configurator", {

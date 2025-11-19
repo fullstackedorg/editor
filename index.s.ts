@@ -25,4 +25,4 @@ style.createGlobalStyle({
         backgroundColor: colors.gray.dark,
         overflow: "hidden"
     }
-})
+});

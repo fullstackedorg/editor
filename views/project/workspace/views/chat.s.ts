@@ -122,8 +122,6 @@ export const chatViewClass = style.createClass("chat-container", {
                     outlineOffset: 3
                 }
             }
-        },
-
-        
+        }
     }
 });

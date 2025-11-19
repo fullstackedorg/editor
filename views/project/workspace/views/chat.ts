@@ -154,7 +154,8 @@ export function createViewChat(project: Project, projectFilePath: string) {
         });
 
         setTimeout(() => {
-            const messages = conversation.element.querySelector(":scope > .messages");
+            const messages =
+                conversation.element.querySelector(":scope > .messages");
             lastScrollY = messages.scrollHeight;
             messages.scrollTo(0, lastScrollY);
             messages.addEventListener("scroll", () => {
@@ -201,7 +202,9 @@ export function createViewChat(project: Project, projectFilePath: string) {
                         agent.info.model
                     );
                     agentSelector.replaceWith(conversation.element);
-                    conversation.element.querySelector(":scope > .messages").scrollTo(0, lastScrollY);
+                    conversation.element
+                        .querySelector(":scope > .messages")
+                        .scrollTo(0, lastScrollY);
                     saveChat();
                 }
             );
@@ -236,7 +239,9 @@ export function createViewChat(project: Project, projectFilePath: string) {
         },
         reloadContents() {},
         restore() {
-            conversation?.element?.querySelector(":scope > .messages").scrollTo(0, lastScrollY);
+            conversation?.element
+                ?.querySelector(":scope > .messages")
+                .scrollTo(0, lastScrollY);
         }
     };
 }

@@ -1,6 +1,6 @@
 import style from "style";
 import spacing from "@fullstacked/ui/values/spacing.s";
-import breakpoints from "@fullstacked/ui/values/breakpoints.s"
+import breakpoints from "@fullstacked/ui/values/breakpoints.s";
 import colors, { opacity } from "@fullstacked/ui/values/colors.s";
 
 export const projectTileClass = "project-tile";
