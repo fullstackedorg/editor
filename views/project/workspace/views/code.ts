@@ -49,7 +49,7 @@ export async function createViewCode(
         view.extensions.add(lintGutter());
 
         if (lspSupport) {
-            lsp.then((l) => {
+            lsp?.then((l) => {
                 l.bindView(projectFilePath, view);
             });
         }

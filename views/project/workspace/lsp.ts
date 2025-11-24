@@ -93,6 +93,8 @@ function tsConfig(project: Project) {
 }
 
 async function createClientLSP(project: Project) {
+    if (!(await lsp.available())) return;
+
     const lspTransport = await createTransport(project);
 
     const client = new LSPClient({
@@ -266,7 +268,7 @@ export async function createLSP(
             const line = lineInfo.number - 1;
             const character = pos - lineInfo.from;
 
-            clientLSP.client
+            clientLSP?.client
                 .request("textDocument/definition", {
                     textDocument: {
                         uri: `${projectRootUri}/${filePath}`
@@ -314,7 +316,7 @@ export async function createLSP(
 
         // add current plugin
         const extensions = [
-            clientLSP.client.plugin(fileUri, filePathToLanguageId(filePath)),
+            clientLSP?.client.plugin(fileUri, filePathToLanguageId(filePath)),
             EditorView.domEventHandlers({
                 click: navigateToDefinition(filePath)
             })
@@ -323,13 +325,13 @@ export async function createLSP(
 
         viewsWithLSP.set(filePath, { view, extensions });
 
-        clientLSP.runDiagnostics(`${projectRootUri}/${filePath}`);
+        clientLSP?.runDiagnostics(`${projectRootUri}/${filePath}`);
     };
 
     const restartClient = async () => {
         console.log("RESTARTING");
 
-        if (clientLSP) await clientLSP.end();
+        if (clientLSP) await clientLSP?.end();
 
         clientLSP = await createClientLSP(project);
         Array.from(viewsWithLSP.entries()).forEach(([filePath, { view }]) => {
@@ -368,10 +370,10 @@ export async function createLSP(
     return {
         bindView,
         runDiagnostics: (projectFilePath: string) => {
-            clientLSP.runDiagnostics(`${projectRootUri}/${projectFilePath}`);
+            clientLSP?.runDiagnostics(`${projectRootUri}/${projectFilePath}`);
         },
         async destroy() {
-            await clientLSP.end();
+            await clientLSP?.end();
             clientLSP = null;
         }
     };

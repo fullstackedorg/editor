@@ -44,3 +44,9 @@ export function version() {
     const payload = new Uint8Array([93]);
     return bridge(payload, ([version]) => version);
 }
+
+//94
+export function available() {
+    const payload = new Uint8Array([94]);
+    return bridge(payload, ([avaialble]) => avaialble);
+}
