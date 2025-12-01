@@ -1,5 +1,5 @@
 import { createSequential, createSubscribable, Store } from ".";
-import { CONFIG_TYPE, Project } from "../types";
+import { CONFIG_TYPE, Project, ProjectsListRemote } from "../types";
 import fs from "fs";
 import { SnackBar } from "components/snackbar";
 import git from "git";
@@ -10,6 +10,9 @@ import core_open from "core_open";
 import packages from "packages";
 import config from "../editor_modules/config";
 import type { createWorkspace } from "../views/project/workspace";
+import { core_fetch2 } from "fetch";
+import { urlToName } from "../views/add-project/projects-list";
+import slugify from "slugify";
 
 const list = createSubscribable(listP, []);
 
@@ -24,11 +27,18 @@ let currentOpenedProject: Project & {
 } = null;
 const current = createSubscribable(() => currentOpenedProject);
 
+const projectsLists = createSubscribable(listProjectsLists);
+
 export const projects = {
     list: list.subscription,
     create: createSequential(create),
     update,
     deleteP,
+
+    projectsLists: {
+        list: projectsLists.subscription,
+        add: addProjectsList
+    },
 
     setCurrent,
     current: current.subscription,
@@ -46,6 +56,51 @@ function setCurrent(project: Project) {
     }
     currentOpenedProject = project;
     current.notify();
+}
+
+async function listProjectsLists() {
+    const { lists } = await config.get(CONFIG_TYPE.PROJECTS_LISTS);
+    return lists || [];
+}
+
+async function addProjectsList(
+    url: string,
+    listName?: string,
+    listId?: string
+) {
+    let projectsList: ProjectsListRemote = null;
+    try {
+        projectsList = await (await core_fetch2(url)).json();
+    } catch (e) {
+        return;
+    }
+
+    if (!projectsList?.projects || !Array.isArray(projectsList?.projects)) {
+        return;
+    }
+
+    const name = listName || projectsList.name || urlToName(url);
+    const id = slugify(listId || projectsList.id || name, { lower: true });
+
+    for (let i = 0; i < projectsList.projects.length; i++) {
+        const project = projectsList.projects[i];
+        await create({
+            id: slugify(project.id || `${id}-${i}`, { lower: true }),
+            title: project.title || `${name}-${i}`,
+            lists: [id],
+            gitRepository: {
+                url: project.gitRepository.url
+            }
+        });
+    }
+
+    let { lists } = await config.get(CONFIG_TYPE.PROJECTS_LISTS);
+    if (!lists) {
+        lists = [];
+    }
+    lists.push({ url, name, id });
+    await config.save(CONFIG_TYPE.PROJECTS_LISTS, { lists });
+    projectsLists.notify();
 }
 
 async function listP() {

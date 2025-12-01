@@ -9,7 +9,6 @@ import stackNavigation from "../../stack-navigation";
 import { List } from "./list";
 import { SearchAdd } from "./search-add";
 import { TopBar as TopBarComponent } from "../../components/top-bar";
-import { PeersWidget } from "./peers-widget";
 import { Settings } from "../settings";
 import { Button } from "@fullstacked/ui";
 import { projectsViewClass } from "./index.s";
@@ -43,15 +42,11 @@ function TopBar() {
     settings.id = SETTINGS_BUTTON_ID;
     settings.onclick = Settings;
 
-    const peersWidget = PeersWidget();
-
     const topBar = TopBarComponent({
         noBack: true,
         title: PROJECTS_TITLE,
-        actions: [peersWidget, settings]
+        actions: [settings]
     });
-
-    topBar.ondestroy = peersWidget.destroy;
 
     return topBar;
 }

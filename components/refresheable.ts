@@ -6,17 +6,21 @@ export function createRefresheable<
 >(
     elementRenderer: (
         ...args: P
-    ) => ElementComponent | Promise<ElementComponent>,
+    ) => ElementComponent | Promise<ElementComponent> | false,
     placeholder?: ElementComponent
 ) {
     const refresheable = {
         element: (placeholder ||
-            (createElement("div") as ElementComponent<any>)) as Awaited<
-            ReturnType<typeof elementRenderer>
-        >,
+            (createElement(
+                "div"
+            ) as ElementComponent<any>)) as ElementComponent,
         refresh: (...newArgs: P) => {
-            refresheable.element.destroy();
             const updatedElement = elementRenderer(...newArgs);
+            if (updatedElement === false) {
+                return;
+            }
+
+            refresheable.element.destroy();
             if (updatedElement instanceof Promise) {
                 return new Promise<void>((resolve) => {
                     updatedElement.then((e) => {

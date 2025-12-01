@@ -1,5 +1,5 @@
 import style from "style";
-import spacing, { maxWidth } from "@fullstacked/ui/values/spacing.s";
+import spacing from "@fullstacked/ui/values/spacing.s";
 
 export const searchAndAddClass = style.createClass("search-and-add", {
     paddingTop: spacing.s,
@@ -8,9 +8,21 @@ export const searchAndAddClass = style.createClass("search-and-add", {
     alignItems: "flex-end",
     justifyContent: "space-between",
     gap: spacing.s,
-    paddingBottom: spacing.m,
-    "> form:first-child": {
-        flex: 1,
-        maxWidth
+    paddingBottom: spacing.m
+});
+
+export const hideClass = style.createClass("hide", {
+    display: "none"
+});
+
+export const searchFormClass = style.createClass("search-form", {
+    display: "flex",
+    gap: spacing.m,
+    flex: 1,
+    "> .input-text": {
+        maxWidth: 400
+    },
+    "> .input-select": {
+        maxWidth: 250
     }
 });

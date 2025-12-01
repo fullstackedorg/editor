@@ -8,6 +8,7 @@ import { CreateEmpty } from "./create-empty";
 import { ImportZip } from "./import-zip";
 import { viewClass } from "../../style/index.s";
 import { addProjectButtonsClass, addProjectClass } from "./index.s";
+import { ProjectsList } from "./projects-list";
 
 export function AddProject() {
     const container = document.createElement("div");
@@ -28,7 +29,6 @@ export function AddProject() {
         iconLeft: "Git"
     });
     cloneGitButton.onclick = () => CloneGit();
-    // cloneGitButton.disabled = platform === Platform.WASM;
 
     const importZipButton = Button({
         text: "Import zip",
@@ -43,18 +43,31 @@ export function AddProject() {
     });
     createEmptyButton.onclick = CreateEmpty;
 
-    buttonsContainer.append(cloneGitButton, importZipButton, createEmptyButton);
+    const projectsListButton = Button({
+        text: "Projects list",
+        iconLeft: "Items"
+    });
+    projectsListButton.onclick = ProjectsList;
+
+    buttonsContainer.append(
+        cloneGitButton,
+        importZipButton,
+        createEmptyButton,
+        projectsListButton
+    );
     container.append(buttonsContainer);
 
     // on project list update (most probably new project created)
     // go back
     const goBackOnNewProject = () => stackNavigation.back();
     Store.projects.list.subscribe(goBackOnNewProject);
+    Store.projects.projectsLists.list.subscribe(goBackOnNewProject);
 
     stackNavigation.navigate(container, {
         bgColor: BG_COLOR,
         onDestroy: () => {
             Store.projects.list.unsubscribe(goBackOnNewProject);
+            Store.projects.projectsLists.list.unsubscribe(goBackOnNewProject);
         }
     });
 }
