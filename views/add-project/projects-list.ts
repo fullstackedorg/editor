@@ -6,11 +6,10 @@ import { Badge, Button, InputText, Loader } from "@fullstacked/ui";
 import { viewClass } from "../../style/index.s";
 import { createFormClass } from "./index.s";
 import { projectsListStatusClass } from "./projects-list.s";
-import { core_fetch2 } from "fetch";
-import { CONFIG_TYPE, ProjectsListRemote } from "../../types";
+import core_fetch from "fetch";
+import { ProjectsListRemote } from "../../types";
 import { createElement } from "../../components/element";
 import { createRefresheable } from "../../components/refresheable";
-import config from "../../editor_modules/config";
 import { Store } from "../../store";
 
 export function ProjectsList() {
@@ -158,8 +157,8 @@ function ProjectsListStatus() {
 
             text.innerHTML = status
                 ? status.error ||
-                  warning ||
-                  `${status.projects.length} project${status.projects.length > 1 ? "s" : ""} in list`
+                warning ||
+                `${status.projects.length} project${status.projects.length > 1 ? "s" : ""} in list`
                 : "";
 
             const badge = Badge({
@@ -167,15 +166,15 @@ function ProjectsListStatus() {
                     ? status.error
                         ? "error"
                         : warning
-                          ? "warning"
-                          : "success"
+                            ? "warning"
+                            : "success"
                     : undefined,
                 text: status
                     ? status.error
                         ? "Error"
                         : warning
-                          ? "warning"
-                          : "Valid"
+                            ? "warning"
+                            : "Valid"
                     : "-"
             });
 
@@ -217,16 +216,28 @@ async function testProjectsListUrl(urlStr: string): Promise<
         };
     }
 
-    const response = await core_fetch2(url);
-    if (!response.ok) {
-        return {
-            error: response.statusText
-        };
+    let response: Awaited<ReturnType<typeof core_fetch>> = null
+    try {
+        response = await core_fetch(url.toString(), {
+            timeout: 3,
+            encoding: "utf8"
+        });
+    } catch(e) {
+        try {
+            const json = JSON.parse(e);
+            return {
+                error: json.statusMessage
+            }
+        } catch(e) {
+            return {
+                error: "Failed fetch"
+            }
+        }
     }
 
     let json: ProjectsListRemote = null;
     try {
-        json = await response.json();
+        json = JSON.parse(response.body);
     } catch (e) {
         return { error: "Invalid json response" };
     }
