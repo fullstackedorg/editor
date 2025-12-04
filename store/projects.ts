@@ -109,12 +109,37 @@ async function listP() {
 }
 
 async function create(project: Omit<Project, "createdDate">) {
-    const newProject: Project = {
+    const projects = await listP();
+
+    let newProject: Project = {
         ...project,
         createdDate: Date.now()
     };
-    const projects = await listP();
-    projects.push(newProject);
+
+    const existingProject = projects.find(({ id }) => id === project.id);
+    if (existingProject) {
+        newProject = existingProject;
+
+        if (project.lists?.length) {
+            existingProject.lists = Array.from(new Set([...(existingProject.lists || []), ...project.lists]))
+        }
+    } else {
+        if (newProject.gitRepository?.url) {
+            const url = new URL(newProject.gitRepository.url);
+            const hostname = url.hostname;
+            const gitAuthConfigs = await config.get(CONFIG_TYPE.GIT);
+            const gitAuth = gitAuthConfigs[hostname];
+            if (gitAuth.username) {
+                newProject.gitRepository.name = newProject.gitRepository.name || gitAuth.username
+            }
+            if (gitAuth.email) {
+                newProject.gitRepository.email = newProject.gitRepository.email || gitAuth.email
+            }
+        }
+
+        projects.push(newProject);
+    }
+    
     await config.save(CONFIG_TYPE.PROJECTS, { projects });
     list.notify();
 

@@ -1,5 +1,6 @@
 import style from "style";
 import spacing from "@fullstacked/ui/values/spacing.s";
+import breakpoints from "@fullstacked/ui/values/breakpoints.s";
 
 export const searchAndAddClass = style.createClass("search-and-add", {
     paddingTop: spacing.s,
@@ -11,18 +12,24 @@ export const searchAndAddClass = style.createClass("search-and-add", {
     paddingBottom: spacing.m
 });
 
-export const hideClass = style.createClass("hide", {
-    display: "none"
-});
-
+export const hideClass = "hide";
 export const searchFormClass = style.createClass("search-form", {
     display: "flex",
     gap: spacing.m,
     flex: 1,
+    alignItems: "flex-end",
     "> .input-text": {
-        maxWidth: 400
+        maxWidth: 400,
+        width: "auto",
+        flex: 1,
     },
     "> .input-select": {
-        maxWidth: 250
+        maxWidth: 250,
+        [`@media (max-width: ${breakpoints.m}px)`]: {
+            display: "none"
+        },
+        [`&.${hideClass}`]: {
+            display: "none"
+        },
     }
 });

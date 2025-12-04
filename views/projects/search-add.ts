@@ -22,6 +22,15 @@ export function SearchAdd() {
     return container;
 }
 
+function allProjectsInSingleList() {
+    const projectsLists = Store.projects.projectsLists.list.check();
+    if (projectsLists.length !== 1) {
+        return false;
+    }
+    const projects = Store.projects.list.check();
+    return projects.every(p => p.lists?.length === 1 && p.lists.at(0) === projectsLists.at(0).id);
+}
+
 function Search() {
     const form = createElement("form");
     form.classList.add(searchFormClass);
@@ -37,9 +46,20 @@ function Search() {
     });
     inputProjectsLists.options.add({ name: "All", id: "all" });
     inputProjectsLists.select.value = "all";
+    inputProjectsLists.select.onchange = (listId) => {
+        projectsList.filter(inputSearch.input.value, listId);
+    }
 
-    const onProjectsListsChange = (projectsLists: ProjectsList[]) => {
-        if (!projectsLists || projectsLists.length === 0) {
+    const buttonProjectsLists = Button({
+        iconRight: "Filter",
+        style: "icon-large"
+    });
+    buttonProjectsLists.type = "button";
+
+
+    const onProjectsListsChange = () => {
+        const projectsLists = Store.projects.projectsLists.list.check();
+        if (!projectsLists || projectsLists.length === 0 || allProjectsInSingleList()) {
             inputProjectsLists.container.classList.add(hideClass);
         } else {
             inputProjectsLists.container.classList.remove(hideClass);
@@ -50,9 +70,10 @@ function Search() {
         );
     };
     Store.projects.projectsLists.list.subscribe(onProjectsListsChange);
+    Store.projects.list.subscribe(onProjectsListsChange);
 
     inputSearch.input.onkeyup = () => {
-        projectsList.filter(inputSearch.input.value);
+        projectsList.filter(inputSearch.input.value, inputProjectsLists.select.value);
     };
 
     form.onsubmit = (e) => {
@@ -63,10 +84,11 @@ function Search() {
         }
     };
 
-    form.append(inputSearch.container, inputProjectsLists.container);
+    form.append(inputSearch.container, inputProjectsLists.container, buttonProjectsLists);
 
     form.ondestroy = () => {
         Store.projects.projectsLists.list.unsubscribe(onProjectsListsChange);
+        Store.projects.list.subscribe(onProjectsListsChange);
     };
 
     return form;
