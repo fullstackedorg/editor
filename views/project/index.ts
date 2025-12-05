@@ -15,7 +15,7 @@ import { createWorkspace } from "./workspace";
 import { Workspace } from "./workspace";
 import { viewClass } from "../../style/index.s";
 import {
-cloningContainerClass,
+    cloningContainerClass,
     fileAndEditorClosedClass,
     fileTreeAndEditorClass,
     gitStatusArrowClass,
@@ -282,12 +282,14 @@ function GitWidget(project: ProjectType) {
             cloningContainer.classList.add(cloningContainerClass);
             container.append(cloningContainer);
             const dialog = Dialog(container);
-            cloneGitRepo(project.gitRepository.url, cloningContainer, project.id).then(
-                () => {
-                    dialog.remove();
-                    refreshBranchAndCommit();
-                }
-            );
+            cloneGitRepo(
+                project.gitRepository.url,
+                cloningContainer,
+                project.id
+            ).then(() => {
+                dialog.remove();
+                refreshBranchAndCommit();
+            });
         }
     });
 

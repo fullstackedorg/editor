@@ -49,4 +49,6 @@ if (!checkProjectsConfigExists) {
     Demo();
 }
 
-Store.projects.projectsLists.list.check()?.forEach(Store.projects.projectsLists.add);
+Store.projects.projectsLists.list
+    .check()
+    ?.forEach(Store.projects.projectsLists.add);

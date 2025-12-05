@@ -64,9 +64,9 @@ async function listProjectsLists() {
 }
 
 async function addProjectsList(list: {
-    url: string,
-    name?: string,
-    id?: string
+    url: string;
+    name?: string;
+    id?: string;
 }) {
     let projectsList: ProjectsListRemote = null;
     try {
@@ -86,8 +86,14 @@ async function addProjectsList(list: {
 
     const existingList = lists.find(({ url }) => url === list.url);
 
-    const name = existingList?.name || list.name || projectsList.name || urlToName(list.url);
-    const id = existingList?.id || slugify(list.id || projectsList.id || name, { lower: true });
+    const name =
+        existingList?.name ||
+        list.name ||
+        projectsList.name ||
+        urlToName(list.url);
+    const id =
+        existingList?.id ||
+        slugify(list.id || projectsList.id || name, { lower: true });
 
     for (let i = 0; i < projectsList.projects.length; i++) {
         const project = projectsList.projects[i];
@@ -108,7 +114,7 @@ async function addProjectsList(list: {
             name
         });
     }
-    
+
     await config.save(CONFIG_TYPE.PROJECTS_LISTS, { lists });
     projectsLists.notify();
 }

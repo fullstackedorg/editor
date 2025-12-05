@@ -86,8 +86,8 @@ export function ProjectsList() {
         addButton.disabled = true;
 
         await Store.projects.projectsLists.add({
-            url: inputUrl.input.value, 
-            name: inputName.input.value, 
+            url: inputUrl.input.value,
+            name: inputName.input.value,
             id: inputIdentifier.input.value
         });
         addButton.disabled = false;
