@@ -219,11 +219,18 @@ function ProjectTile(project: ProjectType) {
         });
         projectSettingsButton.onclick = () => ProjectSettings(project);
 
-        const buttonsGroup = ButtonGroup([
-            deleteButton,
-            shareButton,
-            projectSettingsButton
-        ]);
+        const buttons = [deleteButton, shareButton, projectSettingsButton];
+
+        if (project.lists?.length) {
+            const projectsListsIds = Store.projects.projectsLists.list
+                .check()
+                .map(({ id }) => id);
+            if (project.lists.find((l) => projectsListsIds.includes(l))) {
+                buttons.shift();
+                buttons.pop();
+            }
+        }
+        const buttonsGroup = ButtonGroup(buttons);
 
         content.append(buttonsGroup);
 

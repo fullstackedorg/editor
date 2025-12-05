@@ -134,9 +134,9 @@ async function create(project: Omit<Project, "createdDate">) {
 
     const existingProject = projects.find(({ id }) => id === project.id);
     if (existingProject) {
-        newProject = existingProject;
+        existingProject.title = newProject.title;
 
-        if (project.lists?.length) {
+        if (existingProject.lists?.length) {
             existingProject.lists = Array.from(
                 new Set([...(existingProject.lists || []), ...project.lists])
             );
