@@ -97,7 +97,7 @@ async function addProjectsList(list: {
 
     for (let i = 0; i < projectsList.projects.length; i++) {
         const project = projectsList.projects[i];
-        await create({
+        await projects.create({
             id: slugify(project.id || `${id}-${i}`, { lower: true }),
             title: project.title || `${name}-${i}`,
             lists: [id],

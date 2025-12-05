@@ -41,14 +41,13 @@ core_message.addListener("package", (dataStr) => {
 });
 
 const checkProjectsConfigExists = await config.get(CONFIG_TYPE.PROJECTS, true);
-if (!checkProjectsConfigExists) {
-    if (platform === Platform.WINDOWS) {
-        WindowsAskForAdmin();
-    }
+if (!checkProjectsConfigExists && platform === Platform.WINDOWS) {
+    WindowsAskForAdmin();
+}
 
+const initalProjectsLists = Store.projects.projectsLists.list.check();
+if (!checkProjectsConfigExists && !initalProjectsLists?.length) {
     Demo();
 }
 
-Store.projects.projectsLists.list
-    .check()
-    ?.forEach(Store.projects.projectsLists.add);
+initalProjectsLists?.forEach(Store.projects.projectsLists.add);
