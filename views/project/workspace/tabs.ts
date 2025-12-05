@@ -65,7 +65,7 @@ export function createTabs(
             if (
                 buildErrors.find(
                     ({ file }) =>
-                        file.split(project.id + "/").pop() === filePath
+                        file?.split(project.id + "/").pop() === filePath
                 )
             ) {
                 tab.classList.add(errorTabClass);
@@ -175,7 +175,7 @@ export function createTabs(
                 .check()
                 .find(
                     ({ file }) =>
-                        file.split(project.id + "/").pop() === filePath
+                        file?.split(project.id + "/").pop() === filePath
                 );
             if (hasBuildErrors) {
                 tab[0].classList.add(errorTabClass);

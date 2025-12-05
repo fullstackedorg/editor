@@ -3,7 +3,13 @@ import { NEW_PROJECT_ID } from "../../constants";
 import { AddProject } from "../add-project";
 import { projectsList } from "./list";
 import { Store } from "../../store";
-import { hideClass, searchAndAddClass, searchFormClass } from "./search-add.s";
+import {
+    buttonContainer,
+    hideClass,
+    redBadgeClass,
+    searchAndAddClass,
+    searchFormClass
+} from "./search-add.s";
 import { createElement } from "../../components/element";
 import { ProjectsList } from "../../types";
 
@@ -28,7 +34,9 @@ function allProjectsInSingleList() {
         return false;
     }
     const projects = Store.projects.list.check();
-    return projects.every(p => p.lists?.length === 1 && p.lists.at(0) === projectsLists.at(0).id);
+    return projects.every(
+        (p) => p.lists?.length === 1 && p.lists.at(0) === projectsLists.at(0).id
+    );
 }
 
 function Search() {
@@ -47,22 +55,41 @@ function Search() {
     inputProjectsLists.options.add({ name: "All", id: "all" });
     inputProjectsLists.select.value = "all";
     inputProjectsLists.select.onchange = (listId) => {
+        if (listId === "all") {
+            listSelectedIcon.classList.add(hideClass);
+        } else {
+            listSelectedIcon.classList.remove(hideClass);
+        }
         projectsList.filter(inputSearch.input.value, listId);
-    }
+    };
+
+    const buttonProjectsListsContainer = document.createElement("div");
+    buttonProjectsListsContainer.classList.add(buttonContainer);
+
+    const listSelectedIcon = document.createElement("div");
+    listSelectedIcon.classList.add(redBadgeClass, hideClass);
 
     const buttonProjectsLists = Button({
         iconRight: "Filter",
         style: "icon-large"
     });
     buttonProjectsLists.type = "button";
+    buttonProjectsLists.onclick = inputProjectsLists.select.open;
 
+    buttonProjectsListsContainer.append(listSelectedIcon, buttonProjectsLists);
 
     const onProjectsListsChange = () => {
         const projectsLists = Store.projects.projectsLists.list.check();
-        if (!projectsLists || projectsLists.length === 0 || allProjectsInSingleList()) {
+        if (
+            !projectsLists ||
+            projectsLists.length === 0 ||
+            allProjectsInSingleList()
+        ) {
             inputProjectsLists.container.classList.add(hideClass);
+            buttonProjectsListsContainer.classList.add(hideClass);
         } else {
             inputProjectsLists.container.classList.remove(hideClass);
+            buttonProjectsListsContainer.classList.remove(hideClass);
         }
         inputProjectsLists.options.set(
             { name: "All", id: "all" },
@@ -73,7 +100,10 @@ function Search() {
     Store.projects.list.subscribe(onProjectsListsChange);
 
     inputSearch.input.onkeyup = () => {
-        projectsList.filter(inputSearch.input.value, inputProjectsLists.select.value);
+        projectsList.filter(
+            inputSearch.input.value,
+            inputProjectsLists.select.value
+        );
     };
 
     form.onsubmit = (e) => {
@@ -84,7 +114,11 @@ function Search() {
         }
     };
 
-    form.append(inputSearch.container, inputProjectsLists.container, buttonProjectsLists);
+    form.append(
+        inputSearch.container,
+        buttonProjectsListsContainer,
+        inputProjectsLists.container
+    );
 
     form.ondestroy = () => {
         Store.projects.projectsLists.list.unsubscribe(onProjectsListsChange);

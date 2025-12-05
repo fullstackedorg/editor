@@ -17,7 +17,7 @@ export function sassSetDiagnostic(
     const buildErrors = Store.editor.codeEditor.buildErrors
         .check()
         .filter(
-            ({ file }) => file.split(project.id + "/").pop() === projectFilePath
+            ({ file }) => file?.split(project.id + "/").pop() === projectFilePath
         );
     const diagnostics = buildErrors.map((err) => {
         const from = view.state.doc.line(err.line).from + err.col;

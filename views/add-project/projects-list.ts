@@ -85,13 +85,11 @@ export function ProjectsList() {
         e.preventDefault();
         addButton.disabled = true;
 
-        const url = inputUrl.input.value;
-        const name = inputName.input.value || urlToName(url);
-        const id = slugify(inputIdentifier.input.value || name, {
-            lower: true
+        await Store.projects.projectsLists.add({
+            url: inputUrl.input.value, 
+            name: inputName.input.value, 
+            id: inputIdentifier.input.value
         });
-
-        await Store.projects.projectsLists.add(url, name, id);
         addButton.disabled = false;
         stackNavigation.back();
     };
@@ -157,8 +155,8 @@ function ProjectsListStatus() {
 
             text.innerHTML = status
                 ? status.error ||
-                warning ||
-                `${status.projects.length} project${status.projects.length > 1 ? "s" : ""} in list`
+                  warning ||
+                  `${status.projects.length} project${status.projects.length > 1 ? "s" : ""} in list`
                 : "";
 
             const badge = Badge({
@@ -166,15 +164,15 @@ function ProjectsListStatus() {
                     ? status.error
                         ? "error"
                         : warning
-                            ? "warning"
-                            : "success"
+                          ? "warning"
+                          : "success"
                     : undefined,
                 text: status
                     ? status.error
                         ? "Error"
                         : warning
-                            ? "warning"
-                            : "Valid"
+                          ? "warning"
+                          : "Valid"
                     : "-"
             });
 
@@ -216,22 +214,22 @@ async function testProjectsListUrl(urlStr: string): Promise<
         };
     }
 
-    let response: Awaited<ReturnType<typeof core_fetch>> = null
+    let response: Awaited<ReturnType<typeof core_fetch>> = null;
     try {
         response = await core_fetch(url.toString(), {
             timeout: 3,
             encoding: "utf8"
         });
-    } catch(e) {
+    } catch (e) {
         try {
             const json = JSON.parse(e);
             return {
                 error: json.statusMessage
-            }
-        } catch(e) {
+            };
+        } catch (e) {
             return {
                 error: "Failed fetch"
-            }
+            };
         }
     }
 

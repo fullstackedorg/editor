@@ -63,14 +63,14 @@ async function listProjectsLists() {
     return lists || [];
 }
 
-async function addProjectsList(
+async function addProjectsList(list: {
     url: string,
-    listName?: string,
-    listId?: string
-) {
+    name?: string,
+    id?: string
+}) {
     let projectsList: ProjectsListRemote = null;
     try {
-        projectsList = await (await core_fetch2(url)).json();
+        projectsList = await (await core_fetch2(list.url)).json();
     } catch (e) {
         return;
     }
@@ -79,8 +79,15 @@ async function addProjectsList(
         return;
     }
 
-    const name = listName || projectsList.name || urlToName(url);
-    const id = slugify(listId || projectsList.id || name, { lower: true });
+    let { lists } = await config.get(CONFIG_TYPE.PROJECTS_LISTS);
+    if (!lists) {
+        lists = [];
+    }
+
+    const existingList = lists.find(({ url }) => url === list.url);
+
+    const name = existingList?.name || list.name || projectsList.name || urlToName(list.url);
+    const id = existingList?.id || slugify(list.id || projectsList.id || name, { lower: true });
 
     for (let i = 0; i < projectsList.projects.length; i++) {
         const project = projectsList.projects[i];
@@ -94,11 +101,14 @@ async function addProjectsList(
         });
     }
 
-    let { lists } = await config.get(CONFIG_TYPE.PROJECTS_LISTS);
-    if (!lists) {
-        lists = [];
+    if (!existingList) {
+        lists.push({
+            ...list,
+            id,
+            name
+        });
     }
-    lists.push({ url, name, id });
+    
     await config.save(CONFIG_TYPE.PROJECTS_LISTS, { lists });
     projectsLists.notify();
 }
@@ -121,7 +131,9 @@ async function create(project: Omit<Project, "createdDate">) {
         newProject = existingProject;
 
         if (project.lists?.length) {
-            existingProject.lists = Array.from(new Set([...(existingProject.lists || []), ...project.lists]))
+            existingProject.lists = Array.from(
+                new Set([...(existingProject.lists || []), ...project.lists])
+            );
         }
     } else {
         if (newProject.gitRepository?.url) {
@@ -129,17 +141,19 @@ async function create(project: Omit<Project, "createdDate">) {
             const hostname = url.hostname;
             const gitAuthConfigs = await config.get(CONFIG_TYPE.GIT);
             const gitAuth = gitAuthConfigs[hostname];
-            if (gitAuth.username) {
-                newProject.gitRepository.name = newProject.gitRepository.name || gitAuth.username
+            if (gitAuth?.username) {
+                newProject.gitRepository.name =
+                    newProject.gitRepository.name || gitAuth.username;
             }
-            if (gitAuth.email) {
-                newProject.gitRepository.email = newProject.gitRepository.email || gitAuth.email
+            if (gitAuth?.email) {
+                newProject.gitRepository.email =
+                    newProject.gitRepository.email || gitAuth.email;
             }
         }
 
         projects.push(newProject);
     }
-    
+
     await config.save(CONFIG_TYPE.PROJECTS, { projects });
     list.notify();
 

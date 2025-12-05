@@ -46,7 +46,7 @@ export let projectsList: {
     filter(searchStr?: string, listId?: string): void;
     displayed: ProjectType[];
 } = {
-    filter: () => { },
+    filter: () => {},
     displayed: []
 };
 function Grid(projects: ProjectType[]) {
@@ -67,7 +67,9 @@ function Grid(projects: ProjectType[]) {
         }
 
         if (listId && listId !== "all") {
-            projectsList.displayed = projectsList.displayed.filter(({ lists }) => lists?.includes(listId))
+            projectsList.displayed = projectsList.displayed.filter(
+                ({ lists }) => lists?.includes(listId)
+            );
         }
 
         filteredGrid.refresh(projectsList.displayed);

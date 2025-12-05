@@ -230,9 +230,9 @@ export function createWorkspace(project: Project) {
             { line: number; character: number }
         >();
         buildErrors
-            .filter(({ file }) => file.includes(project.id))
+            .filter(({ file }) => file?.includes(project.id))
             .forEach(({ file, line, col }) => {
-                const projectFilePath = file.split(project.id + "/").pop();
+                const projectFilePath = file?.split(project.id + "/").pop();
                 if (projectFilePaths.has(projectFilePath)) return;
                 projectFilePaths.set(projectFilePath, { line, character: col });
             });

@@ -45,15 +45,16 @@ export function CloneGit(repoUrl?: string) {
         }
         const tmpDirectory = tmpDir + "/" + randomStr(6);
         cloneGitRepo(url, scrollable, tmpDirectory)
-            .then(({consoleTerminal, defaultProjectTitle}) => {
+            .then(({ consoleTerminal, defaultProjectTitle }) => {
                 createAndMoveProject(
                     tmpDirectory,
                     consoleTerminal,
                     defaultProjectTitle,
                     url
                 );
-                stackNavigation.back() })
-            .catch(() => { });
+                stackNavigation.back();
+            })
+            .catch(() => {});
     };
     form.onsubmit = (e) => {
         e.preventDefault();
@@ -77,7 +78,7 @@ export function CloneGit(repoUrl?: string) {
 
 let checkForDone: (progress: string) => void;
 export async function cloneGitRepo(
-    url: string, 
+    url: string,
     container: HTMLElement,
     directory: string
 ) {
@@ -137,7 +138,7 @@ export async function cloneGitRepo(
     return {
         consoleTerminal,
         defaultProjectTitle
-    }
+    };
 }
 
 export function gitLogger(consoleTerminal: ReturnType<typeof ConsoleTerminal>) {

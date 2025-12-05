@@ -15,6 +15,7 @@ import { createWorkspace } from "./workspace";
 import { Workspace } from "./workspace";
 import { viewClass } from "../../style/index.s";
 import {
+cloningContainerClass,
     fileAndEditorClosedClass,
     fileTreeAndEditorClass,
     gitStatusArrowClass,
@@ -213,9 +214,9 @@ function GitWidget(project: ProjectType) {
             const result = await git.head(project.id);
             branchAndCommitContainer.innerHTML = `
                 <div><b>${result.name}</b></div>
-                <div>${result.hash?.slice(0, 7) || "-"}<div>`
+                <div>${result.hash?.slice(0, 7) || "-"}<div>`;
         }
-        
+
         return branchAndCommitContainer;
     };
 
@@ -271,20 +272,24 @@ function GitWidget(project: ProjectType) {
         core_message.removeListener("git-push", pushEvent);
     };
 
-    git.hasGit(project).then(hasGit => {
+    git.hasGit(project).then((hasGit) => {
         if (hasGit) {
-            git.pull(project)
+            git.pull(project);
         } else if (project.gitRepository?.url) {
             const container = document.createElement("div");
             container.innerHTML = `<h2>Cloning Project</h2>`;
+            const cloningContainer = document.createElement("div");
+            cloningContainer.classList.add(cloningContainerClass);
+            container.append(cloningContainer);
             const dialog = Dialog(container);
-            cloneGitRepo(project.gitRepository.url, container, project.id)
-                .then(() => {
+            cloneGitRepo(project.gitRepository.url, cloningContainer, project.id).then(
+                () => {
                     dialog.remove();
                     refreshBranchAndCommit();
-                });
+                }
+            );
         }
-    })
+    });
 
     return container;
 }
