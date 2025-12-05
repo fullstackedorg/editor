@@ -114,3 +114,14 @@ export const gitStatusArrowClass = style.createClass("git-status-arrow", {
         transform: "rotate(-45deg)"
     }
 });
+
+export const cloningContainerClass = style.createClass("cloning-containre", {
+    paddingTop: spacing.m,
+    ".create-terminal": {
+        height: "auto",
+        "> pre": {
+            minHeight: 0,
+            maxHeight: 300
+        }
+    }
+});

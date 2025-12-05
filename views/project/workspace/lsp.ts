@@ -114,7 +114,7 @@ async function createClientLSP(project: Project) {
             const buildErrors: Diagnostic[] =
                 Store.editor.codeEditor.buildErrors
                     .check()
-                    .filter(({ file }) => uri.endsWith(file))
+                    .filter(({ file }) => file && uri.endsWith(file))
                     .map((err) => {
                         const from =
                             view.state.doc.line(err.line).from + err.col;

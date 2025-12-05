@@ -3,6 +3,7 @@ import { providersInfo } from "@fullstacked/ai-agent";
 export enum CONFIG_TYPE {
     GENERAL = "general",
     PROJECTS = "projects",
+    PROJECTS_LISTS = "projects-lists",
     GIT = "git",
     AGENT = "agent"
 }
@@ -12,7 +13,10 @@ export type CONFIG_DATA_TYPE = {
         userMode: boolean;
     };
     [CONFIG_TYPE.PROJECTS]: {
-        projects: ProjectsList;
+        projects: Project[];
+    };
+    [CONFIG_TYPE.PROJECTS_LISTS]: {
+        lists: ProjectsList[];
     };
     [CONFIG_TYPE.GIT]: GitAuths;
 
@@ -25,14 +29,29 @@ export type AgentProvider =
         useDefault?: boolean;
     };
 
-export type ProjectsList = Project[];
+export type ProjectsList = {
+    name: string;
+    id: string;
+    url: string;
+};
+
+export type ProjectsListRemote = {
+    name?: string;
+    id?: string;
+    projects: {
+        id?: string;
+        title?: string;
+        gitRepository: {
+            url: string;
+        };
+    }[];
+};
 
 export type Project = {
     title: string;
     id: string;
     createdDate: number;
     lists?: string[];
-    location?: string;
     gitRepository?: {
         url: string;
         name?: string;

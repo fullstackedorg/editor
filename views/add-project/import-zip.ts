@@ -190,19 +190,6 @@ export async function createAndMoveProject(
         };
     }
 
-    if (project.gitRepository?.url) {
-        const url = new URL(project.gitRepository.url);
-        const hostname = url.hostname;
-        const gitAuthConfigs = await config.get(CONFIG_TYPE.GIT);
-        const gitAuth = gitAuthConfigs[hostname];
-        if (gitAuth?.username) {
-            project.gitRepository.name = gitAuth.username;
-        }
-        if (gitAuth?.email) {
-            project.gitRepository.email = gitAuth.email;
-        }
-    }
-
     consoleTerminal.logger(`Creating Project`);
     consoleTerminal.logger(`${JSON.stringify(project, null, 2)}`);
 

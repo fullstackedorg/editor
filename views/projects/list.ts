@@ -43,7 +43,7 @@ const fuseOptions: IFuseOptions<ProjectType> = {
 };
 
 export let projectsList: {
-    filter(searchStr?: string): void;
+    filter(searchStr?: string, listId?: string): void;
     displayed: ProjectType[];
 } = {
     filter: () => {},
@@ -56,7 +56,7 @@ function Grid(projects: ProjectType[]) {
 
     const filteredGrid = createRefresheable(GridFiltered);
 
-    projectsList.filter = (searchString = "") => {
+    projectsList.filter = (searchString = "", listId = undefined) => {
         if (!searchString) {
             projectsList.displayed = [...projects].sort(
                 (a, b) => b.createdDate - a.createdDate
@@ -65,6 +65,13 @@ function Grid(projects: ProjectType[]) {
             const fuseResults = fuse.search(searchString);
             projectsList.displayed = fuseResults.map(({ item }) => item);
         }
+
+        if (listId && listId !== "all") {
+            projectsList.displayed = projectsList.displayed.filter(
+                ({ lists }) => lists?.includes(listId)
+            );
+        }
+
         filteredGrid.refresh(projectsList.displayed);
     };
     projectsList.filter();
@@ -212,11 +219,18 @@ function ProjectTile(project: ProjectType) {
         });
         projectSettingsButton.onclick = () => ProjectSettings(project);
 
-        const buttonsGroup = ButtonGroup([
-            deleteButton,
-            shareButton,
-            projectSettingsButton
-        ]);
+        const buttons = [deleteButton, shareButton, projectSettingsButton];
+
+        if (project.lists?.length) {
+            const projectsListsIds = Store.projects.projectsLists.list
+                .check()
+                .map(({ id }) => id);
+            if (project.lists.find((l) => projectsListsIds.includes(l))) {
+                buttons.shift();
+                buttons.pop();
+            }
+        }
+        const buttonsGroup = ButtonGroup(buttons);
 
         content.append(buttonsGroup);
 

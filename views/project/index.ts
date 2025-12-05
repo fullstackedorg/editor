@@ -8,13 +8,14 @@ import { Git } from "./git";
 import { createRefresheable } from "../../components/refresheable";
 import git from "../../../fullstacked_modules/git";
 import core_message from "../../../fullstacked_modules/core_message";
-import { Button, Icon, Loader } from "@fullstacked/ui";
+import { Button, Dialog, Icon, Loader } from "@fullstacked/ui";
 import { FileTree } from "./file-tree";
 import { openPrompt } from "../prompt";
 import { createWorkspace } from "./workspace";
 import { Workspace } from "./workspace";
 import { viewClass } from "../../style/index.s";
 import {
+    cloningContainerClass,
     fileAndEditorClosedClass,
     fileTreeAndEditorClass,
     gitStatusArrowClass,
@@ -24,6 +25,7 @@ import {
     loaderContainerClass,
     projectClass
 } from "./index.s";
+import { cloneGitRepo } from "../add-project/clone-git";
 
 export function Project(project: ProjectType) {
     if (!project) return;
@@ -206,12 +208,15 @@ function GitWidget(project: ProjectType) {
     if (!hasGit) return container;
 
     const branchAndCommitRender = async () => {
-        const result = await git.head(project.id);
         const branchAndCommitContainer = createElement("div");
-        branchAndCommitContainer.innerHTML = `
+
+        if (await git.hasGit(project)) {
+            const result = await git.head(project.id);
+            branchAndCommitContainer.innerHTML = `
                 <div><b>${result.name}</b></div>
-                <div>${result.hash?.slice(0, 7) || "-"}<div>
-            `;
+                <div>${result.hash?.slice(0, 7) || "-"}<div>`;
+        }
+
         return branchAndCommitContainer;
     };
 
@@ -267,7 +272,26 @@ function GitWidget(project: ProjectType) {
         core_message.removeListener("git-push", pushEvent);
     };
 
-    git.pull(project);
+    git.hasGit(project).then((hasGit) => {
+        if (hasGit) {
+            git.pull(project);
+        } else if (project.gitRepository?.url) {
+            const container = document.createElement("div");
+            container.innerHTML = `<h2>Cloning Project</h2>`;
+            const cloningContainer = document.createElement("div");
+            cloningContainer.classList.add(cloningContainerClass);
+            container.append(cloningContainer);
+            const dialog = Dialog(container);
+            cloneGitRepo(
+                project.gitRepository.url,
+                cloningContainer,
+                project.id
+            ).then(() => {
+                dialog.remove();
+                refreshBranchAndCommit();
+            });
+        }
+    });
 
     return container;
 }

@@ -1,5 +1,5 @@
 import { createSequential, createSubscribable, Store } from ".";
-import { CONFIG_TYPE, Project } from "../types";
+import { CONFIG_TYPE, Project, ProjectsListRemote } from "../types";
 import fs from "fs";
 import { SnackBar } from "components/snackbar";
 import git from "git";
@@ -10,6 +10,9 @@ import core_open from "core_open";
 import packages from "packages";
 import config from "../editor_modules/config";
 import type { createWorkspace } from "../views/project/workspace";
+import { core_fetch2 } from "fetch";
+import { urlToName } from "../views/add-project/projects-list";
+import slugify from "slugify";
 
 const list = createSubscribable(listP, []);
 
@@ -24,11 +27,18 @@ let currentOpenedProject: Project & {
 } = null;
 const current = createSubscribable(() => currentOpenedProject);
 
+const projectsLists = createSubscribable(listProjectsLists);
+
 export const projects = {
     list: list.subscription,
     create: createSequential(create),
     update,
     deleteP,
+
+    projectsLists: {
+        list: projectsLists.subscription,
+        add: addProjectsList
+    },
 
     setCurrent,
     current: current.subscription,
@@ -48,18 +58,108 @@ function setCurrent(project: Project) {
     current.notify();
 }
 
+async function listProjectsLists() {
+    const { lists } = await config.get(CONFIG_TYPE.PROJECTS_LISTS);
+    return lists || [];
+}
+
+async function addProjectsList(list: {
+    url: string;
+    name?: string;
+    id?: string;
+}) {
+    let projectsList: ProjectsListRemote = null;
+    try {
+        projectsList = await (await core_fetch2(list.url)).json();
+    } catch (e) {
+        return;
+    }
+
+    if (!projectsList?.projects || !Array.isArray(projectsList?.projects)) {
+        return;
+    }
+
+    let { lists } = await config.get(CONFIG_TYPE.PROJECTS_LISTS);
+    if (!lists) {
+        lists = [];
+    }
+
+    const existingList = lists.find(({ url }) => url === list.url);
+
+    const name =
+        existingList?.name ||
+        list.name ||
+        projectsList.name ||
+        urlToName(list.url);
+    const id =
+        existingList?.id ||
+        slugify(list.id || projectsList.id || name, { lower: true });
+
+    for (let i = 0; i < projectsList.projects.length; i++) {
+        const project = projectsList.projects[i];
+        await create({
+            id: slugify(project.id || `${id}-${i}`, { lower: true }),
+            title: project.title || `${name}-${i}`,
+            lists: [id],
+            gitRepository: {
+                url: project.gitRepository.url
+            }
+        });
+    }
+
+    if (!existingList) {
+        lists.push({
+            ...list,
+            id,
+            name
+        });
+    }
+
+    await config.save(CONFIG_TYPE.PROJECTS_LISTS, { lists });
+    projectsLists.notify();
+}
+
 async function listP() {
     const { projects } = await config.get(CONFIG_TYPE.PROJECTS);
     return projects || [];
 }
 
 async function create(project: Omit<Project, "createdDate">) {
-    const newProject: Project = {
+    const projects = await listP();
+
+    let newProject: Project = {
         ...project,
         createdDate: Date.now()
     };
-    const projects = await listP();
-    projects.push(newProject);
+
+    const existingProject = projects.find(({ id }) => id === project.id);
+    if (existingProject) {
+        existingProject.title = newProject.title;
+
+        if (existingProject.lists?.length) {
+            existingProject.lists = Array.from(
+                new Set([...(existingProject.lists || []), ...project.lists])
+            );
+        }
+    } else {
+        if (newProject.gitRepository?.url) {
+            const url = new URL(newProject.gitRepository.url);
+            const hostname = url.hostname;
+            const gitAuthConfigs = await config.get(CONFIG_TYPE.GIT);
+            const gitAuth = gitAuthConfigs[hostname];
+            if (gitAuth?.username) {
+                newProject.gitRepository.name =
+                    newProject.gitRepository.name || gitAuth.username;
+            }
+            if (gitAuth?.email) {
+                newProject.gitRepository.email =
+                    newProject.gitRepository.email || gitAuth.email;
+            }
+        }
+
+        projects.push(newProject);
+    }
+
     await config.save(CONFIG_TYPE.PROJECTS, { projects });
     list.notify();
 

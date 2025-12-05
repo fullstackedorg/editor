@@ -43,8 +43,17 @@ export function CloneGit(repoUrl?: string) {
         if (!url.endsWith(".git")) {
             url += ".git";
         }
-        cloneGitRepo(url, scrollable)
-            .then(() => stackNavigation.back())
+        const tmpDirectory = tmpDir + "/" + randomStr(6);
+        cloneGitRepo(url, scrollable, tmpDirectory)
+            .then(({ consoleTerminal, defaultProjectTitle }) => {
+                createAndMoveProject(
+                    tmpDirectory,
+                    consoleTerminal,
+                    defaultProjectTitle,
+                    url
+                );
+                stackNavigation.back();
+            })
             .catch(() => {});
     };
     form.onsubmit = (e) => {
@@ -68,10 +77,12 @@ export function CloneGit(repoUrl?: string) {
 }
 
 let checkForDone: (progress: string) => void;
-async function cloneGitRepo(url: string, scrollable: HTMLElement) {
+export async function cloneGitRepo(
+    url: string,
+    container: HTMLElement,
+    directory: string
+) {
     const consoleTerminal = ConsoleTerminal();
-
-    const tmpDirectory = tmpDir + "/" + randomStr(6);
 
     const logProgress = gitLogger(consoleTerminal);
 
@@ -99,11 +110,11 @@ async function cloneGitRepo(url: string, scrollable: HTMLElement) {
         text: "Cloning from remote..."
     });
 
-    scrollable.append(loader, consoleTerminal.container);
+    container.append(loader, consoleTerminal.container);
 
     consoleTerminal.logger(`Cloning ${url}`);
     try {
-        git.clone(url, tmpDirectory);
+        git.clone(url, directory);
     } catch (e) {
         consoleTerminal.logger(e.Error);
         throw e;
@@ -119,17 +130,15 @@ async function cloneGitRepo(url: string, scrollable: HTMLElement) {
         defaultProjectTitle = pathnameComponents.slice(0, -1).join(".");
     }
 
-    createAndMoveProject(
-        tmpDirectory,
-        consoleTerminal,
-        defaultProjectTitle,
-        url
-    );
-
     consoleTerminal.logger(`Finished cloning ${url}`);
     consoleTerminal.logger(`Done`);
 
     core_message.removeListener("git-clone", checkForDone);
+
+    return {
+        consoleTerminal,
+        defaultProjectTitle
+    };
 }
 
 export function gitLogger(consoleTerminal: ReturnType<typeof ConsoleTerminal>) {
