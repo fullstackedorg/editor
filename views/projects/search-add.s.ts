@@ -16,7 +16,7 @@ export const searchAndAddClass = style.createClass("search-and-add", {
 
 export const hideClass = "hide";
 export const redBadgeClass = "red-badge";
-export const buttonContainer = style.createClass("button-container", {
+export const buttonContainer = style.createClass("filter-button-container", {
     position: "relative",
     display: "none",
     marginRight: 0 - spacing.m,
