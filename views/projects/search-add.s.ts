@@ -10,7 +10,8 @@ export const searchAndAddClass = style.createClass("search-and-add", {
     display: "flex",
     alignItems: "flex-end",
     justifyContent: "space-between",
-    paddingBottom: spacing.m
+    paddingBottom: spacing.m,
+    gap: spacing.s
 });
 
 export const hideClass = "hide";
@@ -18,6 +19,7 @@ export const redBadgeClass = "red-badge";
 export const buttonContainer = style.createClass("button-container", {
     position: "relative",
     display: "none",
+    marginRight: 0 - spacing.m,
     [`@media (max-width: ${breakpoints.m}px)`]: {
         display: "block"
     },
@@ -63,6 +65,5 @@ export const searchFormClass = style.createClass("search-form", {
 
     [`@media (max-width: ${breakpoints.m}px)`]: {
         gap: spacing.s,
-        marginRight: 0 - spacing.s
     }
 });
