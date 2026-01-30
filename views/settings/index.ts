@@ -10,6 +10,7 @@ import { InputSwitch } from "@fullstacked/ui";
 import { createAiAgentConfigurator } from "../ai-agent/config";
 import { viewClass } from "../../style/index.s";
 import { agentConfigsClass, userModeClass, settingsClass } from "./index.s";
+import { ProjectsLists } from "./projects-lists";
 
 export function Settings() {
     const { container, scrollable } = ViewScrollable();
@@ -23,17 +24,22 @@ export function Settings() {
     container.prepend(topBar);
 
     const userMode = UserMode();
+    const projectsLists = ProjectsLists();
 
     scrollable.append(
         userMode,
         AgentProvider(),
         GitAuthentications(),
+        projectsLists,
         Version()
     );
 
     stackNavigation.navigate(container, {
         bgColor: BG_COLOR,
-        onDestroy: userMode.destroy
+        onDestroy: () => {
+            userMode.destroy();
+            projectsLists.destroy();
+        }
     });
 }
 

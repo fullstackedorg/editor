@@ -121,9 +121,11 @@ function validateProject(project: ProjectsListRemote["projects"][number]) {
     return !!project?.gitRepository?.url;
 }
 
-let lastStatus: "loading" | Awaited<ReturnType<typeof testProjectsListUrl>> =
-    null;
 function ProjectsListStatus() {
+    let lastStatus:
+        | "loading"
+        | Awaited<ReturnType<typeof testProjectsListUrl>> = null;
+
     const container = createElement("div");
     container.classList.add(projectsListStatusClass);
     container.innerHTML = `<label>Status</label>`;
@@ -202,7 +204,7 @@ function strIsUrl(urlStr: string) {
     }
 }
 
-async function testProjectsListUrl(urlStr: string): Promise<
+export async function testProjectsListUrl(urlStr: string): Promise<
     {
         error?: string;
     } & Partial<ProjectsListRemote>

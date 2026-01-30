@@ -1,5 +1,10 @@
 import { createSequential, createSubscribable, Store } from ".";
-import { CONFIG_TYPE, Project, ProjectsListRemote } from "../types";
+import {
+    CONFIG_TYPE,
+    Project,
+    ProjectsList,
+    ProjectsListRemote
+} from "../types";
 import fs from "fs";
 import { SnackBar } from "components/snackbar";
 import git from "git";
@@ -37,7 +42,8 @@ export const projects = {
 
     projectsLists: {
         list: projectsLists.subscription,
-        add: addProjectsList
+        add: addProjectsList,
+        remove: removeProjectList
     },
 
     setCurrent,
@@ -119,6 +125,38 @@ async function addProjectsList(list: {
     projectsLists.notify();
 }
 
+async function removeProjectList(projectsList: ProjectsList) {
+    let { lists } = await config.get(CONFIG_TYPE.PROJECTS_LISTS);
+    if (!lists) {
+        lists = [];
+    }
+
+    const listIndex = lists.findIndex(({ id }) => id === projectsList.id);
+
+    if (listIndex === -1) {
+        return;
+    }
+
+    lists.splice(listIndex, 1);
+
+    await config.save(CONFIG_TYPE.PROJECTS_LISTS, { lists });
+
+    const { projects } = await config.get(CONFIG_TYPE.PROJECTS);
+
+    projects.forEach((p) => {
+        if (!p.lists?.includes(projectsList.id)) {
+            return;
+        }
+        const listIndex = p.lists.findIndex((id) => id === projectsList.id);
+        p.lists.splice(listIndex, 1);
+    });
+
+    await config.save(CONFIG_TYPE.PROJECTS, { projects });
+
+    projectsLists.notify();
+    list.notify();
+}
+
 async function listP() {
     const { projects } = await config.get(CONFIG_TYPE.PROJECTS);
     return projects || [];
@@ -136,7 +174,7 @@ async function create(project: Omit<Project, "createdDate">) {
     if (existingProject) {
         existingProject.title = newProject.title;
 
-        if (existingProject.lists?.length) {
+        if (project.lists?.length) {
             existingProject.lists = Array.from(
                 new Set([...(existingProject.lists || []), ...project.lists])
             );
