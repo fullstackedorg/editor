@@ -64,6 +64,6 @@ export const searchFormClass = style.createClass("search-form", {
     },
 
     [`@media (max-width: ${breakpoints.m}px)`]: {
-        gap: spacing.s,
+        gap: spacing.s
     }
 });
