@@ -329,8 +329,6 @@ export async function createLSP(
     };
 
     const restartClient = async () => {
-        console.log("RESTARTING");
-
         if (clientLSP) await clientLSP?.end();
 
         clientLSP = await createClientLSP(project);
@@ -373,6 +371,7 @@ export async function createLSP(
             clientLSP?.runDiagnostics(`${projectRootUri}/${projectFilePath}`);
         },
         async destroy() {
+            core_message.removeListener("file-event", fileEventsListenner);
             await clientLSP?.end();
             clientLSP = null;
         }

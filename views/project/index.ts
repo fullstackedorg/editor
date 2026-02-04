@@ -45,6 +45,7 @@ export function Project(project: ProjectType) {
             topBar.destroy();
             fileTreeAndEditor.destroy();
             container.destroy();
+            workspace.destroy();
         }
     });
 
